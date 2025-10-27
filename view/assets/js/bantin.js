@@ -237,3 +237,94 @@ document.addEventListener('DOMContentLoaded', function () {
     // Khởi tạo emoji picker
     handleEmojiPicker();
 });
+
+// ============================================
+// HÀM XỬ LÝ LIKE BÀI ĐĂNG
+// ============================================
+function toggleLikePost(maBaiDang, button) {
+    // Kiểm tra đăng nhập
+    if (!window.currentUserId) {
+        alert('Vui lòng đăng nhập để thích bài viết này');
+        return;
+    }
+
+    console.log('toggleLikePost called for post:', maBaiDang);
+    
+    const icon = button.querySelector('i');
+    const isLiked = icon.classList.contains('bi-heart-fill');
+    
+    // Toggle icon ngay lập tức để UX mượt
+    if (isLiked) {
+        icon.classList.remove('bi-heart-fill');
+        icon.classList.add('bi-heart');
+        button.classList.remove('liked');
+    } else {
+        icon.classList.remove('bi-heart');
+        icon.classList.add('bi-heart-fill');
+        button.classList.add('liked');
+    }
+    
+    console.log('Sending request to:', 'api/like-post.php');
+    console.log('Request body:', { maBaiDang: maBaiDang });
+    
+    // Gọi API
+    fetch('api/like-post.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            maBaiDang: maBaiDang
+        })
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        if (data.success) {
+            // Cập nhật số lượt thích
+            const likeCountElement = document.getElementById('likeCount-' + maBaiDang);
+            if (likeCountElement) {
+                likeCountElement.textContent = data.likeCount;
+            }
+            
+            // Đảm bảo trạng thái icon đúng với server
+            if (data.isLiked) {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+                button.classList.add('liked');
+            } else {
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+                button.classList.remove('liked');
+            }
+        } else {
+            // Revert nếu có lỗi
+            if (isLiked) {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+                button.classList.add('liked');
+            } else {
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+                button.classList.remove('liked');
+            }
+            alert('Có lỗi xảy ra: ' + (data.message || 'Không thể thích bài viết'));
+        }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+        // Revert nếu có lỗi
+        if (isLiked) {
+            icon.classList.remove('bi-heart');
+            icon.classList.add('bi-heart-fill');
+            button.classList.add('liked');
+        } else {
+            icon.classList.remove('bi-heart-fill');
+            icon.classList.add('bi-heart');
+            button.classList.remove('liked');
+        }
+        alert('Không thể kết nối đến server');
+    });
+}
