@@ -180,7 +180,17 @@ class modelHoSo
     }
     public function checkHoSoExists($maNguoiDung)
     {
-        $query = "SELECT * FROM hosonguoidung WHERE maNguoiDung = $maNguoiDung";
+        $query = "SELECT h.*, 
+                  tp.tenThanhPho, 
+                  nn.tenNghe AS tenNgheNghiep,
+                  GROUP_CONCAT(st.tenSoThich SEPARATOR ', ') AS soThich
+                  FROM hosonguoidung h
+                  LEFT JOIN thanhpho tp ON h.maThanhPho = tp.maThanhPho
+                  LEFT JOIN nghenghiep nn ON h.maNgheNghiep = nn.maNghe
+                  LEFT JOIN hoso_sothich hst ON h.maHoSo = hst.maHoSo
+                  LEFT JOIN sothich st ON hst.maSoThich = st.maSoThich
+                  WHERE h.maNguoiDung = $maNguoiDung
+                  GROUP BY h.maHoSo";
         $result = $this->execQuery($query);
         return $result;
     }

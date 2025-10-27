@@ -22,7 +22,7 @@ $activePage = isset($page) && $page ? $page : ($_GET['page'] ?? 'bantin');
                     <a class="nav-link <?php echo ($activePage === 'bantin') ? 'active' : ''; ?>" href="home_test.php?page=bantin">Trang chủ</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?php echo ($activePage === 'timkiem') ? 'active' : ''; ?>" href="home_test.php.php?page=timkiem">Tìm kiếm</a>
+                    <a class="nav-link <?php echo ($activePage === 'timkiem') ? 'active' : ''; ?>" href="home_test.php?page=timkiem">Tìm kiếm</a>
                 </li>
             </ul>
 

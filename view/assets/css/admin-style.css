@@ -1,0 +1,113 @@
+/* admin-style.css */
+body {
+    background-color: #f8f9fa;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+    width: 260px;
+    min-width: 260px;
+    background-color: #ffffff;
+    border-right: 1px solid #dee2e6;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1rem;
+}
+
+.sidebar .nav-link {
+    color: #495057;
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar .nav-link i {
+    margin-right: 0.75rem;
+    font-size: 1.2rem;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #e9ecef;
+}
+
+.sidebar .nav-link.active {
+    background-color: #f0f7ff;
+    color: #0d6efd;
+    font-weight: 600;
+}
+
+.sidebar .logout-btn {
+    margin-top: auto; /* Đẩy nút xuống dưới cùng */
+}
+
+/* --- Main Content --- */
+.main-content {
+    flex-grow: 1;
+    padding: 2rem;
+    overflow-x: auto;
+}
+
+.table {
+    vertical-align: middle; /* Căn giữa nội dung trong bảng */
+    border-color: #dee2e6;
+}
+
+.table thead {
+    background-color: #f8f9fa;
+}
+
+.table th {
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.search-bar .form-control {
+    padding-left: 2.5rem;
+}
+
+.search-bar .bi-search {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+.watermark {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+.watermark .logo-v {
+    display: inline-flex; width: 16px; height: 16px;
+    background: #6f42c1; color: white; border-radius: 50%;
+    text-align: center; line-height: 16px; font-weight: bold;
+    font-family: monospace; vertical-align: middle;
+}
+
+
+/* --- Mobile Responsive --- */
+@media (max-width: 991.98px) {
+    .wrapper {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .main-content {
+        padding: 1.5rem;
+    }
+}

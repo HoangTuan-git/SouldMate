@@ -34,6 +34,7 @@ ob_start();
         'taohosonghiemtuc' => ['taohoso_nghiemtuc.css'],
         'taohosotrainghiem' => ['taohoso_trainghiem.css'],
         'quenMatKhau' => ['quenMatKhau.css'],
+        'timkiem' => ['timkiem.css'],
     ];
 
     if (!empty($cssMap[$page])) {

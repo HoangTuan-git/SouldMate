@@ -74,6 +74,8 @@ main {
   width: 36px;
   height: 36px;
   font-size: 14px;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .chat-user-details h3 {

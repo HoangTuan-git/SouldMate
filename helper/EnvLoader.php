@@ -1,17 +1,8 @@
 <?php
-/**
- * Simple .env file loader for PHP
- * Loads environment variables from .env file into $_ENV and getenv()
- */
 
 class EnvLoader
 {
-    /**
-     * Load .env file from specified path
-     * 
-     * @param string $path Path to .env file (default: root directory)
-     * @return bool True if loaded successfully
-     */
+
     public static function load($path = null)
     {
         if ($path === null) {
@@ -57,13 +48,6 @@ class EnvLoader
         return true;
     }
 
-    /**
-     * Get environment variable value
-     * 
-     * @param string $key Variable name
-     * @param mixed $default Default value if not found
-     * @return mixed
-     */
     public static function get($key, $default = null)
     {
         // Check $_ENV first
@@ -80,13 +64,6 @@ class EnvLoader
         return $default;
     }
 
-    /**
-     * Get boolean environment variable
-     * 
-     * @param string $key Variable name
-     * @param bool $default Default value
-     * @return bool
-     */
     public static function getBool($key, $default = false)
     {
         $value = self::get($key);
@@ -97,14 +74,6 @@ class EnvLoader
 
         return filter_var($value, FILTER_VALIDATE_BOOLEAN);
     }
-
-    /**
-     * Get integer environment variable
-     * 
-     * @param string $key Variable name
-     * @param int $default Default value
-     * @return int
-     */
     public static function getInt($key, $default = 0)
     {
         $value = self::get($key);

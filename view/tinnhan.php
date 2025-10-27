@@ -154,6 +154,8 @@ if (isset($_REQUEST['uid'])) $uid = $_REQUEST['uid'];
       color: #fff;
       font-weight: 600;
       font-size: 16px;
+      object-fit: cover; /* Đảm bảo ảnh được crop đúng */
+      border: 2px solid #fff; /* Viền trắng cho avatar */
     }
     
     .online-indicator {

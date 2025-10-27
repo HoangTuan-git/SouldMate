@@ -1,6 +1,6 @@
 <?php
 // Load environment variables
-require_once __DIR__ . '/../helper/EnvLoader.php';
+include_once("helper/EnvLoader.php");
 EnvLoader::load();
 
 // JWT Configuration

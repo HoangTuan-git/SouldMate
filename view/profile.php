@@ -37,120 +37,169 @@ if (!$user || $user->num_rows === 0) {
 }
 
 $userData = $user->fetch_assoc();
+
+// Lấy thêm thông tin nghề nghiệp, thành phố, sở thích
+$ngheNghiep = $userData['tenNgheNghiep'] ?? '';
+$thanhPho = $userData['tenThanhPho'] ?? '';
+$soThich = $userData['soThich'] ?? '';
+$soThichArray = !empty($soThich) ? explode(',', $soThich) : [];
+
+// Tính tuổi
+$tuoi = '';
+if (!empty($userData['ngaySinh'])) {
+    $ngaySinh = new DateTime($userData['ngaySinh']);
+    $hienTai = new DateTime();
+    $tuoi = $hienTai->diff($ngaySinh)->y;
+}
 ?>
 
-<div class="container-fluid px-2 mt-2">
+<div class="profile-container">
+    <!-- Cover Image -->
+    <div class="profile-cover"></div>
 
-    <!-- Profile Header Card -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body text-center py-4">
-                    <div class="position-relative d-inline-block mb-3">
-                        <img src="uploads/avatars/<?= htmlspecialchars($userData['avatar']) ?>" alt="Avatar" class="avatar-xlarge">
-                        <div class="online-indicator" data-user-id="<?= $profileUserId ?>">
-                        </div>
-                        
-                    </div>
-                    <h4 class="card-title mb-1"><?= htmlspecialchars($userData['hoTen']) ?></h4>
-                    <small class="text-muted"><?= htmlspecialchars($userData['moTa']) ?></small>
-                </div>
+    <!-- Profile Card -->
+    <div class="profile-card">
+        <!-- Avatar Section -->
+        <div class="profile-header">
+            <div class="profile-avatar-wrapper">
+                <img src="uploads/avatars/<?= htmlspecialchars($userData['avatar']) ?>" 
+                     alt="<?= htmlspecialchars($userData['hoTen']) ?>" 
+                     class="profile-avatar-img">
             </div>
-        </div>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="row mb-3">
-        <div class="col-6">
-            <a href="home.php?page=tinnhan&uid=<?= $profileUserId ?>" class="btn btn-primary w-100">
-                💬 Nhắn tin
-            </a>
-        </div>
-        <div class="col-6">
-            <div class="dropdown w-100">
-                <button class="btn btn-outline-secondary w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    ⋯ Khác
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#" onclick="viewFullProfile('<?= $profileUserId ?>')">👤 Xem đầy đủ</a></li>
-                    <li><a class="dropdown-item text-warning" href="#" onclick="blockUser('<?= $profileUserId ?>')">🚫 Chặn người dùng</a></li>
-                    <li><a class="dropdown-item text-danger" href="#" onclick="reportUser('<?= $profileUserId ?>')">⚠️ Báo cáo</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <!-- Profile Info Card -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h6 class="mb-0">Thông tin cá nhân</h6>
-                </div>
-                <div class="card-body">
-                    <div class="info-row">
-                        <span class="info-label">Giới tính:</span>
-                        <span class="info-value"><?= htmlspecialchars($userData['gioiTinh']) ?></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Tham gia:</span>
-                        <span class="info-value"><?= date('d/m/Y', strtotime($userData['created_at'] ?? 'now')) ?></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Trạng thái:</span>
-                        <span class="info-value">
-                            <span class="status" data-user-id="<?= $profileUserId ?>">
-                                <span class="badge bg-secondary">Đang kiểm tra...</span>
-                            </span>
+            
+            <div class="profile-info">
+                <h2 class="profile-name">
+                    <?= htmlspecialchars($userData['hoTen']) ?><?php if($tuoi): ?>, <?= $tuoi ?><?php endif; ?>
+                </h2>
+                
+                <div class="profile-meta">
+                    <?php if($thanhPho): ?>
+                        <span class="profile-location">
+                            <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($thanhPho) ?>
                         </span>
-                    </div>
+                    <?php endif; ?>
+                    
+                    <?php if($userData['trangThaiHenHo']): ?>
+                        <span class="profile-dating-status">
+                            <i class="bi bi-heart"></i> 
+                            <?= $userData['trangThaiHenHo'] == 'nghiemtuc' ? 'Tìm kiếm nghiêm túc' : 'Tìm kiếm trải nghiệm' ?>
+                        </span>
+                    <?php endif; ?>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Recent Activity (placeholder) -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h6 class="mb-0">Hoạt động gần đây</h6>
-                </div>
-                <div class="card-body text-center py-4">
-                    <div class="text-muted">
-                        <span style="font-size: 48px; opacity: 0.3;">📊</span>
-                        <p class="mt-2 mb-0">Thông tin hoạt động sẽ được cập nhật sau</p>
-                    </div>
+            <!-- Action Buttons (Heart & More) -->
+            <div class="profile-actions">
+                <button class="profile-action-btn profile-like-btn" onclick="toggleLike('<?= $profileUserId ?>')">
+                    <i class="bi bi-heart"></i>
+                    <span>Thích</span>
+                </button>
+                
+                <div class="dropdown">
+                    <button class="profile-action-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href="home.php?page=tinnhan&uid=<?= $profileUserId ?>">
+                                <i class="bi bi-chat-dots me-2"></i>Nhắn tin ngay
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="#" onclick="blockUser('<?= $profileUserId ?>'); return false;">
+                                <i class="bi bi-slash-circle me-2"></i>Chặn người dùng
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="#" onclick="reportUser('<?= $profileUserId ?>'); return false;">
+                                <i class="bi bi-exclamation-triangle me-2"></i>Báo cáo
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
+
+        <!-- Nghề nghiệp Section -->
+        <?php if($ngheNghiep): ?>
+        <div class="profile-section">
+            <h3 class="profile-section-title">Nghề nghiệp</h3>
+            <p class="profile-section-text"><?= htmlspecialchars($ngheNghiep) ?></p>
+        </div>
+        <?php endif; ?>
+
+        <!-- Sở thích Section -->
+        <?php if(!empty($soThichArray)): ?>
+        <div class="profile-section">
+            <h3 class="profile-section-title">Sở thích</h3>
+            <div class="profile-hobbies">
+                <?php foreach($soThichArray as $hobby): ?>
+                    <?php if(trim($hobby)): ?>
+                        <span class="profile-hobby-tag"><?= htmlspecialchars(trim($hobby)) ?></span>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <!-- Giới thiệu về tôi Section -->
+        <?php if(!empty($userData['moTa'])): ?>
+        <div class="profile-section">
+            <h3 class="profile-section-title">Giới thiệu về tôi</h3>
+            <p class="profile-section-text"><?= nl2br(htmlspecialchars($userData['moTa'])) ?></p>
+        </div>
+        <?php endif; ?>
     </div>
 </div>
 
 
 
 <script>
-// Initialize user status when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    if (window.chatClient) {
-        // Update status for this specific user
-        const userId = '<?= $profileUserId ?>';
-        updateUserProfileStatus(userId);
-        
-        // Listen for status updates
-        if (window.chatClient.socket) {
-            window.chatClient.socket.on('user_status_update', function(data) {
-                if (data.userId === userId) {
-                    updateUserProfileStatus(userId, data.status);
-                }
-            });
-        }
+function toggleLike(userId) {
+    const btn = event.currentTarget;
+    const icon = btn.querySelector('i');
+    const isLiked = icon.classList.contains('bi-heart-fill');
+    
+    // Toggle icon
+    if (isLiked) {
+        icon.classList.remove('bi-heart-fill');
+        icon.classList.add('bi-heart');
+        btn.classList.remove('liked');
+    } else {
+        icon.classList.remove('bi-heart');
+        icon.classList.add('bi-heart-fill');
+        btn.classList.add('liked');
     }
-});
-
-
-function viewFullProfile(userId) {
-    alert('Chức năng xem profile đầy đủ đang được phát triển');
+    
+    // TODO: Call API to save like status
+    fetch('api/like-user.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            target_user_id: userId,
+            action: isLiked ? 'unlike' : 'like'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            // Revert on error
+            if (isLiked) {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+                btn.classList.add('liked');
+            } else {
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+                btn.classList.remove('liked');
+            }
+            alert('Có lỗi xảy ra: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
 
 function blockUser(userId) {

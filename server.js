@@ -4,6 +4,10 @@ const socketIo = require('socket.io');
 const cors = require('cors');
 const mysql = require('mysql2');
 const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+
+// Load environment variables from .env file
+dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
@@ -15,7 +19,7 @@ const io = socketIo(server, {
 });
 
 // JWT Secret Key (phải giống với PHP)
-const JWT_SECRET_KEY = 'my_secret_key_12345';
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY || 'my_secret_key_12345';
 
 // Middleware
 app.use(cors());
