@@ -111,6 +111,11 @@ function timeAgo($datetime)
                 <!-- News Feed -->
                 <?php
                 $posts = $cBanTin->cGetAllTinTuc();
+                
+                // Load controller để check like status
+                include_once("controller/cTuongTac.php");
+                $cTuongTac = new cTuongTac();
+                
                 if ($posts && $posts->num_rows > 0):
                     while ($post = $posts->fetch_assoc()):
                         $images = !empty($post['noiDungAnh']) ? explode(',', $post['noiDungAnh']) : [];
@@ -122,6 +127,12 @@ function timeAgo($datetime)
                         elseif ($imageCount == 3) $gridClass = 'images-3';
                         elseif ($imageCount == 4) $gridClass = 'images-4';
                         elseif ($imageCount >= 5) $gridClass = 'images-5-plus';
+                        
+                        // Kiểm tra user đã like bài này chưa
+                        $userLiked = false;
+                        if (isset($_SESSION['uid'])) {
+                            $userLiked = $cTuongTac->CheckLikeStatus($_SESSION['uid'], $post['maBaiDang']);
+                        }
                 ?>
                         <div class="feed-post-card">
                             <!-- Post Header -->
@@ -176,7 +187,7 @@ function timeAgo($datetime)
                                 <div class="feed-post-stats-inner">
                                     <div class="feed-post-reactions">
                                         <i class="bi bi-heart-fill feed-post-reaction-icon text-danger"></i>
-                                        <span class="feed-post-reaction-count"><?php echo $post['soLuotThich'] ?? 0; ?></span>
+                                        <span class="feed-post-reaction-count" id="likeCount-<?php echo $post['maBaiDang']; ?>"><?php echo $post['soLuotThich'] ?? 0; ?></span>
                                     </div>
                                     <div>
                                         <span class="feed-post-comment-count">
@@ -188,8 +199,8 @@ function timeAgo($datetime)
 
                             <!-- Post Actions -->
                             <div class="feed-post-actions">
-                                <button class="feed-post-action-btn">
-                                    <i class="bi bi-heart"></i>
+                                <button class="feed-post-action-btn <?php echo $userLiked ? 'liked' : ''; ?>" onclick="toggleLikePost(<?php echo $post['maBaiDang']; ?>, this)">
+                                    <i class="bi bi-heart<?php echo $userLiked ? '-fill' : ''; ?>"></i>
                                     <span>Thích</span>
                                 </button>
                                 <button class="feed-post-action-btn">
