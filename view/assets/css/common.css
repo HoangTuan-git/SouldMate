@@ -1,0 +1,35 @@
+/* Common styles for all pages */
+body {
+    background: #f8f9fb;
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+}
+
+.main-container {
+    min-height: calc(100vh - 88px);
+    padding: 0;
+    margin: 0;
+}
+
+/* Container cho các trang có content giữa màn hình */
+.content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+@media (max-width: 767.98px) {
+    .main-container {
+        padding: 0;
+    }
+    
+    .content-wrapper {
+        padding: 10px;
+    }
+}

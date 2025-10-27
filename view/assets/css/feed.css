@@ -1,0 +1,300 @@
+/* ==================================
+   NEWS FEED SPECIFIC STYLES
+   Namespace: .feed-post-* để tránh conflict
+   ================================== */
+
+/* Post Card Container */
+.feed-post-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+/* Post Header */
+.feed-post-header {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.feed-post-avatar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.feed-post-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid transparent;
+}
+
+/* Avatar với verified badge (viền xanh như ảnh) */
+.feed-post-avatar.verified {
+    border-color: #1da1f2;
+    padding: 2px;
+}
+
+.feed-post-user-info {
+    flex: 1;
+}
+
+.feed-post-username {
+    font-size: 15px;
+    font-weight: 600;
+    color: #050505;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.feed-post-time {
+    font-size: 13px;
+    color: #65676b;
+    margin: 0;
+}
+
+.feed-post-menu-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: #65676b;
+    font-size: 20px;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.feed-post-menu-btn:hover {
+    background: #f2f3f5;
+}
+
+/* Post Content Text */
+.feed-post-content {
+    padding: 0 20px 12px;
+}
+
+.feed-post-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #050505;
+    margin: 0;
+    word-wrap: break-word;
+}
+
+/* Post Images Grid - Flexible Layout */
+.feed-post-images {
+    margin-top: 12px;
+    display: grid;
+    gap: 2px;
+    background: #f0f2f5;
+}
+
+/* 1 ảnh - Full width */
+.feed-post-images.images-1 {
+    grid-template-columns: 1fr;
+    max-height: 600px;
+}
+
+.feed-post-images.images-1 .feed-post-image-item {
+    height: 100%;
+    max-height: 600px;
+}
+
+/* 2 ảnh - 2 cột bằng nhau */
+.feed-post-images.images-2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.feed-post-images.images-2 .feed-post-image-item {
+    height: 300px;
+}
+
+/* 3 ảnh - 1 lớn trái, 2 nhỏ phải */
+.feed-post-images.images-3 {
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.feed-post-images.images-3 .feed-post-image-item:first-child {
+    grid-row: 1 / 3;
+    height: 100%;
+}
+
+.feed-post-images.images-3 .feed-post-image-item {
+    height: 200px;
+}
+
+/* 4 ảnh - Grid 2x2 */
+.feed-post-images.images-4 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.feed-post-images.images-4 .feed-post-image-item {
+    height: 250px;
+}
+
+/* 5+ ảnh - 1 lớn trái, 4 nhỏ phải (2x2) */
+.feed-post-images.images-5-plus {
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.feed-post-images.images-5-plus .feed-post-image-item:first-child {
+    grid-row: 1 / 3;
+    height: 100%;
+}
+
+.feed-post-images.images-5-plus .feed-post-image-item {
+    height: 200px;
+}
+
+/* Image Item */
+.feed-post-image-item {
+    position: relative;
+    overflow: hidden;
+    background: #f0f2f5;
+}
+
+.feed-post-image-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Overlay cho ảnh thừa (+X ảnh) */
+.feed-post-image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 32px;
+    font-weight: 600;
+}
+
+/* Post Stats (Likes & Comments Count) */
+.feed-post-stats {
+    padding: 12px 20px;
+    border-top: 1px solid #e4e6eb;
+    border-bottom: 1px solid #e4e6eb;
+}
+
+.feed-post-stats-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #65676b;
+}
+
+.feed-post-reactions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.feed-post-reaction-icon {
+    font-size: 18px;
+}
+
+.feed-post-reaction-count {
+    font-weight: 500;
+}
+
+.feed-post-comment-count {
+    cursor: pointer;
+}
+
+.feed-post-comment-count:hover {
+    text-decoration: underline;
+}
+
+/* Post Actions (Like, Comment, Share) */
+.feed-post-actions {
+    padding: 8px 12px;
+    display: flex;
+    gap: 4px;
+}
+
+.feed-post-action-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #65676b;
+    transition: background 0.2s;
+}
+
+.feed-post-action-btn:hover {
+    background: #f2f3f5;
+}
+
+.feed-post-action-btn i {
+    font-size: 20px;
+}
+
+.feed-post-action-btn.liked {
+    color: #e4405f;
+}
+
+.feed-post-action-btn.liked i {
+    color: #e4405f;
+}
+
+/* Empty State */
+.feed-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.feed-empty-state i {
+    font-size: 64px;
+    color: #ccc;
+    margin-bottom: 16px;
+}
+
+.feed-empty-state p {
+    font-size: 16px;
+    color: #65676b;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+
+    .feed-post-images.images-3,
+    .feed-post-images.images-5-plus {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+    }
+
+    .feed-post-images.images-3 .feed-post-image-item:first-child,
+    .feed-post-images.images-5-plus .feed-post-image-item:first-child {
+        grid-row: auto;
+    }
+
+    .feed-post-image-item {
+        height: 200px !important;
+    }
+}

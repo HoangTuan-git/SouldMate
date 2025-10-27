@@ -1,0 +1,51 @@
+
+
+/* Extracted from chat-content.php */
+/* Message status styling */
+        .msg_status {
+            font-size: 11px;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 2px;
+            margin-right: 12px;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .message-wrapper.me .msg_status {
+            text-align: right;
+        }
+
+        /* Optional: Add different status styles */
+        .msg_status.sent {
+            color: #94a3b8;
+        }
+
+        .msg_status.delivered {
+            color: #64748b;
+        }
+
+        .msg_status.read {
+            color: gray;
+        }
+
+        /* Status icons */
+        .msg_status::before {
+            content: '';
+            margin-right: 4px;
+        }
+
+        .msg_status.sent::before {
+            content: '✓';
+        }
+
+        .msg_status.delivered::before {
+            content: '✓✓';
+        }
+
+        .msg_status.read::before {
+            content: '✓✓';
+            color: gray;
+        }

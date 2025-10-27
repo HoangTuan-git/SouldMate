@@ -1,0 +1,134 @@
+/* Bantin (Feed) page styles */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+    --border-radius: 12px;
+}
+
+.feed-container {
+    width: 100%;
+}
+
+@media (min-width: 992px) {
+    .feed-container {
+        max-width: 860px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .feed-container {
+        max-width: 920px;
+    }
+}
+
+.post-card {
+    background: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #e9ecef;
+    margin-bottom: 20px;
+    transition: all .2s ease;
+}
+
+.post-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.avatar-circle {
+    width: 50px !important;
+    height: 50px !important;
+    background: var(--primary-gradient);
+    border-radius: 50% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 16px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+}
+
+.avatar-lg {
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 18px;
+}
+
+.post-input {
+    background: #f8f9fa;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: all .2s ease;
+    color: #6c757d;
+}
+
+.post-input:hover {
+    background: #e9ecef;
+}
+
+.btn-gradient {
+    background: var(--primary-gradient);
+    border: none;
+    color: #fff;
+    font-weight: 500;
+    transition: all .3s ease;
+}
+
+.btn-gradient:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, .3);
+    color: #fff;
+}
+
+#privacySelect {
+    border: none;
+    background-color: #e0dce2ff;
+    color: #1f2020ff;
+    padding: 0;
+    font-size: 14px;
+    border-radius: 20px;
+}
+
+#emojiPickerContainer {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
+    max-height: 350px;
+    background: #fff;
+}
+
+emoji-picker {
+    width: 100%;
+    height: 350px;
+    --num-columns: 8;
+    --emoji-size: 1.5rem;
+    --background: #fff;
+    --border-color: transparent;
+    --outline-color: #667eea;
+    --category-emoji-size: 1.25rem;
+    border: none;
+}
+
+@media (max-width: 767.98px) {
+    .feed-container {
+        max-width: 100%;
+        padding: 0 10px;
+    }
+
+    emoji-picker {
+        --num-columns: 6;
+        --emoji-size: 1.25rem;
+        height: 280px;
+    }
+
+    #emojiPickerContainer {
+        max-height: 280px;
+    }
+}

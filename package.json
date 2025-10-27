@@ -1,0 +1,39 @@
+{
+  "name": "chat-server",
+  "version": "1.0.0",
+  "description": "Real-time chat server for dating app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "prod": "node server-production.js",
+    "dev": "nodemon server.js",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop ecosystem.config.js",
+    "pm2:restart": "pm2 restart ecosystem.config.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "mysql2": "^3.6.0",
+    "socket.io": "^4.7.2",
+    "jsonwebtoken": "^9.0.2",
+    "express-rate-limit": "^6.10.0",
+    "helmet": "^7.0.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "chat",
+    "socket.io",
+    "real-time",
+    "dating"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  }
+}

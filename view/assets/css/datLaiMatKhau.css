@@ -1,0 +1,26 @@
+
+
+/* Extracted from datLaiMatKhau.php */
+.password-strength {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .weak {
+            background: #e74c3c;
+            color: white;
+        }
+        .medium {
+            background: #f39c12;
+            color: white;
+        }
+        .strong {
+            background: #2ecc71;
+            color: white;
+        }
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+        }

@@ -1,0 +1,74 @@
+
+
+/* Extracted from profile_quiz.php */
+/* Tùy chỉnh nhỏ để khớp với thiết kế */
+        body,
+        html {
+            height: 100%;
+        }
+
+        body {
+            /* Sử dụng màu nền trắng như trong ảnh */
+            background-color: #ffffff;
+        }
+
+        /* Lớp CSS cho thẻ card câu hỏi */
+        .question-card {
+            background-color: #f0f7ff;
+            /* Màu xanh nhạt */
+            border-radius: 1rem;
+            /* Bo góc 16px */
+            border: none;
+            /* Không có viền */
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* Nút đóng X */
+        .btn-close-custom {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            color: #6c757d;
+            cursor: pointer;
+            line-height: 1;
+            z-index: 10;
+        }
+
+        .btn-close-custom:hover {
+            color: #000;
+        }
+
+        /* Căn giữa nội dung chính */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            /* Chiếm toàn bộ không gian còn lại */
+            padding: 1rem;
+        }
+
+        button a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .footer-watermark .logo-v {
+            display: inline-flex;
+            width: 16px;
+            height: 16px;
+            background: #6f42c1;
+            /* Màu tím */
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 16px;
+            font-weight: bold;
+            font-family: monospace;
+            vertical-align: middle;
+        }
