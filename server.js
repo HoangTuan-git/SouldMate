@@ -30,7 +30,7 @@ const db = mysql.createConnection({
   host: 'localhost',
   user: 'root', // Thay đổi theo cấu hình của bạn
   password: '', // Thay đổi theo cấu hình của bạn
-  database: 'dating_app' // Thay đổi theo tên database của bạn
+  database: 'db_dating_final' // Thay đổi theo tên database của bạn
 });
 
 db.connect((err) => {
