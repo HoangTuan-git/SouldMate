@@ -4,5 +4,3 @@ vendor/
 .env.local
 config/*.local.php
 *.log
-uploads/avatars/*
-!uploads/avatars/.gitkeep
