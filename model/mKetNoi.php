@@ -7,10 +7,20 @@ class mKetNoi
         $host = 'localhost';
         $pass = '';
         $db = 'db_dating_final';
-        return mysqli_connect($host, $user, $pass, $db);
+        $conn = mysqli_connect($host, $user, $pass, $db);
+        
+        if (!$conn) {
+            error_log("Database connection failed: " . mysqli_connect_error());
+            die("Connection failed: " . mysqli_connect_error());
+        }
+        
+        mysqli_set_charset($conn, "utf8mb4");
+        return $conn;
     }
     public function NgatKetNoi($conn)
     {
-        $conn->close();
+        if ($conn) {
+            $conn->close();
+        }
     }
 }

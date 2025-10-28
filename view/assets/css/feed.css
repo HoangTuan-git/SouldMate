@@ -250,6 +250,132 @@
     background: #f2f3f5;
 }
 
+/* ==================================
+   COMMENT SECTION STYLES
+   ================================== */
+
+.comment-section {
+    padding: 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e4e6eb;
+}
+
+.comment-form {
+    margin-bottom: 20px;
+}
+
+.comment-form textarea {
+    border-radius: 20px;
+    border: 1px solid #ced4da;
+    resize: none;
+    padding: 10px 16px;
+    font-size: 14px;
+}
+
+.comment-form textarea:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.comment-form .btn {
+    border-radius: 20px;
+    padding: 8px 16px;
+}
+
+.comment-list {
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Custom scrollbar */
+.comment-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.comment-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.comment-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.comment-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.comment-item {
+    animation: fadeIn 0.3s ease-in;
+    margin-bottom: 12px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.comment-item .comment-bubble {
+    background-color: #fff !important;
+    border: 1px solid #e4e6eb;
+    transition: all 0.2s ease;
+    padding: 5px 12px 5px 12px;
+}
+
+.comment-item .comment-bubble:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.comment-item .comment-avatar {
+    border: 2px solid #e4e6eb;
+}
+
+.comment-item strong {
+    color: #050505;
+    font-size: 14px;
+}
+
+.comment-item p {
+    color: #050505;
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+.comment-item small {
+    font-size: 12px;
+    color: #65676b;
+}
+
+.comment-item .btn-link {
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 0;
+}
+
+.comment-item .btn-link:hover {
+    text-decoration: underline;
+}
+
+#loadMoreContainer {
+    padding-top: 10px;
+}
+
+#loadMoreContainer .btn {
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
 .feed-post-action-btn i {
     font-size: 20px;
 }

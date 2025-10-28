@@ -190,9 +190,9 @@ function timeAgo($datetime)
                                         <span class="feed-post-reaction-count" id="likeCount-<?php echo $post['maBaiDang']; ?>"><?php echo $post['soLuotThich'] ?? 0; ?></span>
                                     </div>
                                     <div>
-                                        <span class="feed-post-comment-count">
-                                            <?php echo $post['soBinhLuan'] ?? 0; ?> bình luận
-                                        </span>
+                                        <span class="feed-post-comment-count" id="commentCount-<?php echo $post['maBaiDang']; ?>">
+                                            <?php echo $post['soBinhLuan'] ?? 0; ?>
+                                        </span> bình luận
                                     </div>
                                 </div>
                             </div>
@@ -203,7 +203,7 @@ function timeAgo($datetime)
                                     <i class="bi bi-heart<?php echo $userLiked ? '-fill' : ''; ?>"></i>
                                     <span>Thích</span>
                                 </button>
-                                <button class="feed-post-action-btn">
+                                <button class="feed-post-action-btn" onclick="toggleCommentSection(<?php echo $post['maBaiDang']; ?>)">
                                     <i class="bi bi-chat"></i>
                                     <span>Bình luận</span>
                                 </button>
@@ -211,6 +211,38 @@ function timeAgo($datetime)
                                     <i class="bi bi-share"></i>
                                     <span>Chia sẻ</span>
                                 </button>
+                            </div>
+
+                            <!-- Comment Section -->
+                            <div id="commentSection-<?php echo $post['maBaiDang']; ?>" 
+                                 class="comment-section" 
+                                 data-post-owner="<?php echo $post['maNguoiDung']; ?>"
+                                 style="display: none;">
+                                <div class="comment-form mb-3">
+                                    <div class="d-flex gap-2">
+                                        <img src="<?php echo $userAvatar ?? 'img/default.png'; ?>" alt="User" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                                        <div class="flex-grow-1">
+                                            <textarea 
+                                                id="commentInput-<?php echo $post['maBaiDang']; ?>" 
+                                                class="form-control" 
+                                                rows="2" 
+                                                placeholder="Viết bình luận..."
+                                                onkeypress="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); addComment(<?php echo $post['maBaiDang']; ?>); }"
+                                            ></textarea>
+                                        </div>
+                                        <button class="btn btn-primary align-self-end" onclick="addComment(<?php echo $post['maBaiDang']; ?>)">
+                                            <i class="bi bi-send"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="commentList-<?php echo $post['maBaiDang']; ?>" class="comment-list">
+                                    <!-- Comments will be loaded here via JavaScript -->
+                                </div>
+                                <div id="loadMoreContainer-<?php echo $post['maBaiDang']; ?>" class="text-center mt-2" style="display: none;">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="loadMoreComments(<?php echo $post['maBaiDang']; ?>)">
+                                        <i class="bi bi-arrow-down-circle"></i> Tải thêm bình luận
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     <?php
@@ -310,5 +342,4 @@ function timeAgo($datetime)
             </form>
         </div>
     </div>
-    <script src="view/assets/js/bantin.js"></script>
 </div>

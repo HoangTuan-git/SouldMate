@@ -105,10 +105,15 @@ $titles = [
     </main>
     <!-- Bootstrap 5 Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Chat client -->
+    <!-- Set current user ID for JavaScript -->
+    <script>
+        window.currentUserId = <?php echo isset($_SESSION['uid']) ? (int)$_SESSION['uid'] : 0; ?>;
+    </script>
+    <!-- Comment system -->
+    <script src="view/assets/js/comment-loadmore.js"></script>
     <?php
-    // Load page-specific JavaScript based on current page
     $jsMap = [
+        'home'   => 'bantin.js',
         'bantin' => 'bantin.js',
         'dexuat' => 'dexuat.js',
         'dangky' => 'dangky.js'
@@ -135,6 +140,22 @@ $titles = [
     
     <?php if(isset($uid)): ?>
     window.currentReceiverId = <?= $uid ?>;
+    <?php endif; ?>
+    
+    // For bantin page - set userAvatar
+    <?php if(isset($_SESSION['uid'])): ?>
+    <?php
+    include_once("controller/cHoSo.php");
+    $cHoSo = new controlHoSo();
+    $hoSo = $cHoSo->getAllHoSoByUID($_SESSION['uid']);
+    if ($hoSo && $hoSo->num_rows > 0) {
+        $r = $hoSo->fetch_assoc();
+        $userAvatar = $r['anhDaiDien'] ?? 'img/default.png';
+    } else {
+        $userAvatar = 'img/default.png';
+    }
+    ?>
+    window.userAvatar = '<?= $userAvatar ?>';
     <?php endif; ?>
 </script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
