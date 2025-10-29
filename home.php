@@ -127,35 +127,12 @@ $titles = [
     <?php if(isset($_SESSION['uid'])): ?>
     window.currentUserId = <?= $_SESSION['uid'] ?>;
     window.jwtToken = '<?= $_SESSION['jwt_token'] ?? '' ?>';
-    
-    // DEBUG: Log token
-    console.log('🔍 [home.php] User ID:', <?= $_SESSION['uid'] ?>);
-    console.log('🔍 [home.php] JWT Token:', '<?= $_SESSION['jwt_token'] ?? 'NOT SET' ?>');
-    console.log('🔍 [home.php] Token length:', '<?= isset($_SESSION['jwt_token']) ? strlen($_SESSION['jwt_token']) : 0 ?>');
     <?php else: ?>
     window.currentUserId = null;
     window.jwtToken = null;
-    console.log('⚠️ [home.php] User not logged in');
     <?php endif; ?>
-    
     <?php if(isset($uid)): ?>
     window.currentReceiverId = <?= $uid ?>;
-    <?php endif; ?>
-    
-    // For bantin page - set userAvatar
-    <?php if(isset($_SESSION['uid'])): ?>
-    <?php
-    include_once("controller/cHoSo.php");
-    $cHoSo = new controlHoSo();
-    $hoSo = $cHoSo->getAllHoSoByUID($_SESSION['uid']);
-    if ($hoSo && $hoSo->num_rows > 0) {
-        $r = $hoSo->fetch_assoc();
-        $userAvatar = $r['anhDaiDien'] ?? 'img/default.png';
-    } else {
-        $userAvatar = 'img/default.png';
-    }
-    ?>
-    window.userAvatar = '<?= $userAvatar ?>';
     <?php endif; ?>
 </script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>

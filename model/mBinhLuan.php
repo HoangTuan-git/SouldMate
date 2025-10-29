@@ -7,28 +7,26 @@ class mBinhLuan
     {
         $p = new mKetNoi();
         $conn = $p->KetNoi();
-        
         if (!$conn) {
+            error_log("[AddComment] Không kết nối được DB");
             return false;
         }
-        
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         $date = date('Y-m-d H:i:s');
-        
         $noiDung = $conn->real_escape_string(trim($noiDung));
         $maNguoiDung = (int)$maNguoiDung;
         $maBaiDang = (int)$maBaiDang;
-        
         $sql = "INSERT INTO binhluan (maNguoiDung, maBaiDang, noiDung, thoiGianTao, trangThai) 
                 VALUES ($maNguoiDung, $maBaiDang, '$noiDung', '$date', 1)";
-
         $kq = $conn->query($sql);
-        
+        if (!$kq) {
+            error_log('[AddComment] SQL Error: ' . $conn->error);
+            error_log('[AddComment] Query: ' . $sql);
+        }
         if ($kq) {
             $sqlUpdate = "UPDATE baidang SET soBinhLuan = soBinhLuan + 1 WHERE maBaiDang = $maBaiDang";
             $conn->query($sqlUpdate);
         }
-        
         $p->NgatKetNoi($conn);
         return $kq ? true : false;
     }
@@ -87,7 +85,7 @@ class mBinhLuan
 
         $sql = "SELECT bl.*, 
                 COALESCE(hs.hoTen, 'User') as hoTen, 
-                COALESCE(hs.avatar, 'img/default.png') as avatar 
+                COALESCE(hs.avatar, '') as avatar 
                 FROM binhluan bl
                 LEFT JOIN hosonguoidung hs ON bl.maNguoiDung = hs.maNguoiDung
                 WHERE bl.maBaiDang = $maBaiDang AND bl.trangThai = 1
@@ -102,6 +100,10 @@ class mBinhLuan
             error_log("SQL Query: " . $sql);
         } elseif ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
+                // Nếu không có avatar thì trả về default.png
+                if (empty($row['avatar'])) {
+                    $row['avatar'] = 'default.png';
+                }
                 $comments[] = $row;
             }
         }

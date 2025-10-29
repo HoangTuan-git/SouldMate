@@ -411,7 +411,7 @@ function displayComments(maBaiDang, comments) {
     
     let html = '';
     comments.forEach(comment => {
-        const avatar = comment.anhDaiDien || 'img/default.png';
+    const avatar = comment.avatar === 'default.png' ? 'img/default.png' : ('uploads/avatars/' + comment.avatar);
         const timeAgo = getTimeAgo(comment.thoiGianTao);
         const isOwner = comment.maNguoiDung == currentUserId; // Cần set biến currentUserId trong view
         

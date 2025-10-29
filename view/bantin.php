@@ -62,10 +62,17 @@ function timeAgo($datetime)
                             $checkProfile = isset($_SESSION['uid'])? $cHoSo->checkHoSoExists($_SESSION['uid']) : false;
 
                             if (isset($_SESSION['uid']) && $checkProfile):
-                                //load avatar from session
-                                $src = 'uploads/avatars/' . ($_SESSION['avatar'] ?? 'default.png');
+                                // Lấy avatar từ DB
+                                $avatar = 'img/default.png';
+                                $profileResult = $cHoSo->getProfile($_SESSION['uid']);
+                                if ($profileResult && $profileResult->num_rows > 0) {
+                                    $profile = $profileResult->fetch_assoc();
+                                    if (!empty($profile['avatar'])) {
+                                        $avatar = 'uploads/avatars/' . $profile['avatar'];
+                                    }
+                                }
+                                $src = $avatar;
                             ?>
-
                                 <img src="<?= htmlspecialchars($src) ?>"
                                     alt="Avatar"
                                     class="avatar-circle me-3">
@@ -138,7 +145,14 @@ function timeAgo($datetime)
                             <!-- Post Header -->
                             <div class="feed-post-header">
                                 <div class="feed-post-avatar-wrapper">
-                                    <img src="img/<?php echo $post['avatar'] ?? 'default.png'; ?>"
+                                    <?php
+                                    $avatarPath = 'img/default.png';
+                                    if (!empty($post['avatar'])) {
+                                        // Nếu đã có avatar trong DB thì lấy
+                                        $avatarPath = 'uploads/avatars/' . $post['avatar'];
+                                    }
+                                    ?>
+                                    <img src="<?= htmlspecialchars($avatarPath) ?>"
                                         alt="Avatar"
                                         class="feed-post-avatar verified"
                                         onerror="this.src='img/default.png'">

@@ -143,7 +143,9 @@ function createCommentHTML(comment, postId) {
     
     // Fix avatar path
     let avatarPath = comment.avatar || 'img/default.png';
-    if (avatarPath && !avatarPath.includes('/') && !avatarPath.startsWith('img/')) {
+    if (avatarPath === 'default.png') {
+        avatarPath = 'img/default.png';
+    } else if (avatarPath && !avatarPath.includes('/') && !avatarPath.startsWith('img/')) {
         avatarPath = 'uploads/avatars/' + avatarPath;
     }
     
