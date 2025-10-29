@@ -47,6 +47,13 @@ class controlHoSo
                     }
                 }
             }
+            //Lưu avatar vào session
+            if ($avatarPath) {
+                $_SESSION['avatar'] = $avatarPath;
+            }
+             else {
+                $_SESSION['avatar'] = 'default.jpg';
+            }
             return ['success' => true, 'message' => 'Tạo hồ sơ thành công!', 'maHoSo' => $maHoSo];
         }
 

@@ -43,7 +43,8 @@
             'maThanhPho' => $_POST['location'] ?? null,
             'maNgheNghiep' => $_POST['occupation'] ?? null,
             'moTa' => $_POST['bio'] ?? '',
-            'soThich' => $_POST['hobbies'] ?? '',
+            //get  hobbies as array checkbox had been selected
+            'soThich' => $_POST['hobbies'] ?? [],
             'trangThaiHenHo' => 'nghiemtuc'
         ];
 
@@ -69,7 +70,7 @@
 
     <main class="container p-0">
         <div class="row justify-content-center">
-            <div class="col-lg-12 col-md-10">
+            <div class="col-lg-12 col-md-10 mb-2">
 
                 <h2 class="text-center fw-bold mb-4">Tạo Hồ Sơ</h2>
 
@@ -158,9 +159,26 @@
 
                             <div class="mb-3">
                                 <label for="hobbies" class="form-label">Sở thích</label>
-                                <!-- select fetch data from DB -->
-                                <input type="text" class="form-control" id="hobbies" name="hobbies" placeholder="Kể về những sở thích của bạn (ví dụ: đọc sách, du lịch, thể thao, âm nhạc)">
-                                <small class="text-muted">Ngăn cách bằng dấu phẩy</small>
+                                <!-- check box with 4 column layout -->
+                                <div id="hobbies" class="form-check">
+                                    <?php
+                                    if ($formData['hobbies'] && $formData['hobbies']->num_rows > 0) {
+                                        $count = 0;
+                                        echo '<div class="row">';
+                                        while ($hobby = $formData['hobbies']->fetch_assoc()) {
+                                            echo '<div class="form-check col-3">
+                                                    <input class="form-check-input" type="checkbox" value="' . $hobby['maSoThich'] . '" id="hobby_' . $hobby['maSoThich'] . '" name="hobbies[]">
+                                                    <label class="form-check-label" for="hobby_' . $hobby['maSoThich'] . '">' . $hobby['tenSoThich'] . '</label>
+                                                  </div>';
+                                            if (++$count % 4 === 0) {
+                                                echo '</div><div class="row">';
+                                            }
+
+                                        }
+                                        echo '</div>';
+                                    }
+                                    ?>
+                                </div>
                             </div>
 
                             <div class="mb-3">

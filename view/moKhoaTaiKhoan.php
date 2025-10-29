@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mở khóa tài khoản</title>
-
-    <link rel="stylesheet" href="admin-style.css">
+    <link rel="stylesheet" href="assets/css/admin-style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
     <div class="wrapper">
@@ -21,7 +21,7 @@
                 </a>
             </nav>
             <div class="logout-btn mt-auto">
-                <a href="#" class="btn btn-outline-danger w-100">
+                <a href="dangxuat.php" class="btn btn-outline-danger w-100">
                     <i class="bi bi-box-arrow-right"></i> Đăng xuất
                 </a>
             </div>

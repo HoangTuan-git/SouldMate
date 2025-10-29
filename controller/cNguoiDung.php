@@ -40,7 +40,12 @@ class controlNguoiDung
                 $_SESSION['email'] = $TDN;
                 $_SESSION['jwt_token'] = $token;
 
-
+                //nếu admin thì vào trang admin
+                if ($_SESSION['uid'] == 5) {
+                    echo " <script>alert('Dang nhap vào trang admin thanh cong')</script>";
+                    header("refresh:0.5;url=view/quanLyViPham.php");
+                    return;
+                }
                 // Kiểm tra nếu người dùng đã có hồ sơ chưa
                 $hoSoController = new controlHoSo();
                 $hasProfile = $hoSoController->checkHoSoExists($_SESSION['uid']);
@@ -140,15 +145,6 @@ class controlNguoiDung
 
                     error_log("🔍 DEBUG Register - User ID: " . $r['maNguoiDung']);
                     error_log("🔍 DEBUG Register - JWT Token: $token");
-                }
-                //get avatar save to session
-                $hoSoController = new controlHoSo();
-                $profileResult = $hoSoController->getProfile($r['maNguoiDung']);
-                if ($profileResult && $profileResult->num_rows > 0) {
-                    $profile = $profileResult->fetch_assoc();
-                    $_SESSION['avatar'] = $profile['avatar'];
-                } else {
-                    $_SESSION['avatar'] = null; // Hoặc giá trị mặc định nếu không có hồ sơ
                 }
 
                 echo "<script>alert('Đăng ký thành công!');</script>";
