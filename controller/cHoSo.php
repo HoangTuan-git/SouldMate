@@ -48,11 +48,10 @@ class controlHoSo
                 }
             }
             //Lưu avatar vào session
-            if ($avatarPath) {
+            if (!empty($avatarPath) && $avatarPath !== 'default.jpg') {
                 $_SESSION['avatar'] = $avatarPath;
-            }
-             else {
-                $_SESSION['avatar'] = 'default.jpg';
+            } else {
+                $_SESSION['avatar'] = 'default.png';
             }
             return ['success' => true, 'message' => 'Tạo hồ sơ thành công!', 'maHoSo' => $maHoSo];
         }
@@ -167,11 +166,8 @@ class controlHoSo
     public function checkHoSoExists($maNguoiDung)
     {
         $model = new modelHoSo();
-        $result = $model->checkHoSoExists($maNguoiDung);
-        if ($result && $result->num_rows > 0) {
-            return $result;
-        }
-        return false;
+        // Dùng đúng logic kiểm tra đã có hồ sơ chưa
+        return $model->hasProfile($maNguoiDung);
     }
 
 }

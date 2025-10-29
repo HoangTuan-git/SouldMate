@@ -31,9 +31,13 @@ class controlNguoiDung
                 $profileResult = $hoSoController->getProfile($userId);
                 if ($profileResult && $profileResult->num_rows > 0) {
                     $profile = $profileResult->fetch_assoc();
-                    $_SESSION['avatar'] = $profile['avatar'];
+                    if (!empty($profile['avatar']) && $profile['avatar'] !== 'default.png' && file_exists(__DIR__ . '/../uploads/avatars/' . $profile['avatar'])) {
+                        $_SESSION['avatar'] = 'uploads/avatars/' . $profile['avatar'];
+                    } else {
+                        $_SESSION['avatar'] = 'img/default.png';
+                    }
                 } else {
-                    $_SESSION['avatar'] = null; // Hoặc giá trị mặc định nếu không có hồ sơ
+                    $_SESSION['avatar'] = 'img/default.png';
                 }
                 // Lưu vào session
                 $_SESSION['uid'] = $userId;
