@@ -1,6 +1,6 @@
 <?php
 if (!isset($_SESSION['uid'])) {
-    header("Location: home.php?page=dangnhap");
+    header("Location: home_test.php?page=dangnhap");
     exit();
 }
 
@@ -164,7 +164,7 @@ if ($maThanhPho) {
                 <span>Danh sách người bị chặn</span>
             </a>
 
-            <a href="home.php?page=dangxuat" class="profile-action-btn btn-danger">
+            <a href="home_test.php?page=dangxuat" class="profile-action-btn btn-danger">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Đăng xuất</span>
             </a>

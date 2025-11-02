@@ -259,8 +259,6 @@
                         if (isset($_SESSION['uid'])) {
                             $isLiked = $timController->checkLiked($_SESSION['uid'], $nguoiDung['maNguoiDung']);
                         }
-                    ?>
-                    <?php foreach ($danhSachNguoiDung as $nguoiDung): 
                         if ($nguoiDung['maNguoiDung'] !== $_SESSION['uid']): ?>
                         <div class="col">
                             <div class="card profile-card text-center">

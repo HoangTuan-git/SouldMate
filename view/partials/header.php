@@ -1,10 +1,6 @@
 <?php
 // Determine active page for highlighting
 $activePage = isset($page) && $page ? $page : ($_GET['page'] ?? 'bantin');
-include_once("model/mme.php");
-$p = new mMe();
-$rs = $p->GetUserById($_SESSION['uid']);
-$u = $rs ? $rs->fetch_assoc() : null;
 ?>
 
 <nav class="navbar navbar-expand-lg header-navbar">

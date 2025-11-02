@@ -1,27 +1,51 @@
+<?php
+session_start();
+// Kiểm tra quyền admin
+if (!isset($_SESSION['uid']) || $_SESSION['role'] != 'admin') {
+    header('Location: home.php?page=dangnhap');
+    exit();
+}
+
+include_once('controller/cAdmin.php');
+$adminController = new controlAdmin();
+
+// Xử lý tìm kiếm
+$keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
+$lockedAccounts = $keyword ? $adminController->timKiemTaiKhoanKhoa($keyword) : $adminController->getDanhSachTaiKhoanKhoa();
+
+// Xử lý mở khóa tài khoản
+if (isset($_POST['unlockAccount'])) {
+    $maNguoiDung = $_POST['maNguoiDung'];
+    $result = $adminController->moKhoaTaiKhoan($maNguoiDung);
+    $message = $result['message'];
+    $messageType = $result['success'] ? 'success' : 'danger';
+}
+?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mở khóa tài khoản</title>
-    <link rel="stylesheet" href="assets/css/admin-style.css">
+    <title>Mở khóa tài khoản - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/admin-style.css">
 </head>
 <body>
     <div class="wrapper">
         <aside class="sidebar">
             <nav class="nav flex-column">
-                <a class="nav-link" href="quanLyViPham.html">
+                <a class="nav-link" href="quanLyViPham.php">
                     <i class="bi bi-list-task"></i>
                     Quản lý vi phạm
                 </a>
-                <a class="nav-link active" aria-current="page" href="moKhoaTaiKhoan.html">
+                <a class="nav-link active" aria-current="page" href="moKhoaTaiKhoan.php">
                     <i class="bi bi-unlock"></i>
                     Mở khóa tài khoản
                 </a>
             </nav>
             <div class="logout-btn mt-auto">
-                <a href="dangxuat.php" class="btn btn-outline-danger w-100">
+                <a href="home.php?page=dangxuat" class="btn btn-outline-danger w-100">
                     <i class="bi bi-box-arrow-right"></i> Đăng xuất
                 </a>
             </div>
@@ -32,15 +56,23 @@
 
         <main class="main-content">
             <h1 class="h3 fw-bold mb-4">Quản lý tài khoản bị khóa</h1>
+            
+            <?php if (isset($message)): ?>
+                <div class="alert alert-<?= $messageType ?> alert-dismissible fade show" role="alert">
+                    <?= htmlspecialchars($message) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php endif; ?>
 
-            <form class="mb-4">
+            <form class="mb-4" method="GET">
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
-                    <input type="text" class="form-control border-start-0" placeholder="Tìm kiếm theo ID người dùng...">
-                    <button class="btn btn-primary" type="button">Tìm kiếm</button>
+                    <input type="text" name="keyword" class="form-control border-start-0" 
+                           placeholder="Tìm kiếm theo ID hoặc tên người dùng..." 
+                           value="<?= htmlspecialchars($keyword) ?>">
+                    <button class="btn btn-primary" type="submit">Tìm kiếm</button>
                 </div>
             </form>
-            
 
             <div class="table-responsive">
                 <table class="table table-hover bg-white border rounded">
@@ -54,64 +86,37 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td><strong>MSU001</strong></td>
-                            <td>Nguyễn Văn A</td>
-                            <td>2023-10-26</td>
-                            <td>Nội dung không phù hợp lặp lại</td>
-                            <td class="text-end">
-                                <button class="btn btn-outline-secondary btn-sm">Mở khóa</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>MSU002</strong></td>
-                            <td>Trần Thị B</td>
-                            <td>2023-11-15</td>
-                            <td>Hành vi quấy rối</td>
-                            <td class="text-end">
-                                <button class="btn btn-outline-secondary btn-sm">Mở khóa</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>MSU003</strong></td>
-                            <td>Lê Minh C</td>
-                            <td>2024-01-03</td>
-                            <td>Sử dụng tài khoản giả mạo</td>
-                            <td class="text-end">
-                                <button class="btn btn-outline-secondary btn-sm">Mở khóa</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>MSU004</strong></td>
-                            <td>Phạm Thị D</td>
-                            <td>2024-02-20</td>
-                            <td>Vi phạm bản quyền hình ảnh</td>
-                            <td class="text-end">
-                                <button class="btn btn-outline-secondary btn-sm">Mở khóa</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>MSU005</strong></td>
-                            <td>Hoàng Đức E</td>
-                            <td>2024-03-01</td>
-                            <td>Spam liên tục</td>
-                            <td class="text-end">
-                                <button class="btn btn-outline-secondary btn-sm">Mở khóa</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>MSU006</strong></td>
-                            <td>Đặng Thị G</td>
-                            <td>2024-03-10</td>
-                            <td>Đăng tải thông tin sai sự thật</td>
-                            <td class="text-end">
-                                <button class="btn btn-outline-secondary btn-sm">Mở khóa</button>
-                            </td>
-                        </tr>
+                        <?php if ($lockedAccounts && $lockedAccounts->num_rows > 0): ?>
+                            <?php while ($row = $lockedAccounts->fetch_assoc()): ?>
+                                <tr>
+                                    <td><strong>MSU<?= str_pad($row['maNguoiDung'], 3, '0', STR_PAD_LEFT) ?></strong></td>
+                                    <td><?= htmlspecialchars($row['hoTen'] ?? 'Chưa cập nhật') ?></td>
+                                    <td><?= date('d/m/Y', strtotime($row['ngayBiKhoa'])) ?></td>
+                                    <td><?= htmlspecialchars($row['lyDoKhoa']) ?></td>
+                                    <td class="text-end">
+                                        <form method="POST" style="display:inline;" 
+                                              onsubmit="return confirm('Bạn có chắc muốn mở khóa tài khoản này?');">
+                                            <input type="hidden" name="maNguoiDung" value="<?= $row['maNguoiDung'] ?>">
+                                            <button type="submit" name="unlockAccount" class="btn btn-success btn-sm">
+                                                Mở khóa
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">
+                                    Không có tài khoản bị khóa
+                                </td>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
         </main>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

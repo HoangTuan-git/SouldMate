@@ -7,9 +7,10 @@ class modelTinNhan
         $p = new mKetNoi();
         $conn = $p->KetNoi();
         if ($conn) {
-            //repair sql injection
-            $_query = mysqli_real_escape_string($conn, $query);
-            $result = $conn->query($_query);
+            // Execute raw query. Do NOT escape the full SQL string with
+            // mysqli_real_escape_string — that corrupts the SQL quoting.
+            // Use prepared statements for any user-supplied values instead.
+            $result = $conn->query($query);
             $p->NgatKetNoi($conn);
             return $result;
         } else {
@@ -38,15 +39,28 @@ class modelTinNhan
 
     public function mSendMessage($uid1, $uid2, $noidung)
     {
-        $strsend = "insert into tinnhan values('',$uid1,$uid2,'$noidung',now())";
-        $result =  $this->execQuery($strsend);
-        return $result;
+        // Use prepared statement to avoid SQL injection and quoting issues
+        $p = new mKetNoi();
+        $conn = $p->KetNoi();
+        if (!$conn) return false;
+
+        $sql = "INSERT INTO tinnhan (maNguoiDung1, maNguoiDung2, noiDungText, thoiGianGui) VALUES (?, ?, ?, NOW())";
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            $p->NgatKetNoi($conn);
+            return false;
+        }
+        $stmt->bind_param('iis', $uid1, $uid2, $noidung);
+        $ok = $stmt->execute();
+        $stmt->close();
+        $p->NgatKetNoi($conn);
+        return $ok;
     }
 
     public function mGetAllFriend($uid)
     {
-        $strget1 = "select * from nguoidung join quanhenguoidung on nguoidung.maNguoiDung = quanhenguoidung.maNguoiDung1 join hosonguoidung on nguoidung.maNguoiDung = hosonguoidung.maNguoiDung where maNguoiDung2 = $uid";
-        $strget2 = "select * from nguoidung join quanhenguoidung on nguoidung.maNguoiDung = quanhenguoidung.maNguoiDung2 join hosonguoidung on nguoidung.maNguoiDung = hosonguoidung.maNguoiDung where maNguoiDung1 = $uid";
+        $strget1 = "select * from nguoidung join quanhenguoidung on nguoidung.maNguoiDung = quanhenguoidung.maNguoiDung1 join hosonguoidung on nguoidung.maNguoiDung = hosonguoidung.maNguoiDung where maNguoiDung2 = $uid and trangThai = 'ghep'";
+        $strget2 = "select * from nguoidung join quanhenguoidung on nguoidung.maNguoiDung = quanhenguoidung.maNguoiDung2 join hosonguoidung on nguoidung.maNguoiDung = hosonguoidung.maNguoiDung where maNguoiDung1 = $uid and trangThai = 'ghep'";
         $result1 =  $this->execQuery($strget1);
         $result2 =  $this->execQuery($strget2);
         $result = array();

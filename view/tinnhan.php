@@ -571,7 +571,7 @@ if (isset($_REQUEST['uid'])) $uid = $_REQUEST['uid'];
         </div>
         <?php
     } else {
-        $user = $hoso->checkHoSoExists($uid);
+        $user = $hoso->getProfile($uid);
         $user = $user->fetch_assoc();
     ?>
         <div class="chat-window">
