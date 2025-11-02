@@ -42,7 +42,27 @@ $u = $rs ? $rs->fetch_assoc() : null;
             <div class="d-flex align-items-center gap-3 ms-auto">
                 <div class="dropdown">
                     <button class="btn p-0 border-0 bg-transparent" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="uploads/avatars/<?php echo $u['avatar'] ?? 'default.png'; ?>" class="avatar" alt="">
+                            <?php
+                            $avatarHeader = 'img/default.png';
+                            $debugAvatarPath = '';
+                            $debugFileExists = false;
+                            if (isset($_SESSION['uid'])) {
+                                include_once(__DIR__ . '/../../controller/cHoSo.php');
+                                $cHoSo = new controlHoSo();
+                                $profileResult = $cHoSo->getProfile($_SESSION['uid']);
+                                if ($profileResult && $profileResult->num_rows > 0) {
+                                    $profile = $profileResult->fetch_assoc();
+                                    // Đường dẫn vật lý tuyệt đối tới file avatar
+                                    $debugAvatarPath = realpath(__DIR__ . '/../../uploads/avatars/' . $profile['avatar']);
+                                    $debugFileExists = !empty($profile['avatar']) && $profile['avatar'] !== 'default.png' && $debugAvatarPath && file_exists($debugAvatarPath);
+                                    if ($debugFileExists) {
+                                        $avatarHeader = 'uploads/avatars/' . $profile['avatar'];
+                                    }
+                                }
+                            }
+                            ?>
+                            <img src="<?= htmlspecialchars($avatarHeader) ?>" class="avatar" alt="" onerror="this.onerror=null;this.src='img/default.png';">
+
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                         <li><a class="dropdown-item" href="home.php?page=me">Hồ sơ</a></li>

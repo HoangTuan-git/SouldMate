@@ -251,6 +251,7 @@
             <h4 class="fw-bold mb-4">Kết quả tìm kiếm (<?= $soLuongKetQua ?>)</h4>
 
             <?php if ($soLuongKetQua > 0): ?>
+                <!-- Hiển thị danh sách người dùng, ngoại trừ người dùng hiện tại -->
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                     <?php foreach ($danhSachNguoiDung as $nguoiDung):
                         // Kiểm tra đã thích chưa
@@ -259,6 +260,8 @@
                             $isLiked = $timController->checkLiked($_SESSION['uid'], $nguoiDung['maNguoiDung']);
                         }
                     ?>
+                    <?php foreach ($danhSachNguoiDung as $nguoiDung): 
+                        if ($nguoiDung['maNguoiDung'] !== $_SESSION['uid']): ?>
                         <div class="col">
                             <div class="card profile-card text-center">
                                 <div class="card-body">
@@ -330,7 +333,8 @@
                                 </div>
                             </div>
                         </div>
-                    <?php endforeach; ?>
+                    <?php endif; 
+                endforeach; ?>
                 </div>
             <?php else: ?>
                 <div class="empty-state">

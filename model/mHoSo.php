@@ -32,7 +32,7 @@ class modelHoSo
      */
     public function getProfileByUserId($maNguoiDung)
     {
-        $query = "SELECT h.*, tp.tenThanhPho, nn.tenNgheNghiep 
+        $query = "SELECT h.*, tp.tenThanhPho, nn.tenNgheNghiep
                   FROM hosonguoidung h
                   LEFT JOIN thanhpho tp ON h.maThanhPho = tp.maThanhPho
                   LEFT JOIN nghenghiep nn ON h.maNgheNghiep = nn.maNgheNghiep
@@ -46,7 +46,7 @@ class modelHoSo
      */
     public function getProfileById($maHoSo)
     {
-        $query = "SELECT h.*, tp.tenThanhPho, nn.tenNgheNghiep 
+        $query = "SELECT h.*, tp.tenThanhPho, nn.tenNgheNghiep
                   FROM hosonguoidung h
                   LEFT JOIN thanhpho tp ON h.maThanhPho = tp.maThanhPho
                   LEFT JOIN nghenghiep nn ON h.maNgheNghiep = nn.maNgheNghiep
@@ -165,7 +165,7 @@ class modelHoSo
     public function getAllJobs()
     {
         $query = "SELECT nn.*, nnh.tenNganh FROM nghenghiep nn
-                  LEFT JOIN nganhnghe nnh ON nn.maNganh = nnh.maNganh
+                  INNER JOIN nganhnghe nnh ON nn.maNganh = nnh.maNganh
                   ORDER BY nnh.tenNganh, nn.tenNgheNghiep ASC";
         return $this->execQuery($query);
     }

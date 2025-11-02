@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý vi phạm</title>
-    <link rel="stylesheet" href="admin-style.css">
+    <link rel="stylesheet" href="assets/css/admin-style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
     <div class="wrapper">
@@ -14,13 +15,13 @@
                     <i class="bi bi-list-task"></i>
                     Quản lý vi phạm
                 </a>
-                <a class="nav-link" href="moKhoaTaiKhoan.html">
+                <a class="nav-link" href="moKhoaTaiKhoan.php">
                     <i class="bi bi-unlock"></i>
                     Mở khóa tài khoản
                 </a>
             </nav>
             <div class="logout-btn mt-auto">
-                <a href="#" class="btn btn-outline-danger w-100">
+                <a href="dangxuat.php" class="btn btn-outline-danger w-100">
                     <i class="bi bi-box-arrow-right"></i> Đăng xuất
                 </a>
             </div>

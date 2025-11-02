@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Debug Comment</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .section { margin: 20px 0; padding: 10px; border: 1px solid #ccc; }
+        pre { background: #f5f5f5; padding: 10px; overflow: auto; }
+    </style>
+</head>
+<body>
+    <h1>Debug Comment System</h1>
+    
+    <div class="section">
+        <h2>Test Get Comments</h2>
+        <input type="number" id="postId" value="3" placeholder="maBaiDang">
+        <button onclick="testGet()">Test Get</button>
+        <pre id="resultGet"></pre>
+    </div>
+    
+    <div class="section">
+        <h2>Test Add Comment</h2>
+        <input type="number" id="postId2" value="3" placeholder="maBaiDang">
+        <input type="text" id="content" placeholder="Nội dung" value="Test comment">
+        <button onclick="testAdd()">Test Add</button>
+        <pre id="resultAdd"></pre>
+    </div>
+    
+    <script>
+    function testGet() {
+        const maBaiDang = document.getElementById('postId').value;
+        document.getElementById('resultGet').textContent = 'Loading...';
+        
+        fetch('api/comment-post.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({action: 'get', maBaiDang: parseInt(maBaiDang)})
+        })
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('resultGet').textContent = JSON.stringify(data, null, 2);
+            console.log('Get response:', data);
+        })
+        .catch(e => {
+            document.getElementById('resultGet').textContent = 'Error: ' + e.message;
+        });
+    }
+    
+    function testAdd() {
+        const maBaiDang = document.getElementById('postId2').value;
+        const noiDung = document.getElementById('content').value;
+        document.getElementById('resultAdd').textContent = 'Loading...';
+        
+        fetch('api/comment-post.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({action: 'add', maBaiDang: parseInt(maBaiDang), noiDung: noiDung})
+        })
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('resultAdd').textContent = JSON.stringify(data, null, 2);
+            console.log('Add response:', data);
+        })
+        .catch(e => {
+            document.getElementById('resultAdd').textContent = 'Error: ' + e.message;
+        });
+    }
+    </script>
+</body>
+</html>

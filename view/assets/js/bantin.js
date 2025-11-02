@@ -237,3 +237,334 @@ document.addEventListener('DOMContentLoaded', function () {
     // Khởi tạo emoji picker
     handleEmojiPicker();
 });
+
+// ============================================
+// HÀM XỬ LÝ LIKE BÀI ĐĂNG
+// ============================================
+function toggleLikePost(maBaiDang, button) {
+    // Kiểm tra đăng nhập
+    if (!window.currentUserId) {
+        alert('Vui lòng đăng nhập để thích bài viết này');
+        return;
+    }
+
+    console.log('toggleLikePost called for post:', maBaiDang);
+    
+    const icon = button.querySelector('i');
+    const isLiked = icon.classList.contains('bi-heart-fill');
+    
+    // Toggle icon ngay lập tức để UX mượt
+    if (isLiked) {
+        icon.classList.remove('bi-heart-fill');
+        icon.classList.add('bi-heart');
+        button.classList.remove('liked');
+    } else {
+        icon.classList.remove('bi-heart');
+        icon.classList.add('bi-heart-fill');
+        button.classList.add('liked');
+    }
+    
+    console.log('Sending request to:', 'api/like-post.php');
+    console.log('Request body:', { maBaiDang: maBaiDang });
+    
+    // Gọi API
+    fetch('api/like-post.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            maBaiDang: maBaiDang
+        })
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        if (data.success) {
+            // Cập nhật số lượt thích
+            const likeCountElement = document.getElementById('likeCount-' + maBaiDang);
+            if (likeCountElement) {
+                likeCountElement.textContent = data.likeCount;
+            }
+            
+            // Đảm bảo trạng thái icon đúng với server
+            if (data.isLiked) {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+                button.classList.add('liked');
+            } else {
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+                button.classList.remove('liked');
+            }
+        } else {
+            // Revert nếu có lỗi
+            if (isLiked) {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+                button.classList.add('liked');
+            } else {
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+                button.classList.remove('liked');
+            }
+            alert('Có lỗi xảy ra: ' + (data.message || 'Không thể thích bài viết'));
+        }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+        // Revert nếu có lỗi
+        if (isLiked) {
+            icon.classList.remove('bi-heart');
+            icon.classList.add('bi-heart-fill');
+            button.classList.add('liked');
+        } else {
+            icon.classList.remove('bi-heart-fill');
+            icon.classList.add('bi-heart');
+            button.classList.remove('liked');
+        }
+        alert('Không thể kết nối đến server');
+    });
+}
+
+// ============= COMMENT FUNCTIONS =============
+
+// Toggle hiển thị form comment và danh sách comment
+function toggleCommentSection(maBaiDang) {
+    const commentSection = document.getElementById('commentSection-' + maBaiDang);
+    
+    if (!commentSection) {
+        console.error('Comment section not found for post:', maBaiDang);
+        return;
+    }
+    
+    // Toggle display
+    if (commentSection.style.display === 'none' || commentSection.style.display === '') {
+        commentSection.style.display = 'block';
+        // Load comments ngay khi mở - QUAN TRỌNG!
+        console.log('Opening comment section, loading comments for post:', maBaiDang);
+        loadComments(maBaiDang);
+    } else {
+        commentSection.style.display = 'none';
+    }
+}
+
+// Load danh sách comment
+function loadComments(maBaiDang) {
+    console.log('Loading comments for post:', maBaiDang);
+    
+    fetch('api/comment-post.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            action: 'get',
+            maBaiDang: maBaiDang
+        })
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Comments loaded:', data);
+        if (data.success) {
+            displayComments(maBaiDang, data.comments);
+            // Cập nhật số lượng bình luận luôn
+            updateCommentCount(maBaiDang, data.commentCount || data.comments.length);
+        } else {
+            console.error('Failed to load comments:', data.message);
+            // Vẫn hiển thị placeholder
+            const commentList = document.getElementById('commentList-' + maBaiDang);
+            if (commentList) {
+                commentList.innerHTML = '<p class="text-muted text-center py-3">Không thể tải bình luận</p>';
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error loading comments:', error);
+        const commentList = document.getElementById('commentList-' + maBaiDang);
+        if (commentList) {
+            commentList.innerHTML = '<p class="text-danger text-center py-3">Lỗi kết nối: ' + error.message + '</p>';
+        }
+    });
+}
+
+// Hiển thị danh sách comment
+function displayComments(maBaiDang, comments) {
+    const commentList = document.getElementById('commentList-' + maBaiDang);
+    
+    if (!commentList) {
+        console.error('Comment list not found for post:', maBaiDang);
+        return;
+    }
+    
+    console.log('Displaying comments for post:', maBaiDang, 'Total:', comments ? comments.length : 0);
+    
+    if (!comments || comments.length === 0) {
+        commentList.innerHTML = '<p class="text-muted text-center py-3">Chưa có bình luận nào</p>';
+        return;
+    }
+    
+    let html = '';
+    comments.forEach(comment => {
+    const avatar = comment.avatar === 'default.png' ? 'img/default.png' : ('uploads/avatars/' + comment.avatar);
+        const timeAgo = getTimeAgo(comment.thoiGianTao);
+        const isOwner = comment.maNguoiDung == currentUserId; // Cần set biến currentUserId trong view
+        
+        html += `
+            <div class="comment-item mb-3" data-comment-id="${comment.maBinhLuan}">
+                <div class="d-flex">
+                    <img src="${avatar}" alt="${comment.hoTen}" class="rounded-circle me-2" width="40" height="40">
+                    <div class="flex-grow-1">
+                        <div class="bg-light rounded p-2">
+                            <strong>${comment.hoTen}</strong>
+                            <p class="mb-0">${escapeHtml(comment.noiDung)}</p>
+                        </div>
+                        <small class="text-muted ms-2">${timeAgo}</small>
+                        ${isOwner ? `<a href="#" class="text-danger ms-2 small" onclick="deleteComment(${comment.maBinhLuan}, ${maBaiDang}); return false;">Xóa</a>` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    commentList.innerHTML = html;
+    console.log('Comments displayed successfully');
+}
+
+// Thêm comment mới
+function addComment(maBaiDang) {
+    const textarea = document.getElementById('commentInput-' + maBaiDang);
+    
+    if (!textarea) {
+        console.error('Comment input not found for post:', maBaiDang);
+        return;
+    }
+    
+    const noiDung = textarea.value.trim();
+    
+    if (noiDung === '') {
+        alert('Vui lòng nhập nội dung bình luận');
+        return;
+    }
+    
+    console.log('Adding comment to post:', maBaiDang, 'Content:', noiDung);
+    
+    fetch('api/comment-post.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            action: 'add',
+            maBaiDang: maBaiDang,
+            noiDung: noiDung
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Add comment response:', data);
+        if (data.success) {
+            // Clear textarea
+            textarea.value = '';
+            
+            // LUÔN reload comments từ server để đảm bảo hiển thị đầy đủ
+            loadComments(maBaiDang);
+            
+            // Cập nhật số lượng bình luận NGAY LẬP TỨC
+            if (data.commentCount !== undefined) {
+                updateCommentCount(maBaiDang, data.commentCount);
+            }
+            
+            console.log('Comment added successfully!');
+        } else {
+            alert('Có lỗi xảy ra: ' + (data.message || 'Không thể thêm bình luận'));
+            console.error('Failed to add comment:', data);
+        }
+    })
+    .catch(error => {
+        console.error('Error adding comment:', error);
+        alert('Không thể kết nối đến server: ' + error.message);
+    });
+}
+
+// Xóa comment
+function deleteComment(maBinhLuan, maBaiDang) {
+    if (!confirm('Bạn có chắc muốn xóa bình luận này?')) {
+        return;
+    }
+    
+    console.log('Deleting comment:', maBinhLuan);
+    
+    fetch('api/comment-post.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            action: 'delete',
+            maBaiDang: maBaiDang,
+            maBinhLuan: maBinhLuan
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Delete comment response:', data);
+        if (data.success) {
+            // Reload comments
+            loadComments(maBaiDang);
+            
+            // Update comment count - giảm 1
+            const commentCountElement = document.getElementById('commentCount-' + maBaiDang);
+            if (commentCountElement) {
+                const currentCount = parseInt(commentCountElement.textContent) || 0;
+                updateCommentCount(maBaiDang, Math.max(0, currentCount - 1));
+            }
+        } else {
+            alert('Có lỗi xảy ra: ' + (data.message || 'Không thể xóa bình luận'));
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting comment:', error);
+        alert('Không thể kết nối đến server');
+    });
+}
+
+// Utility function - Escape HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Utility function - Update comment count
+function updateCommentCount(maBaiDang, newCount) {
+    const commentCountElement = document.getElementById('commentCount-' + maBaiDang);
+    if (commentCountElement) {
+        commentCountElement.textContent = newCount;
+        console.log('Updated comment count for post', maBaiDang, 'to', newCount);
+    } else {
+        console.warn('Comment count element not found for post:', maBaiDang);
+    }
+}
+
+// Utility function - Time ago
+function getTimeAgo(datetime) {
+    const now = new Date();
+    const past = new Date(datetime);
+    const diffMs = now - past;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+    
+    if (diffMins < 1) return 'Vừa xong';
+    if (diffMins < 60) return diffMins + ' phút trước';
+    if (diffHours < 24) return diffHours + ' giờ trước';
+    if (diffDays < 7) return diffDays + ' ngày trước';
+    
+    return past.toLocaleDateString('vi-VN');
+}

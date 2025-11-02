@@ -93,8 +93,9 @@
             'maThanhPho' => $_POST['location'] ?? null,
             'maNgheNghiep' => $_POST['occupation'] ?? null,
             'moTa' => $_POST['bio'] ?? '',
+            //get  hobbies as array checkbox had been selected
             'soThich' => $_POST['hobbies'] ?? [],
-            'trangThaiHenHo' => 'nghiêm túc'
+            'trangThaiHenHo' => 'nghiemtuc'
         ];
         error_log("Processed Data: " . print_r($data, true));
         // Upload avatar nếu có
@@ -119,7 +120,7 @@
 
     <main class="container p-0">
         <div class="row justify-content-center">
-            <div class="col-lg-12 col-md-10">
+            <div class="col-lg-12 col-md-10 mb-2">
 
                 <h2 class="text-center fw-bold mb-4">Tạo Hồ Sơ</h2>
 
@@ -207,24 +208,27 @@
                             </div>
 
                             <div class="mb-3">
-                                <div class="form-label">Sở thích <span class="text-muted">(Chọn ít nhất 1 sở thích)</span></div>
-                                <div class="row g-2">
+                                <label for="hobbies" class="form-label">Sở thích</label>
+                                <!-- check box with 4 column layout -->
+                                <div id="hobbies" class="form-check">
                                     <?php
                                     if ($formData['hobbies'] && $formData['hobbies']->num_rows > 0) {
+                                        $count = 0;
+                                        echo '<div class="row">';
                                         while ($hobby = $formData['hobbies']->fetch_assoc()) {
-                                            echo '<div class="col-md-4 col-sm-6">';
-                                            echo '    <div class="form-check">';
-                                            echo '        <input class="form-check-input" type="checkbox" name="hobbies[]" value="' . $hobby['maSoThich'] . '" id="hobby' . $hobby['maSoThich'] . '">';
-                                            echo '        <label class="form-check-label" for="hobby' . $hobby['maSoThich'] . '">';
-                                            echo '            ' . htmlspecialchars($hobby['tenSoThich']);
-                                            echo '        </label>';
-                                            echo '    </div>';
-                                            echo '</div>';
+                                            echo '<div class="form-check col-3">
+                                                    <input class="form-check-input" type="checkbox" value="' . $hobby['maSoThich'] . '" id="hobby_' . $hobby['maSoThich'] . '" name="hobbies[]">
+                                                    <label class="form-check-label" for="hobby_' . $hobby['maSoThich'] . '">' . $hobby['tenSoThich'] . '</label>
+                                                  </div>';
+                                            if (++$count % 4 === 0) {
+                                                echo '</div><div class="row">';
+                                            }
+
                                         }
+                                        echo '</div>';
                                     }
                                     ?>
                                 </div>
-                                <small class="text-danger d-none" id="hobbiesError">Vui lòng chọn ít nhất một sở thích</small>
                             </div>
 
                             <div class="mb-3">

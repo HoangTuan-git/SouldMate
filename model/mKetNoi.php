@@ -6,11 +6,16 @@ class mKetNoi
         $user = 'root';
         $host = 'localhost';
         $pass = '';
-        $db = 'db_dating_final_v1';
-        return mysqli_connect($host, $user, $pass, $db);
+        $db = 'db_dating_final';
+        $conn = mysqli_connect($host, $user, $pass, $db);
+        
+        mysqli_set_charset($conn, "utf8mb4");
+        return $conn;
     }
     public function NgatKetNoi($conn)
     {
-        $conn->close();
+        if ($conn) {
+            $conn->close();
+        }
     }
 }

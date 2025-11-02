@@ -335,6 +335,145 @@ if (isset($_REQUEST['uid'])) $uid = $_REQUEST['uid'];
         font-size: 13px;
       }
     }
+    
+    /* Empty State Styling */
+    .chat-empty-state {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    }
+    
+    .empty-state-content {
+      text-align: center;
+      max-width: 400px;
+      animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .empty-state-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.25);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.25);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 12px 32px rgba(102, 126, 234, 0.35);
+      }
+    }
+    
+    .empty-state-icon svg {
+      width: 40px;
+      height: 40px;
+      color: #fff;
+    }
+    
+    .empty-state-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 0 0 12px 0;
+    }
+    
+    .empty-state-text {
+      font-size: 15px;
+      color: #64748b;
+      line-height: 1.6;
+      margin: 0 0 32px 0;
+    }
+    
+    .empty-state-illustration {
+      margin: 32px 0;
+      opacity: 0.6;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+    
+    .empty-state-illustration svg {
+      width: 200px;
+      height: 150px;
+    }
+    
+    .empty-state-tip {
+      display: inline-flex;
+      align-items: center;
+      padding: 12px 20px;
+      background: #f1f5f9;
+      border-radius: 12px;
+      color: #475569;
+      font-size: 14px;
+      border: 1px solid #e2e8f0;
+      margin-top: 24px;
+    }
+    
+    .empty-state-tip svg {
+      color: #667eea;
+      flex-shrink: 0;
+    }
+    
+    /* Responsive for empty state */
+    @media (max-width: 768px) {
+      .empty-state-icon {
+        width: 64px;
+        height: 64px;
+      }
+      
+      .empty-state-icon svg {
+        width: 32px;
+        height: 32px;
+      }
+      
+      .empty-state-title {
+        font-size: 20px;
+      }
+      
+      .empty-state-text {
+        font-size: 14px;
+      }
+      
+      .empty-state-illustration svg {
+        width: 160px;
+        height: 120px;
+      }
+      
+      .empty-state-tip {
+        font-size: 13px;
+        padding: 10px 16px;
+      }
+    }
     </style>
 </head>
 <body>
@@ -398,14 +537,39 @@ if (isset($_REQUEST['uid'])) $uid = $_REQUEST['uid'];
     <?php
     //if not have uid ask user to select a chat
     if (!isset($uid)) {
-        echo '<div class="chat-window">';
-        echo '<div class="chat-header-left">';
-        echo '<h3>Chọn một cuộc trò chuyện</h3>';
-        echo '</div>';
-        echo '<div class="chat-body" id="chatBody" style="text-align:center; padding:50px;">';
-        echo '<p>Vui lòng chọn một cuộc trò chuyện từ danh sách bên trái để bắt đầu nhắn tin.</p>';
-        echo '</div>';
-        echo '</div>';
+        ?>
+        <div class="chat-window">
+            <div class="chat-empty-state">
+                <div class="empty-state-content">
+                    <div class="empty-state-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            <path d="M8 10h.01M12 10h.01M16 10h.01"></path>
+                        </svg>
+                    </div>
+                    <h3 class="empty-state-title">Chưa chọn cuộc trò chuyện</h3>
+                    <p class="empty-state-text">Hãy chọn một người bạn từ danh sách bên trái để bắt đầu trò chuyện</p>
+                    <div class="empty-state-illustration">
+                        <svg viewBox="0 0 200 150" fill="none">
+                            <!-- Illustration -->
+                            <circle cx="60" cy="50" r="20" fill="#e2e8f0"/>
+                            <circle cx="140" cy="50" r="20" fill="#e2e8f0"/>
+                            <path d="M70 50 Q100 30 130 50" stroke="#cbd5e1" stroke-width="2" fill="none"/>
+                            <circle cx="100" cy="100" r="8" fill="#667eea"/>
+                            <circle cx="115" cy="100" r="8" fill="#764ba2"/>
+                            <circle cx="85" cy="100" r="8" fill="#a6c1ee"/>
+                        </svg>
+                    </div>
+                    <div class="empty-state-tip">
+                        <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;margin-right:8px;">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                        </svg>
+                        <span>Mẹo: Bạn có thể tìm kiếm bạn bè mới từ trang <a href="home.php?page=timkiem" style="color:#667eea;text-decoration:none;font-weight:600;">Tìm kiếm</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php
     } else {
         $user = $hoso->checkHoSoExists($uid);
         $user = $user->fetch_assoc();
@@ -530,7 +694,7 @@ if (isset($_REQUEST['uid'])) $uid = $_REQUEST['uid'];
                     <form action="#" method="post" id="chatForm" class="message-form" enctype="multipart/form-data">
                         <div class="input-container">
                             <?php
-                            if ($result['maNguoiDung1'] == $_SESSION['uid']) {
+                            if ($row['maNguoiDung1'] == $_SESSION['uid']) {
                                 echo '<input type="text" placeholder="Bạn đã chặn người dùng này. Không thể gửi tin nhắn." name="txtmessage" id="messageInput" autocomplete="off" class="message-input" disabled>';
                             } else {
                                 echo '<input type="text" placeholder="Bạn đã bị chặn, không thể gửi tin nhắn." name="txtmessage" id="messageInput" autocomplete="off" class="message-input" disabled>';
@@ -569,12 +733,6 @@ if (isset($_REQUEST['uid'])) $uid = $_REQUEST['uid'];
      // Set user IDs and JWT token for JavaScript
         window.currentUserId = <?= isset($_SESSION['uid']) ? $_SESSION['uid'] : 'null' ?>;
         window.jwtToken = '<?= isset($_SESSION['jwt_token']) ? $_SESSION['jwt_token'] : '' ?>';
-
-        // DEBUG: Log token để kiểm tra
-        console.log('🔍 DEBUG - Current User ID:', window.currentUserId);
-        console.log('🔍 DEBUG - JWT Token:', window.jwtToken);
-        console.log('🔍 DEBUG - Token length:', window.jwtToken ? window.jwtToken.length : 0);
-
         <?php if (isset($uid)): ?>
             window.currentReceiverId = <?= $uid ?>;
         <?php endif; ?>
