@@ -176,9 +176,25 @@ function timeAgo($datetime) {
                                             <p class="feed-post-time"><?php echo timeAgo($post['ngayTao']); ?></p>
                                         </div>
                                     </div>
-                                    <button class="feed-post-menu-btn">
-                                        <i class="bi bi-three-dots"></i>
-                                    </button>
+                                    <div class="feed-post-menu-container">
+                                        <button class="feed-post-menu-btn" onclick="togglePostMenu(<?= $post['maBaiDang'] ?>)">
+                                            <i class="bi bi-three-dots"></i>
+                                        </button>
+                                        <div class="feed-post-dropdown" id="postMenu-<?= $post['maBaiDang'] ?>" style="display: none;">
+                                            <?php if ($post['maNguoiDung'] == $_SESSION['uid']): ?>
+                                                <button class="dropdown-item" onclick="editPost(<?= $post['maBaiDang'] ?>)">
+                                                    <i class="bi bi-pencil"></i> Chỉnh sửa
+                                                </button>
+                                                <button class="dropdown-item text-danger" onclick="deletePost(<?= $post['maBaiDang'] ?>)">
+                                                    <i class="bi bi-trash"></i> Xóa bài viết
+                                                </button>
+                                            <?php else: ?>
+                                                <button class="dropdown-item text-danger" onclick="reportPost(<?= $post['maBaiDang'] ?>, <?= $post['maNguoiDung'] ?>)">
+                                                    <i class="bi bi-exclamation-triangle"></i> Báo cáo bài viết
+                                                </button>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- ===== Nội dung bài viết ===== -->
@@ -328,4 +344,144 @@ function timeAgo($datetime) {
     </div>
     <!-- Kết thúc modal đăng bản tin -->
 
-    
+    <style>
+    /* Post Menu Dropdown Styles */
+    .feed-post-menu-container {
+        position: relative;
+    }
+
+    .feed-post-menu-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        transition: background 0.2s;
+    }
+
+    .feed-post-menu-btn:hover {
+        background: #f1f5f9;
+    }
+
+    .feed-post-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        min-width: 200px;
+        z-index: 1000;
+        overflow: hidden;
+        margin-top: 4px;
+    }
+
+    .feed-post-dropdown .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        padding: 12px 16px;
+        background: none;
+        border: none;
+        text-align: left;
+        cursor: pointer;
+        transition: background 0.2s;
+        font-size: 14px;
+        color: #475569;
+    }
+
+    .feed-post-dropdown .dropdown-item:hover {
+        background: #f8fafc;
+    }
+
+    .feed-post-dropdown .dropdown-item.text-danger {
+        color: #dc2626;
+    }
+
+    .feed-post-dropdown .dropdown-item.text-danger:hover {
+        background: #fef2f2;
+    }
+
+    .feed-post-dropdown .dropdown-item i {
+        font-size: 16px;
+    }
+    </style>
+
+    <script>
+    // Toggle post menu dropdown
+    function togglePostMenu(postId) {
+        const menu = document.getElementById('postMenu-' + postId);
+        const allMenus = document.querySelectorAll('.feed-post-dropdown');
+        
+        // Close all other menus
+        allMenus.forEach(m => {
+            if (m !== menu) m.style.display = 'none';
+        });
+        
+        // Toggle current menu
+        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Close menus when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.feed-post-menu-container')) {
+            document.querySelectorAll('.feed-post-dropdown').forEach(menu => {
+                menu.style.display = 'none';
+            });
+        }
+    });
+
+    // Report post function
+    function reportPost(postId, postOwnerId) {
+        const reason = prompt('Vui lòng nhập lý do báo cáo bài viết này:');
+        if (reason && reason.trim()) {
+            submitPostReport(postId, postOwnerId, reason.trim());
+        }
+        togglePostMenu(postId); // Close menu
+    }
+
+    // Submit post report
+    function submitPostReport(postId, postOwnerId, reason) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'home.php?page=report-post';
+
+        const postIdInput = document.createElement('input');
+        postIdInput.type = 'hidden';
+        postIdInput.name = 'postId';
+        postIdInput.value = postId;
+
+        const ownerIdInput = document.createElement('input');
+        ownerIdInput.type = 'hidden';
+        ownerIdInput.name = 'ownerId';
+        ownerIdInput.value = postOwnerId;
+
+        const reasonInput = document.createElement('input');
+        reasonInput.type = 'hidden';
+        reasonInput.name = 'reason';
+        reasonInput.value = reason;
+
+        form.appendChild(postIdInput);
+        form.appendChild(ownerIdInput);
+        form.appendChild(reasonInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    // Edit post function (placeholder)
+    function editPost(postId) {
+        alert('Chức năng chỉnh sửa bài viết đang được phát triển');
+    }
+
+    // Delete post function (placeholder)
+    function deletePost(postId) {
+        if (confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
+            // TODO: Implement delete functionality
+            alert('Chức năng xóa bài viết đang được phát triển');
+        }
+    }
+    </script>
+
+        
