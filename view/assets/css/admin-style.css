@@ -70,16 +70,6 @@ body {
     color: #fff;
 }
 
-.watermark {
-    font-size: 0.85rem;
-    color: #6c757d;
-}
-
-.watermark .logo-v {
-    color: #667eea;
-    font-weight: 700;
-    font-size: 1.1rem;
-}
 
 /* --- Main Content --- */
 .main-content {

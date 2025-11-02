@@ -1,5 +1,5 @@
 <?php
-include_once('model/mBaoCaoViPham.php');
+include_once('../model/mBaoCaoViPham.php');
 
 class controlAdmin
 {
@@ -46,10 +46,10 @@ class controlAdmin
         $result = $this->model->lockAccount($maNguoiDung, $lyDo);
         
         if ($result) {
-            return ['success' => true, 'message' => 'Đã khóa tài khoản thành công!'];
+            return ['success' => true, 'message' => 'Đã khóa tài khoản thành công và cập nhật trạng thái các báo cáo!'];
         }
         
-        return ['success' => false, 'message' => 'Có lỗi xảy ra khi khóa tài khoản!'];
+        return ['success' => false, 'message' => 'Tài khoản đã bị khóa hoặc có lỗi xảy ra!'];
     }
 
     /**

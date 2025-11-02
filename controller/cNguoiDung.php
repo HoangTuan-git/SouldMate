@@ -18,14 +18,17 @@ class controlNguoiDung
                 //dang nhap thanh cong
                 $r = $tblTaiKhoan->fetch_assoc();
                 $userId = $r['maNguoiDung'];
+                
+                // Kiểm tra trạng thái tài khoản bị khóa
+                if (isset($r['trangThaiViPham']) && $r['trangThaiViPham'] == 'khoa') {
+                    echo "<script>alert('Tài khoản của bạn đã bị khóa do vi phạm. Vui lòng liên hệ quản trị viên.')</script>";
+                    header("refresh:0.5;url=home_test.php?page=dangnhap");
+                    return;
+                }
 
                 // Tạo JWT token
                 $token = JWTHelper::createToken($userId, $TDN);
 
-                // DEBUG: Log token
-                error_log("🔍 DEBUG Login - User ID: $userId");
-                error_log("🔍 DEBUG Login - JWT Token: $token");
-                error_log("🔍 DEBUG Login - Token length: " . strlen($token));
                 //get avatar save to session
                 $hoSoController = new controlHoSo();
                 $profileResult = $hoSoController->getProfile($userId);
@@ -43,9 +46,10 @@ class controlNguoiDung
                 $_SESSION['uid'] = $userId;
                 $_SESSION['email'] = $TDN;
                 $_SESSION['jwt_token'] = $token;
+                $_SESSION['role'] = $r['role'] ?? 'user'; // Lưu role vào session
 
                 //nếu admin thì vào trang admin
-                if ($_SESSION['uid'] == 5) {
+                if ($_SESSION['role'] == 'admin') {
                     echo " <script>alert('Dang nhap vào trang admin thanh cong')</script>";
                     header("refresh:0.5;url=view/quanLyViPham.php");
                     return;
@@ -147,8 +151,7 @@ class controlNguoiDung
                     $token = JWTHelper::createToken($r['maNguoiDung'], $email);
                     $_SESSION['jwt_token'] = $token;
 
-                    error_log("🔍 DEBUG Register - User ID: " . $r['maNguoiDung']);
-                    error_log("🔍 DEBUG Register - JWT Token: $token");
+                    $_SESSION['role'] = $r['role'] ?? 'user'; // Lưu role vào session
                 }
 
                 echo "<script>alert('Đăng ký thành công!');</script>";

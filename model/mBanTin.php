@@ -33,4 +33,45 @@ class mBanTin
         $p->NgatKetNoi($conn);
         return $kq;
     }
+
+    public function mDeleteTinTuc($postId, $userId)
+    {
+        $p = new mKetNoi();
+        $conn = $p->KetNoi();
+        
+        // Kiểm tra quyền sở hữu bài viết
+        $checkQuery = "SELECT maNguoiDung, noidungAnh FROM baidang WHERE maBaiDang = $postId";
+        $result = $conn->query($checkQuery);
+        
+        if ($result && $result->num_rows > 0) {
+            $post = $result->fetch_assoc();
+            
+            // Chỉ cho phép xóa nếu là chủ bài viết
+            if ($post['maNguoiDung'] != $userId) {
+                $p->NgatKetNoi($conn);
+                return false;
+            }
+            
+            // Xóa bài viết (các bình luận và tương tác sẽ tự động xóa nếu có foreign key cascade)
+            $deleteQuery = "DELETE FROM baidang WHERE maBaiDang = $postId";
+            $kq = $conn->query($deleteQuery);
+            
+            // Xóa file ảnh nếu có
+            if ($kq && !empty($post['noidungAnh'])) {
+                $images = explode(',', $post['noidungAnh']);
+                foreach ($images as $image) {
+                    $imagePath = __DIR__ . '/../img/' . trim($image);
+                    if (file_exists($imagePath)) {
+                        @unlink($imagePath);
+                    }
+                }
+            }
+            
+            $p->NgatKetNoi($conn);
+            return $kq;
+        }
+        
+        $p->NgatKetNoi($conn);
+        return false;
+    }
 }

@@ -1,12 +1,12 @@
 <?php
 session_start();
 // Kiểm tra quyền admin
-if (!isset($_SESSION['uid']) || $_SESSION['uid'] != 5) {
-    header('Location: home_test.php?page=dangnhap');
+if (!isset($_SESSION['uid']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
+    header('Location: ../home_test.php?page=dangnhap');
     exit();
 }
 
-include_once('controller/cAdmin.php');
+require_once('../controller/cAdmin.php');
 $adminController = new controlAdmin();
 
 // Xử lý tìm kiếm
@@ -46,12 +46,9 @@ if (isset($_POST['lockAccount'])) {
                 </a>
             </nav>
             <div class="logout-btn mt-auto">
-                <a href="home.php?page=dangxuat" class="btn btn-outline-danger w-100">
+                <a href="../home_test.php?page=dangxuat" class="btn btn-outline-danger w-100">
                     <i class="bi bi-box-arrow-right"></i> Đăng xuất
                 </a>
-            </div>
-            <div class="watermark text-center mt-3">
-                 <span>Made with <span class="logo-v">V</span></span>
             </div>
         </aside>
 
@@ -83,6 +80,7 @@ if (isset($_POST['lockAccount'])) {
                             <th scope="col">ID Người dùng</th>
                             <th scope="col">Tên</th>
                             <th scope="col">Số lần báo cáo</th>
+                            <th scope="col">Trạng thái</th>
                             <th scope="col" class="text-end">Hành động</th>
                         </tr>
                     </thead>
@@ -97,24 +95,39 @@ if (isset($_POST['lockAccount'])) {
                                             <?= $row['soLanBaoCao'] ?> báo cáo
                                         </span>
                                     </td>
+                                    <td>
+                                        <?php if ($row['trangThaiViPham'] == 'khoa'): ?>
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-lock-fill"></i> Đã khóa
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle-fill"></i> Hoạt động
+                                            </span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td class="text-end">
                                         <button class="btn btn-outline-secondary btn-sm me-2" 
                                                 onclick="viewDetails(<?= $row['maNguoiDung'] ?>)">
                                             Xem chi tiết
                                         </button>
-                                        <form method="POST" style="display:inline;" 
-                                              onsubmit="return confirm('Bạn có chắc muốn khóa tài khoản này?');">
-                                            <input type="hidden" name="maNguoiDung" value="<?= $row['maNguoiDung'] ?>">
-                                            <button type="submit" name="lockAccount" class="btn btn-danger btn-sm">
-                                                Khóa tài khoản
-                                            </button>
-                                        </form>
+                                        <?php if ($row['trangThaiViPham'] != 'khoa'): ?>
+                                            <form method="POST" style="display:inline;" 
+                                                  onsubmit="return confirm('Bạn có chắc muốn khóa tài khoản này?');">
+                                                <input type="hidden" name="maNguoiDung" value="<?= $row['maNguoiDung'] ?>">
+                                                <button type="submit" name="lockAccount" class="btn btn-danger btn-sm">
+                                                    <i class="bi bi-lock"></i> Khóa tài khoản
+                                                </button>
+                                            </form>
+                                        <?php else: ?>
+                                            <span class="text-muted small">Đã khóa</span>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="4" class="text-center py-4 text-muted">
+                                <td colspan="5" class="text-center py-4 text-muted">
                                     Không có dữ liệu vi phạm
                                 </td>
                             </tr>

@@ -135,12 +135,13 @@ class modelBaoCaoViPham
         if ($con) {
             $sql = "SELECT 
                         nd.maNguoiDung,
+                        nd.trangThaiViPham,
                         h.hoTen,
                         COUNT(bc.maBaoCao) as soLanBaoCao
                     FROM nguoidung nd
                     LEFT JOIN hosonguoidung h ON nd.maNguoiDung = h.maNguoiDung
                     INNER JOIN baocaovipham bc ON nd.maNguoiDung = bc.maNguoiDungBiBaoCao
-                    GROUP BY nd.maNguoiDung, h.hoTen
+                    GROUP BY nd.maNguoiDung, nd.trangThaiViPham, h.hoTen
                     HAVING soLanBaoCao >= ?
                     ORDER BY soLanBaoCao DESC";
             
@@ -168,10 +169,10 @@ class modelBaoCaoViPham
                         bc.maBaoCao,
                         bc.loaiBaoCao,
                         bc.lyDo,
-                        bc.thoiGianBaoCao,
+                        bc.thoiGianBaoCao as ngayBaoCao,
                         bc.trangThai,
                         bc.noiDungViPham,
-                        h.hoTen as nguoiBaoCao
+                        h.hoTen as tenNguoiBaoCao
                     FROM baocaovipham bc
                     LEFT JOIN hosonguoidung h ON bc.maNguoiBaoCao = h.maNguoiDung
                     WHERE bc.maNguoiDungBiBaoCao = ?
@@ -262,12 +263,20 @@ class modelBaoCaoViPham
                         nd.maNguoiDung,
                         h.hoTen,
                         nd.trangThaiViPham,
-                        nd.ngayBiKhoa,
-                        nd.lyDoKhoa
+                        (SELECT lv1.ngayThucHien 
+                         FROM lichsuvipham lv1 
+                         WHERE lv1.maNguoiDung = nd.maNguoiDung 
+                         AND lv1.hanhDong LIKE 'Khóa tài khoản:%'
+                         ORDER BY lv1.ngayThucHien DESC LIMIT 1) as ngayBiKhoa,
+                        (SELECT lv2.hanhDong 
+                         FROM lichsuvipham lv2 
+                         WHERE lv2.maNguoiDung = nd.maNguoiDung 
+                         AND lv2.hanhDong LIKE 'Khóa tài khoản:%'
+                         ORDER BY lv2.ngayThucHien DESC LIMIT 1) as lyDoKhoa
                     FROM nguoidung nd
                     LEFT JOIN hosonguoidung h ON nd.maNguoiDung = h.maNguoiDung
                     WHERE nd.trangThaiViPham = 'khoa'
-                    ORDER BY nd.ngayBiKhoa DESC";
+                    ORDER BY ngayBiKhoa DESC";
             
             $result = $con->query($sql);
             $con->close();
@@ -285,15 +294,60 @@ class modelBaoCaoViPham
         $con = $conn->KetNoi();
 
         if ($con) {
-            $sql = "UPDATE nguoidung 
-                    SET trangThaiViPham = 'khoa', 
-                        ngayBiKhoa = NOW(), 
-                        lyDoKhoa = ?
-                    WHERE maNguoiDung = ?";
+            // Kiểm tra trạng thái hiện tại
+            $checkSql = "SELECT trangThaiViPham FROM nguoidung WHERE maNguoiDung = ?";
+            $checkStmt = $con->prepare($checkSql);
+            $checkStmt->bind_param("i", $maNguoiDung);
+            $checkStmt->execute();
+            $checkResult = $checkStmt->get_result();
+            $userData = $checkResult->fetch_assoc();
             
-            $stmt = $con->prepare($sql);
-            $stmt->bind_param("si", $lyDo, $maNguoiDung);
-            $kq = $stmt->execute();
+            // Nếu đã bị khóa rồi
+            if ($userData && $userData['trangThaiViPham'] == 'khoa') {
+                $con->close();
+                return false;
+            }
+            
+            // Bắt đầu transaction
+            $con->begin_transaction();
+            
+            try {
+                // Cập nhật trạng thái vi phạm
+                $sql1 = "UPDATE nguoidung 
+                        SET trangThaiViPham = 'khoa'
+                        WHERE maNguoiDung = ?";
+                
+                $stmt1 = $con->prepare($sql1);
+                $stmt1->bind_param("i", $maNguoiDung);
+                $stmt1->execute();
+                
+                // Thêm vào lịch sử vi phạm
+                $hanhDong = "Khóa tài khoản: " . $lyDo;
+                $sql2 = "INSERT INTO lichsuvipham (maNguoiDung, ngayThucHien, hanhDong) 
+                        VALUES (?, NOW(), ?)";
+                
+                $stmt2 = $con->prepare($sql2);
+                $stmt2->bind_param("is", $maNguoiDung, $hanhDong);
+                $stmt2->execute();
+                
+                // Cập nhật trạng thái các báo cáo thành 'daxuly'
+                $sql3 = "UPDATE baocaovipham 
+                        SET trangThai = 'daxuly'
+                        WHERE maNguoiDungBiBaoCao = ? 
+                        AND trangThai = 'dangxuly'";
+                
+                $stmt3 = $con->prepare($sql3);
+                $stmt3->bind_param("i", $maNguoiDung);
+                $stmt3->execute();
+                
+                // Commit transaction
+                $con->commit();
+                $kq = true;
+            } catch (Exception $e) {
+                // Rollback nếu có lỗi
+                $con->rollback();
+                $kq = false;
+            }
             
             $con->close();
             return $kq;
@@ -310,15 +364,36 @@ class modelBaoCaoViPham
         $con = $conn->KetNoi();
 
         if ($con) {
-            $sql = "UPDATE nguoidung 
-                    SET trangThaiViPham = NULL, 
-                        ngayBiKhoa = NULL, 
-                        lyDoKhoa = NULL
-                    WHERE maNguoiDung = ?";
+            // Bắt đầu transaction
+            $con->begin_transaction();
             
-            $stmt = $con->prepare($sql);
-            $stmt->bind_param("i", $maNguoiDung);
-            $kq = $stmt->execute();
+            try {
+                // Cập nhật trạng thái vi phạm
+                $sql1 = "UPDATE nguoidung 
+                        SET trangThaiViPham = NULL
+                        WHERE maNguoiDung = ?";
+                
+                $stmt1 = $con->prepare($sql1);
+                $stmt1->bind_param("i", $maNguoiDung);
+                $stmt1->execute();
+                
+                // Thêm vào lịch sử vi phạm
+                $hanhDong = "Mở khóa tài khoản";
+                $sql2 = "INSERT INTO lichsuvipham (maNguoiDung, ngayThucHien, hanhDong) 
+                        VALUES (?, NOW(), ?)";
+                
+                $stmt2 = $con->prepare($sql2);
+                $stmt2->bind_param("is", $maNguoiDung, $hanhDong);
+                $stmt2->execute();
+                
+                // Commit transaction
+                $con->commit();
+                $kq = true;
+            } catch (Exception $e) {
+                // Rollback nếu có lỗi
+                $con->rollback();
+                $kq = false;
+            }
             
             $con->close();
             return $kq;
@@ -338,13 +413,14 @@ class modelBaoCaoViPham
             $keyword = "%$keyword%";
             $sql = "SELECT 
                         nd.maNguoiDung,
+                        nd.trangThaiViPham,
                         h.hoTen,
                         COUNT(bc.maBaoCao) as soLanBaoCao
                     FROM nguoidung nd
                     LEFT JOIN hosonguoidung h ON nd.maNguoiDung = h.maNguoiDung
                     INNER JOIN baocaovipham bc ON nd.maNguoiDung = bc.maNguoiDungBiBaoCao
                     WHERE nd.maNguoiDung LIKE ? OR h.hoTen LIKE ?
-                    GROUP BY nd.maNguoiDung, h.hoTen
+                    GROUP BY nd.maNguoiDung, nd.trangThaiViPham, h.hoTen
                     HAVING soLanBaoCao >= ?
                     ORDER BY soLanBaoCao DESC";
             
@@ -373,16 +449,122 @@ class modelBaoCaoViPham
                         nd.maNguoiDung,
                         h.hoTen,
                         nd.trangThaiViPham,
-                        nd.ngayBiKhoa,
-                        nd.lyDoKhoa
+                        (SELECT lv1.ngayThucHien 
+                         FROM lichsuvipham lv1 
+                         WHERE lv1.maNguoiDung = nd.maNguoiDung 
+                         AND lv1.hanhDong LIKE 'Khóa tài khoản:%'
+                         ORDER BY lv1.ngayThucHien DESC LIMIT 1) as ngayBiKhoa,
+                        (SELECT lv2.hanhDong 
+                         FROM lichsuvipham lv2 
+                         WHERE lv2.maNguoiDung = nd.maNguoiDung 
+                         AND lv2.hanhDong LIKE 'Khóa tài khoản:%'
+                         ORDER BY lv2.ngayThucHien DESC LIMIT 1) as lyDoKhoa
                     FROM nguoidung nd
                     LEFT JOIN hosonguoidung h ON nd.maNguoiDung = h.maNguoiDung
                     WHERE nd.trangThaiViPham = 'khoa' 
                     AND (nd.maNguoiDung LIKE ? OR h.hoTen LIKE ?)
-                    ORDER BY nd.ngayBiKhoa DESC";
+                    ORDER BY ngayBiKhoa DESC";
             
             $stmt = $con->prepare($sql);
             $stmt->bind_param("ss", $keyword, $keyword);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            $con->close();
+            return $result;
+        }
+        return false;
+    }
+    
+    /**
+     * Lấy thông tin người dùng
+     */
+    public function getUserInfo($maNguoiDung)
+    {
+        $conn = new mKetNoi();
+        $con = $conn->KetNoi();
+
+        if ($con) {
+            $sql = "SELECT 
+                        nd.maNguoiDung,
+                        nd.email,
+                        nd.trangThaiViPham,
+                        (SELECT lv1.ngayThucHien 
+                         FROM lichsuvipham lv1 
+                         WHERE lv1.maNguoiDung = nd.maNguoiDung 
+                         AND lv1.hanhDong LIKE 'Khóa tài khoản:%'
+                         ORDER BY lv1.ngayThucHien DESC LIMIT 1) as ngayBiKhoa,
+                        (SELECT lv2.hanhDong 
+                         FROM lichsuvipham lv2 
+                         WHERE lv2.maNguoiDung = nd.maNguoiDung 
+                         AND lv2.hanhDong LIKE 'Khóa tài khoản:%'
+                         ORDER BY lv2.ngayThucHien DESC LIMIT 1) as lyDoKhoa,
+                        h.hoTen
+                    FROM nguoidung nd
+                    LEFT JOIN hosonguoidung h ON nd.maNguoiDung = h.maNguoiDung
+                    WHERE nd.maNguoiDung = ?";
+            
+            $stmt = $con->prepare($sql);
+            $stmt->bind_param("i", $maNguoiDung);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $userInfo = $result->fetch_assoc();
+            
+            $con->close();
+            return $userInfo;
+        }
+        return false;
+    }
+
+    /**
+     * Lấy thống kê báo cáo của người dùng
+     */
+    public function getReportStatsByUser($maNguoiDung)
+    {
+        $conn = new mKetNoi();
+        $con = $conn->KetNoi();
+
+        if ($con) {
+            $sql = "SELECT 
+                        COUNT(*) as tongBaoCao,
+                        SUM(CASE WHEN loaiBaoCao = 'nguoidung' THEN 1 ELSE 0 END) as baoCaoNguoiDung,
+                        SUM(CASE WHEN loaiBaoCao = 'baidang' THEN 1 ELSE 0 END) as baoCaoBaiDang,
+                        SUM(CASE WHEN loaiBaoCao = 'tinnhan' THEN 1 ELSE 0 END) as baoCaoTinNhan
+                    FROM baocaovipham
+                    WHERE maNguoiDungBiBaoCao = ?";
+            
+            $stmt = $con->prepare($sql);
+            $stmt->bind_param("i", $maNguoiDung);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $stats = $result->fetch_assoc();
+            
+            $con->close();
+            return $stats;
+        }
+        return false;
+    }
+
+    /**
+     * Lấy lịch sử vi phạm của người dùng từ bảng lichsuvipham
+     */
+    public function getViolationHistory($maNguoiDung)
+    {
+        $conn = new mKetNoi();
+        $con = $conn->KetNoi();
+
+        if ($con) {
+            $sql = "SELECT 
+                        maLichSu,
+                        maNguoiDung,
+                        ngayThucHien,
+                        hanhDong
+                    FROM lichsuvipham
+                    WHERE maNguoiDung = ?
+                    ORDER BY ngayThucHien DESC";
+            
+            $stmt = $con->prepare($sql);
+            $stmt->bind_param("i", $maNguoiDung);
             $stmt->execute();
             $result = $stmt->get_result();
             

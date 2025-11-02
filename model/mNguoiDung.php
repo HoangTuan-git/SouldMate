@@ -39,7 +39,10 @@ class modelNguoiDung
     public function mLogin($email, $pass)
     {
         // $pass phải là MD5 hash để so sánh với matKhau trong DB
-        $strLogin = "SELECT * FROM nguoidung WHERE email='$email' AND matKhau='$pass'";
+        // SELECT thêm trangThaiViPham và role để kiểm tra
+        $strLogin = "SELECT maNguoiDung, email, matKhau, trangThaiViPham, role 
+                     FROM nguoidung 
+                     WHERE email='$email' AND matKhau='$pass'";
         $result =  $this->execQuery($strLogin);
         return $result;
     }
