@@ -105,10 +105,15 @@ $titles = [
     </main>
     <!-- Bootstrap 5 Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Chat client -->
+    <!-- Set current user ID for JavaScript -->
+    <script>
+        window.currentUserId = <?php echo isset($_SESSION['uid']) ? (int)$_SESSION['uid'] : 0; ?>;
+    </script>
+    <!-- Comment system -->
+    <script src="view/assets/js/comment-loadmore.js"></script>
     <?php
-    // Load page-specific JavaScript based on current page
     $jsMap = [
+        'home'   => 'bantin.js',
         'bantin' => 'bantin.js',
         'dexuat' => 'dexuat.js',
         'dangky' => 'dangky.js'
@@ -122,17 +127,10 @@ $titles = [
     <?php if(isset($_SESSION['uid'])): ?>
     window.currentUserId = <?= $_SESSION['uid'] ?>;
     window.jwtToken = '<?= $_SESSION['jwt_token'] ?? '' ?>';
-    
-    // DEBUG: Log token
-    console.log('🔍 [home.php] User ID:', <?= $_SESSION['uid'] ?>);
-    console.log('🔍 [home.php] JWT Token:', '<?= $_SESSION['jwt_token'] ?? 'NOT SET' ?>');
-    console.log('🔍 [home.php] Token length:', '<?= isset($_SESSION['jwt_token']) ? strlen($_SESSION['jwt_token']) : 0 ?>');
     <?php else: ?>
     window.currentUserId = null;
     window.jwtToken = null;
-    console.log('⚠️ [home.php] User not logged in');
     <?php endif; ?>
-    
     <?php if(isset($uid)): ?>
     window.currentReceiverId = <?= $uid ?>;
     <?php endif; ?>

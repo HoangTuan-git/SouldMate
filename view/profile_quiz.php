@@ -1,11 +1,16 @@
 <!-- Page tạo hồ sơ sau khi đăng ký -->
 <?php
-// //if not jwt token redirect to home page
-// if(!isset($_SESSION['jwt_token'])) {
-//     echo "<script>alert('Người dùng chưa đăng ký.');</script>";
-//     header("Location: home.php?page=dangky");
-//     exit();
-// }
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+include_once(__DIR__ . "/../controller/cHoSo.php");
+$cHoSo = new controlHoSo();
+// Nếu đã đăng nhập và đã có hồ sơ thì không cho vào trang này nữa
+if (isset($_SESSION['uid']) && $cHoSo->checkHoSoExists($_SESSION['uid'])) {
+    header("Location: home_test.php");
+    exit();
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="vi">
