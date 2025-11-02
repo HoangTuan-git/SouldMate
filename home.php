@@ -109,6 +109,9 @@ $titles = [
             case 'blocked-list':
                 include_once 'view/blocked-list.php';
                 break;
+            case 'premium':
+                include_once 'view/premium.php';
+                break;
             default:
                 include_once 'view/bantin.php';
                 break;

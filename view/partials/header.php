@@ -1,6 +1,14 @@
 <?php
 // Determine active page for highlighting
 $activePage = isset($page) && $page ? $page : ($_GET['page'] ?? 'bantin');
+
+// Kiểm tra trạng thái Premium
+$isPremiumUser = false;
+if (isset($_SESSION['uid'])) {
+    include_once(__DIR__ . '/../../controller/cPayment.php');
+    $cPayment = new controlPayment();
+    $isPremiumUser = $cPayment->checkPremiumStatus($_SESSION['uid']);
+}
 ?>
 
 <nav class="navbar navbar-expand-lg header-navbar">
@@ -30,8 +38,21 @@ $activePage = isset($page) && $page ? $page : ($_GET['page'] ?? 'bantin');
                 <li class="nav-item">
                     <a class="nav-link <?php echo ($activePage === 'timkiem') ? 'active' : ''; ?>" href="home.php?page=timkiem">Tìm kiếm</a>
                 </li>
+                <?php if ($isPremiumUser): ?>
                 <li class="nav-item">
-                    <a class="nav-link <?php echo ($activePage === 'premium') ? 'active' : ''; ?>" href="#">Premium</a>
+                    <a class="nav-link <?php echo ($activePage === 'dexuat') ? 'active' : ''; ?>" href="home.php?page=dexuat">
+                        <i class="bi bi-stars text-warning"></i> Đề xuất
+                    </a>
+                </li>
+                <?php endif; ?>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo ($activePage === 'premium') ? 'active' : ''; ?>" href="home.php?page=premium">
+                        <?php if ($isPremiumUser): ?>
+                            <i class="bi bi-crown-fill text-warning"></i> Premium
+                        <?php else: ?>
+                            Premium
+                        <?php endif; ?>
+                    </a>
                 </li>
             </ul>
 
