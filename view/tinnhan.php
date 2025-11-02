@@ -505,7 +505,7 @@ if (isset($_REQUEST['uid'])) $uid = $_REQUEST['uid'];
                                 if ($lastMessageResult && $lastMessageResult->num_rows > 0) {
                                     $lastMessage = $lastMessageResult->fetch_assoc();
                                     $sent_at = date('H:i', strtotime($lastMessage['sent_at'] ?? 'now'));
-                                    $previewText = strlen($lastMessage['msg']) > 30 ? substr($lastMessage['msg'], 0, 30) . '...' . ' ' . $sent_at : $lastMessage['msg'].' '.$sent_at;
+                                    $previewText = strlen($lastMessage['noiDungText']) > 30 ? substr($lastMessage['noiDungText'], 0, 30) . '...' . ' ' . $sent_at : $lastMessage['noiDungText'].' '.$sent_at;
                                     echo '<div class="chat-preview">' . htmlspecialchars($previewText) . '</div>';
                                 } else {
                                     echo '<div class="chat-preview">Nhấn để bắt đầu trò chuyện</div>';
