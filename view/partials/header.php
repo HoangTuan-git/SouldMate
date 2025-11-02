@@ -1,6 +1,10 @@
 <?php
 // Determine active page for highlighting
 $activePage = isset($page) && $page ? $page : ($_GET['page'] ?? 'bantin');
+include_once("model/mme.php");
+$p = new mMe();
+$rs = $p->GetUserById($_SESSION['uid']);
+$u = $rs ? $rs->fetch_assoc() : null;
 ?>
 
 <nav class="navbar navbar-expand-lg header-navbar">
@@ -38,12 +42,13 @@ $activePage = isset($page) && $page ? $page : ($_GET['page'] ?? 'bantin');
             <div class="d-flex align-items-center gap-3 ms-auto">
                 <div class="dropdown">
                     <button class="btn p-0 border-0 bg-transparent" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="uploads/avatars/<?php echo $_SESSION['avatar'] ?? 'default.png'; ?>" class="avatar" alt="">
+                        <img src="uploads/avatars/<?php echo $u['avatar'] ?? 'default.png'; ?>" class="avatar" alt="">
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                         <li><a class="dropdown-item" href="home.php?page=me">Hồ sơ</a></li>
-                        <li><a class="dropdown-item" href="home.php?page=xuly">Ai thích tôi</a></li>
-                        <li><a class="dropdown-item" href="view/dangxuat.php">Đăng xuất</a></li>
+                        <li><a class="dropdown-item" href="home.php?page=DSDuocTim">Ai thích tôi</a></li>
+                        <li><a class="dropdown-item" href="home.php?page=DSTim">Tôi thích ai</a></li>
+                        <li><a class="dropdown-item" href="home.php?page=dangxuat">Đăng xuất</a></li>
                     </ul>
                 </div>
             </div>

@@ -9,17 +9,19 @@ class controlTimKiem
     public function timKiemNguoiDung($filters = [])
     {
         $model = new TimKiem();
-        
+
+        // Lấy UID của người dùng hiện tại (nếu có)
+        $currentUserId = isset($_SESSION['uid']) ? $_SESSION['uid'] : null;
         // Lấy các tham số tìm kiếm
         $tuKhoa = $filters['tuKhoa'] ?? '';
         $khuVuc = $filters['khuVuc'] ?? '';
         $doTuoi = $filters['doTuoi'] ?? '';
         $ngheNghiep = $filters['ngheNghiep'] ?? '';
-        
+
         // Xử lý độ tuổi
         $doTuoiMin = null;
         $doTuoiMax = null;
-        
+
         if (!empty($doTuoi)) {
             switch ($doTuoi) {
                 case '18-22':
@@ -40,19 +42,20 @@ class controlTimKiem
                     break;
             }
         }
-        
+
         // Gọi model để tìm kiếm
         $result = $model->TimKiemNguoiDung(
             $tuKhoa,
             $khuVuc,
             $doTuoiMin,
             $doTuoiMax,
-            $ngheNghiep
+            $ngheNghiep,
+            $currentUserId
         );
-        
+
         return $result;
     }
-    
+
     /**
      * Đếm số lượng kết quả tìm kiếm
      */
@@ -61,7 +64,7 @@ class controlTimKiem
         $result = $this->timKiemNguoiDung($filters);
         return $result ? $result->num_rows : 0;
     }
-    
+
     /**
      * Format kết quả tìm kiếm thành mảng
      */
@@ -69,7 +72,7 @@ class controlTimKiem
     {
         $result = $this->timKiemNguoiDung($filters);
         $danhSach = [];
-        
+
         if ($result && $result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 // Tính tuổi
@@ -81,11 +84,11 @@ class controlTimKiem
                 } else {
                     $row['tuoi'] = null;
                 }
-                
+
                 $danhSach[] = $row;
             }
         }
-        
+
         return $danhSach;
     }
 }

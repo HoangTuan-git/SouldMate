@@ -32,10 +32,10 @@ class modelHoSo
      */
     public function getProfileByUserId($maNguoiDung)
     {
-        $query = "SELECT h.*, tp.tenThanhPho, nn.tenNghe 
+        $query = "SELECT h.*, tp.tenThanhPho, nn.tenNgheNghiep 
                   FROM hosonguoidung h
                   LEFT JOIN thanhpho tp ON h.maThanhPho = tp.maThanhPho
-                  LEFT JOIN nghenghiep nn ON h.maNgheNghiep = nn.maNghe
+                  LEFT JOIN nghenghiep nn ON h.maNgheNghiep = nn.maNgheNghiep
                   WHERE h.maNguoiDung = $maNguoiDung";
         $result = $this->execQuery($query);
         return $result;
@@ -46,10 +46,10 @@ class modelHoSo
      */
     public function getProfileById($maHoSo)
     {
-        $query = "SELECT h.*, tp.tenThanhPho, nn.tenNghe 
+        $query = "SELECT h.*, tp.tenThanhPho, nn.tenNgheNghiep 
                   FROM hosonguoidung h
                   LEFT JOIN thanhpho tp ON h.maThanhPho = tp.maThanhPho
-                  LEFT JOIN nghenghiep nn ON h.maNgheNghiep = nn.maNghe
+                  LEFT JOIN nghenghiep nn ON h.maNgheNghiep = nn.maNgheNghiep
                   WHERE h.maHoSo = $maHoSo";
         $result = $this->execQuery($query);
         return $result;
@@ -62,7 +62,7 @@ class modelHoSo
     {
         $hoSo_unique_id = 'profile_' . uniqid('', true);
 
-        $query = "INSERT INTO hosonguoidung (hoSo_unique_id, maNguoiDung, hoTen, ngaysinh, gioiTinh, maNgheNghiep, maThanhPho, moTa, avatar, trangThaiHenHo) 
+        $query = "INSERT INTO hosonguoidung (hoSo_unique_id, maNguoiDung, hoTen, ngaySinh, gioiTinh, maNgheNghiep, maThanhPho, moTa, avatar, trangThaiHenHo) 
                   VALUES ('$hoSo_unique_id', $maNguoiDung, '$hoTen', '$ngaySinh', '$gioiTinh', " .
             ($maNgheNghiep ? $maNgheNghiep : 'NULL') . ", " .
             ($maThanhPho ? $maThanhPho : 'NULL') . ", '$moTa', '$avatar', '$trangThaiHenHo')";
@@ -88,7 +88,7 @@ class modelHoSo
     {
         $query = "UPDATE hosonguoidung SET 
                   hoTen = '$hoTen',
-                  ngaysinh = '$ngaySinh',
+                  ngaySinh = '$ngaySinh',
                   gioiTinh = '$gioiTinh',
                   maNgheNghiep = " . ($maNgheNghiep ? $maNgheNghiep : 'NULL') . ",
                   maThanhPho = " . ($maThanhPho ? $maThanhPho : 'NULL') . ",
@@ -155,7 +155,7 @@ class modelHoSo
      */
     public function getJobsByIndustry($maNganh)
     {
-        $query = "SELECT * FROM nghenghiep WHERE maNganh = $maNganh ORDER BY tenNghe ASC";
+        $query = "SELECT * FROM nghenghiep WHERE maNganh = $maNganh ORDER BY tenNgheNghiep ASC";
         return $this->execQuery($query);
     }
 
@@ -165,8 +165,8 @@ class modelHoSo
     public function getAllJobs()
     {
         $query = "SELECT nn.*, nnh.tenNganh FROM nghenghiep nn
-                  INNER JOIN nganhnghe nnh ON nn.maNganh = nnh.maNganh
-                  ORDER BY nnh.tenNganh, nn.tenNghe ASC";
+                  LEFT JOIN nganhnghe nnh ON nn.maNganh = nnh.maNganh
+                  ORDER BY nnh.tenNganh, nn.tenNgheNghiep ASC";
         return $this->execQuery($query);
     }
 
@@ -182,11 +182,11 @@ class modelHoSo
     {
         $query = "SELECT h.*, 
                   tp.tenThanhPho, 
-                  nn.tenNghe AS tenNgheNghiep,
+                  nn.tenNgheNghiep AS tenNgheNghiep,
                   GROUP_CONCAT(st.tenSoThich SEPARATOR ', ') AS soThich
                   FROM hosonguoidung h
                   LEFT JOIN thanhpho tp ON h.maThanhPho = tp.maThanhPho
-                  LEFT JOIN nghenghiep nn ON h.maNgheNghiep = nn.maNghe
+                  LEFT JOIN nghenghiep nn ON h.maNgheNghiep = nn.maNgheNghiep
                   LEFT JOIN hoso_sothich hst ON h.maHoSo = hst.maHoSo
                   LEFT JOIN sothich st ON hst.maSoThich = st.maSoThich
                   WHERE h.maNguoiDung = $maNguoiDung

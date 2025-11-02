@@ -9,6 +9,56 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
+    <style>
+        .avatar-upload-box {
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 300px;
+        }
+
+        .avatar-upload-box:hover {
+            border-color: #0d6efd;
+            background-color: #f8f9fa;
+        }
+
+        .avatar-placeholder {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .avatar-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .form-check {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+
+        .form-check:hover {
+            background-color: #f8f9fa;
+            border-color: #0d6efd;
+        }
+
+        .form-check-input:checked~.form-check-label {
+            font-weight: 500;
+            color: #0d6efd;
+        }
+    </style>
 
 </head>
 
@@ -43,10 +93,10 @@
             'maThanhPho' => $_POST['location'] ?? null,
             'maNgheNghiep' => $_POST['occupation'] ?? null,
             'moTa' => $_POST['bio'] ?? '',
-            'soThich' => $_POST['hobbies'] ?? '',
-            'trangThaiHenHo' => 'nghiemtuc'
+            'soThich' => $_POST['hobbies'] ?? [],
+            'trangThaiHenHo' => 'nghiêm túc'
         ];
-
+        error_log("Processed Data: " . print_r($data, true));
         // Upload avatar nếu có
         $avatarPath = null;
         if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] == 0) {
@@ -113,7 +163,7 @@
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label">Ảnh đại diện</label>
+                                <label for="avatarUpload" class="form-label">Ảnh đại diện</label>
                                 <div class="d-flex justify-content-center">
                                     <label for="avatarUpload" class="avatar-upload-box text-center">
                                         <div class="avatar-placeholder" id="avatarPreview">
@@ -157,10 +207,24 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="hobbies" class="form-label">Sở thích</label>
-                                <!-- select fetch data from DB -->
-                                <input type="text" class="form-control" id="hobbies" name="hobbies" placeholder="Kể về những sở thích của bạn (ví dụ: đọc sách, du lịch, thể thao, âm nhạc)">
-                                <small class="text-muted">Ngăn cách bằng dấu phẩy</small>
+                                <div class="form-label">Sở thích <span class="text-muted">(Chọn ít nhất 1 sở thích)</span></div>
+                                <div class="row g-2">
+                                    <?php
+                                    if ($formData['hobbies'] && $formData['hobbies']->num_rows > 0) {
+                                        while ($hobby = $formData['hobbies']->fetch_assoc()) {
+                                            echo '<div class="col-md-4 col-sm-6">';
+                                            echo '    <div class="form-check">';
+                                            echo '        <input class="form-check-input" type="checkbox" name="hobbies[]" value="' . $hobby['maSoThich'] . '" id="hobby' . $hobby['maSoThich'] . '">';
+                                            echo '        <label class="form-check-label" for="hobby' . $hobby['maSoThich'] . '">';
+                                            echo '            ' . htmlspecialchars($hobby['tenSoThich']);
+                                            echo '        </label>';
+                                            echo '    </div>';
+                                            echo '</div>';
+                                        }
+                                    }
+                                    ?>
+                                </div>
+                                <small class="text-danger d-none" id="hobbiesError">Vui lòng chọn ít nhất một sở thích</small>
                             </div>
 
                             <div class="mb-3">
@@ -204,6 +268,21 @@
             if (age < 18) {
                 alert('Bạn phải đủ 18 tuổi để tạo hồ sơ!');
                 this.value = '';
+            }
+        });
+
+        // Validate sở thích (phải chọn ít nhất 1)
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const checkboxes = document.querySelectorAll('input[name="hobbies[]"]:checked');
+            const errorMsg = document.getElementById('hobbiesError');
+
+            if (checkboxes.length === 0) {
+                e.preventDefault();
+                errorMsg.classList.remove('d-none');
+                alert('Vui lòng chọn ít nhất một sở thích!');
+                return false;
+            } else {
+                errorMsg.classList.add('d-none');
             }
         });
     </script>

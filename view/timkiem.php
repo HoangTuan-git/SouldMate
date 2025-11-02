@@ -1,27 +1,33 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Khám phá - SoulMatch</title>
     <style>
         body {
-            background-color: #f8f9fa; /* Màu nền xám rất nhạt */
+            background-color: #f8f9fa;
+            /* Màu nền xám rất nhạt */
         }
+
         /* === Search & Filters === */
         .filter-section {
             background-color: #ffffff;
             padding: 1.5rem;
             border-radius: 0.75rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             margin-bottom: 2rem;
         }
+
         .search-bar {
             position: relative;
         }
+
         .search-bar .form-control {
             padding-left: 2.5rem;
         }
+
         .search-bar .bi-search {
             position: absolute;
             left: 0.75rem;
@@ -35,15 +41,17 @@
             background-color: #ffffff;
             border: none;
             border-radius: 0.75rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-            height: 100%; /* Đảm bảo các card cao bằng nhau */
+            height: 100%;
+            /* Đảm bảo các card cao bằng nhau */
         }
+
         .profile-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
         }
-        
+
         .profile-card-img {
             width: 120px;
             height: 120px;
@@ -51,82 +59,145 @@
             object-fit: cover;
             margin: 0 auto;
             border: 3px solid #ffffff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        
+
         .profile-card .card-body {
             padding-top: 1.5rem;
             padding-bottom: 1.5rem;
         }
-        
+
         .profile-card .card-text {
             font-size: 0.9rem;
             color: #6c757d;
             /* Giới hạn 3 dòng text */
             display: -webkit-box;
             -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;  
+            -webkit-box-orient: vertical;
             overflow: hidden;
-            min-height: 4.05rem; /* 0.9rem * 1.5 line-height * 3 lines */
+            min-height: 4.05rem;
+            /* 0.9rem * 1.5 line-height * 3 lines */
         }
-        
+
         .like-button {
             font-weight: 500;
             color: #6c757d;
             text-decoration: none;
         }
+
         .like-button:hover {
-            color: #dc3545; /* text-danger */
+            color: #dc3545;
+            /* text-danger */
         }
+
         .like-button .bi-heart {
             vertical-align: middle;
         }
-        
+
         .empty-state {
             text-align: center;
             padding: 60px 20px;
         }
-        
+
         .empty-state i {
             font-size: 64px;
             color: #ccc;
             margin-bottom: 16px;
         }
-        
+
         .empty-state p {
             font-size: 16px;
             color: #65676b;
             margin: 0;
         }
 
+        .like-btn {
+            transition: all 0.3s ease;
+        }
+
+        .like-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .like-btn:not(:disabled):hover {
+            transform: scale(1.05);
+        }
     </style>
 </head>
+
 <body>
-<?php
-// Xử lý tìm kiếm
-include_once("controller/cTimKiem.php");
-include_once("controller/cHoSo.php");
+    <?php
+    // Xử lý tìm kiếm
+    include_once("controller/cTimKiem.php");
+    include_once("controller/cHoSo.php");
+    include_once("controller/cTim.php");
 
-$timKiemController = new controlTimKiem();
-$hoSoController = new controlHoSo();
+    $timKiemController = new controlTimKiem();
+    $hoSoController = new controlHoSo();
+    $timController = new cTim();
 
-// Lấy dữ liệu form
-$formData = $hoSoController->getFormData();
+    // XỬ LÝ LIKE
+    if (isset($_POST['likeUser']) && isset($_SESSION['uid'])) {
+        $targetUserId = intval($_POST['targetUserId']);
+        $result = $timController->likeUser($_SESSION['uid'], $targetUserId);
+        $_SESSION['likeResult'] = $result;
 
-// Lấy tham số tìm kiếm từ GET
-$filters = [
-    'tuKhoa' => $_GET['tuKhoa'] ?? '',
-    'khuVuc' => $_GET['khuVuc'] ?? '',
-    'doTuoi' => $_GET['doTuoi'] ?? '',
-    'ngheNghiep' => $_GET['ngheNghiep'] ?? ''
-];
+        // Redirect để tránh resubmit
+        header("Location: " . $_SERVER['REQUEST_URI']);
+        exit;
+    }
 
-// Thực hiện tìm kiếm
-$danhSachNguoiDung = $timKiemController->layDanhSachKetQua($filters);
-$soLuongKetQua = count($danhSachNguoiDung);
-?>
+    // XỬ LÝ UNLIKE (BỎ THÍCH)
+    if (isset($_POST['unlikeUser']) && isset($_SESSION['uid'])) {
+        $targetUserId = intval($_POST['targetUserId']);
+        $result = $timController->unlikeUser($_SESSION['uid'], $targetUserId);
+        $_SESSION['likeResult'] = $result;
+
+        // Redirect để tránh resubmit
+        header("Location: " . $_SERVER['REQUEST_URI']);
+        exit;
+    }
+
+    // Hiển thị kết quả nếu có
+    if (isset($_SESSION['likeResult'])) {
+        $result = $_SESSION['likeResult'];
+        $alertType = $result['success'] ? 'success' : 'danger';
+        echo '<div class="alert alert-' . $alertType . ' alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 9999; min-width: 300px;">';
+        echo htmlspecialchars($result['message']);
+        echo '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+        echo '</div>';
+        unset($_SESSION['likeResult']);
+    }
+
+    // Lấy dữ liệu form
+    $formData = $hoSoController->getFormData();
+
+    // Lấy tham số tìm kiếm từ GET
+    $filters = [
+        'tuKhoa' => $_GET['tuKhoa'] ?? '',
+        'khuVuc' => $_GET['khuVuc'] ?? '',
+        'doTuoi' => $_GET['doTuoi'] ?? '',
+        'ngheNghiep' => $_GET['ngheNghiep'] ?? ''
+    ];
+
+    // Thực hiện tìm kiếm
+    $danhSachNguoiDung = $timKiemController->layDanhSachKetQua($filters);
+    $soLuongKetQua = count($danhSachNguoiDung);
+    ?>
     <main class="container py-4 py-lg-5">
-        
+        <!-- Form hidden dùng chung cho chức năng Like -->
+        <form id="likeForm" method="POST" style="display: none;">
+            <input type="hidden" name="targetUserId" id="targetUserIdInput">
+            <input type="hidden" name="likeUser" value="1">
+        </form>
+
+        <!-- Form hidden dùng chung cho chức năng Unlike -->
+        <form id="unlikeForm" method="POST" style="display: none;">
+            <input type="hidden" name="targetUserId" id="targetUserIdInputUnlike">
+            <input type="hidden" name="unlikeUser" value="1">
+        </form>
+
         <h2 class="fw-bold text-center mb-4">Khám phá các hồ sơ mới</h2>
 
         <section class="filter-section">
@@ -137,9 +208,9 @@ $soLuongKetQua = count($danhSachNguoiDung);
                         <label for="tuKhoa" class="form-label fw-semibold">Tìm kiếm</label>
                         <div class="search-bar">
                             <i class="bi bi-search"></i>
-                            <input type="text" class="form-control" name="tuKhoa" id="tuKhoa" 
-                                   placeholder="Tìm kiếm người dùng theo tên..."
-                                   value="<?= htmlspecialchars($filters['tuKhoa']) ?>">
+                            <input type="text" class="form-control" name="tuKhoa" id="tuKhoa"
+                                placeholder="Tìm kiếm người dùng theo tên..."
+                                value="<?= htmlspecialchars($filters['tuKhoa']) ?>">
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6">
@@ -147,13 +218,13 @@ $soLuongKetQua = count($danhSachNguoiDung);
                         <select class="form-select" name="khuVuc" id="khuVuc">
                             <option value="" <?= empty($filters['khuVuc']) ? 'selected' : '' ?>>Tất cả</option>
                             <?php
-                                if ($formData['cities'] && $formData['cities']->num_rows > 0) {
-                                    while ($city = $formData['cities']->fetch_assoc()) {
-                                        $selected = ($filters['khuVuc'] == $city['maThanhPho']) ? 'selected' : '';
-                                        echo '<option value="' . $city['maThanhPho'] . '" ' . $selected . '>' 
-                                             . htmlspecialchars($city['tenThanhPho']) . '</option>';
-                                    }
+                            if ($formData['cities'] && $formData['cities']->num_rows > 0) {
+                                while ($city = $formData['cities']->fetch_assoc()) {
+                                    $selected = ($filters['khuVuc'] == $city['maThanhPho']) ? 'selected' : '';
+                                    echo '<option value="' . $city['maThanhPho'] . '" ' . $selected . '>'
+                                        . htmlspecialchars($city['tenThanhPho']) . '</option>';
                                 }
+                            }
                             ?>
                         </select>
                     </div>
@@ -178,58 +249,83 @@ $soLuongKetQua = count($danhSachNguoiDung);
 
         <section class="results-section">
             <h4 class="fw-bold mb-4">Kết quả tìm kiếm (<?= $soLuongKetQua ?>)</h4>
-            
+
             <?php if ($soLuongKetQua > 0): ?>
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-                    <?php foreach ($danhSachNguoiDung as $nguoiDung): ?>
+                    <?php foreach ($danhSachNguoiDung as $nguoiDung):
+                        // Kiểm tra đã thích chưa
+                        $isLiked = false;
+                        if (isset($_SESSION['uid'])) {
+                            $isLiked = $timController->checkLiked($_SESSION['uid'], $nguoiDung['maNguoiDung']);
+                        }
+                    ?>
                         <div class="col">
                             <div class="card profile-card text-center">
                                 <div class="card-body">
-                                    <?php 
-                                    $avatarPath = !empty($nguoiDung['avatar']) 
+                                    <?php
+                                    $avatarPath = !empty($nguoiDung['avatar'])
                                         ? 'uploads/avatars/' . htmlspecialchars($nguoiDung['avatar'])
                                         : 'uploads/avatars/default.png';
                                     ?>
                                     <img src="<?= $avatarPath ?>" alt="Profile" class="profile-card-img mb-3">
-                                    
+
                                     <h5 class="card-title fw-bold mb-1">
                                         <?= htmlspecialchars($nguoiDung['hoTen'] ?? 'Người dùng') ?>
                                     </h5>
-                                    
+
                                     <p class="text-muted small mb-2">
                                         <?= $nguoiDung['tuoi'] ? $nguoiDung['tuoi'] . ' tuổi' : 'N/A' ?>
                                         <?php if (!empty($nguoiDung['gioiTinh'])): ?>
                                             • <?= $nguoiDung['gioiTinh'] == 'Nam' ? '👨' : '👩' ?>
                                         <?php endif; ?>
                                     </p>
-                                    
+
                                     <?php if (!empty($nguoiDung['tenThanhPho'])): ?>
                                         <p class="text-muted small mb-3">
                                             <i class="bi bi-geo-alt-fill"></i> <?= htmlspecialchars($nguoiDung['tenThanhPho']) ?>
                                         </p>
                                     <?php endif; ?>
-                                    
-                                    <?php if (!empty($nguoiDung['tenNghe'])): ?>
+
+                                    <?php if (!empty($nguoiDung['tenNgheNghiep'])): ?>
                                         <p class="text-muted small mb-3">
-                                            <i class="bi bi-briefcase-fill"></i> <?= htmlspecialchars($nguoiDung['tenNghe']) ?>
+                                            <i class="bi bi-briefcase-fill"></i> <?= htmlspecialchars($nguoiDung['tenNgheNghiep']) ?>
                                         </p>
                                     <?php endif; ?>
-                                    
+
                                     <p class="card-text">
-                                        <?= !empty($nguoiDung['moTa']) 
-                                            ? htmlspecialchars($nguoiDung['moTa']) 
+                                        <?= !empty($nguoiDung['moTa'])
+                                            ? htmlspecialchars($nguoiDung['moTa'])
                                             : 'Chưa có mô tả...' ?>
                                     </p>
-                                    
+
                                     <div class="d-flex justify-content-center gap-3">
-                                        <a href="home.php?page=profile&uid=<?= $nguoiDung['maNguoiDung'] ?>" 
-                                           class="btn btn-sm btn-outline-primary">
+                                        <a href="home.php?page=profile&uid=<?= $nguoiDung['maNguoiDung'] ?>"
+                                            class="btn btn-sm btn-outline-primary">
                                             <i class="bi bi-person"></i> Xem profile
                                         </a>
-                                        <a href="#" class="like-button" 
-                                           onclick="handleLike(<?= $nguoiDung['maNguoiDung'] ?>); return false;">
-                                            <i class="bi bi-heart"></i> Thích
-                                        </a>
+
+                                        <?php if (isset($_SESSION['uid'])): ?>
+                                            <?php if ($isLiked): ?>
+                                                <!-- Đã thích - hiển thị cả nút tim đỏ và nút X -->
+                                                <button class="btn btn-sm btn-danger like-btn" disabled>
+                                                    <i class="bi bi-heart-fill"></i> Đã thích
+                                                </button>
+                                                <button onclick="unlikeUser(<?= $nguoiDung['maNguoiDung'] ?>)"
+                                                    class="btn btn-sm btn-outline-secondary unlike-btn">
+                                                    <i class="bi bi-x-lg"></i> Bỏ thích
+                                                </button>
+                                            <?php else: ?>
+                                                <!-- Chưa thích - chỉ hiển thị nút tim -->
+                                                <button onclick="likeUser(<?= $nguoiDung['maNguoiDung'] ?>)"
+                                                    class="btn btn-sm btn-outline-danger like-btn">
+                                                    <i class="bi bi-heart"></i> Thích
+                                                </button>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <a href="home.php?page=dangnhap" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-heart"></i> Thích
+                                            </a>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -247,10 +343,20 @@ $soLuongKetQua = count($danhSachNguoiDung);
     </main>
 
     <script>
-        function handleLike(userId) {
-            // TODO: Implement like functionality
-            alert('Tính năng đang được phát triển. User ID: ' + userId);
+        function likeUser(userId) {
+            if (confirm('Bạn có chắc muốn thích người này?')) {
+                document.getElementById('targetUserIdInput').value = userId;
+                document.getElementById('likeForm').submit();
+            }
+        }
+
+        function unlikeUser(userId) {
+            if (confirm('Bạn có chắc muốn bỏ thích người này?')) {
+                document.getElementById('targetUserIdInputUnlike').value = userId;
+                document.getElementById('unlikeForm').submit();
+            }
         }
     </script>
 </body>
+
 </html>

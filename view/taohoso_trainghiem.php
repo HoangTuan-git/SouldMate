@@ -42,7 +42,7 @@
             'gioiTinh' => $_POST['gender'] ?? '',
             'maThanhPho' => $_POST['location'] ?? null,
             'moTa' => $_POST['bio'] ?? '',
-            'trangThaiHenHo' => 'trainghiem'
+            'trangThaiHenHo' => 'trải nghiệm'
         ];
 
         // Upload avatar nếu có

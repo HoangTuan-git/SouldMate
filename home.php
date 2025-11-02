@@ -44,7 +44,8 @@ $titles = [
         'bantin' => ['bantin.css', 'feed.css'],
         'dexuat' => ['dexuat.css'],
         'me'     => ['me.css'],
-        'xuly'   => ['xuly.css'],
+        'DSTim' => ['DSTim.css'],
+        'DSDuocTim' => ['DSTim.css'],
         'chat-content' => ['chat-content.css'],
         'profile' => ['profile.css']
     ];
@@ -81,6 +82,9 @@ $titles = [
             case 'profile':
                 include_once 'view/profile.php';
                 break;
+            case 'ChinhSuaHS':
+                include_once 'view/ChinhSuaHS.php';
+                break;
             case 'block-user':
                 include_once 'view/block-user.php';
                 break;
@@ -90,8 +94,11 @@ $titles = [
             case 'dangxuat':
                 include_once 'view/dangxuat.php';
                 break;
-            case 'xuly':
-                include_once 'view/xuly.php';
+            case 'DSTim':
+                include_once 'view/DSTim.php';
+                break;
+            case 'DSDuocTim':
+                include_once 'view/DSDuocTim.php';
                 break;
             case 'chat-content':
                 include_once 'view/chat-content.php';
@@ -118,27 +125,27 @@ $titles = [
     }
     ?>
     <script>
-  // Set user IDs and JWT token for JavaScript
-    <?php if(isset($_SESSION['uid'])): ?>
-    window.currentUserId = <?= $_SESSION['uid'] ?>;
-    window.jwtToken = '<?= $_SESSION['jwt_token'] ?? '' ?>';
-    
-    // DEBUG: Log token
-    console.log('🔍 [home.php] User ID:', <?= $_SESSION['uid'] ?>);
-    console.log('🔍 [home.php] JWT Token:', '<?= $_SESSION['jwt_token'] ?? 'NOT SET' ?>');
-    console.log('🔍 [home.php] Token length:', '<?= isset($_SESSION['jwt_token']) ? strlen($_SESSION['jwt_token']) : 0 ?>');
-    <?php else: ?>
-    window.currentUserId = null;
-    window.jwtToken = null;
-    console.log('⚠️ [home.php] User not logged in');
-    <?php endif; ?>
-    
-    <?php if(isset($uid)): ?>
-    window.currentReceiverId = <?= $uid ?>;
-    <?php endif; ?>
-</script>
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script src="chat-client.js"></script>
+        // Set user IDs and JWT token for JavaScript
+        <?php if (isset($_SESSION['uid'])): ?>
+            window.currentUserId = <?= $_SESSION['uid'] ?>;
+            window.jwtToken = '<?= $_SESSION['jwt_token'] ?? '' ?>';
+
+            // DEBUG: Log token
+            console.log('🔍 [home.php] User ID:', <?= $_SESSION['uid'] ?>);
+            console.log('🔍 [home.php] JWT Token:', '<?= $_SESSION['jwt_token'] ?? 'NOT SET' ?>');
+            console.log('🔍 [home.php] Token length:', '<?= isset($_SESSION['jwt_token']) ? strlen($_SESSION['jwt_token']) : 0 ?>');
+        <?php else: ?>
+            window.currentUserId = null;
+            window.jwtToken = null;
+            console.log('⚠️ [home.php] User not logged in');
+        <?php endif; ?>
+
+        <?php if (isset($uid)): ?>
+            window.currentReceiverId = <?= $uid ?>;
+        <?php endif; ?>
+    </script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="chat-client.js"></script>
 </body>
 
 </html>

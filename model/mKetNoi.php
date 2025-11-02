@@ -6,7 +6,7 @@ class mKetNoi
         $user = 'root';
         $host = 'localhost';
         $pass = '';
-        $db = 'db_dating_final';
+        $db = 'db_dating_final_v1';
         return mysqli_connect($host, $user, $pass, $db);
     }
     public function NgatKetNoi($conn)

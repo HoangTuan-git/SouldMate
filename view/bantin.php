@@ -1,4 +1,8 @@
 <?php
+include_once("model/mme.php");
+$p = new mMe();
+$rs = $p->GetUserById($_SESSION['uid']);
+$u = $rs ? $rs->fetch_assoc() : null;
 include_once("controller/cBanTin.php");
 $cBanTin = new cBanTin();
 if (isset($_POST['postNews'])) {
@@ -59,11 +63,11 @@ function timeAgo($datetime)
                             include_once("controller/cHoSo.php");
                             $cHoSo = new controlHoSo();
 
-                            $checkProfile = isset($_SESSION['uid'])? $cHoSo->checkHoSoExists($_SESSION['uid']) : false;
+                            $checkProfile = isset($_SESSION['uid']) ? $cHoSo->checkHoSoExists($_SESSION['uid']) : false;
 
                             if (isset($_SESSION['uid']) && $checkProfile):
                                 //load avatar from session
-                                $src = 'uploads/avatars/' . ($_SESSION['avatar'] ?? 'default.png');
+                                $src = 'uploads/avatars/' . ($u['avatar'] ?? 'default.png');
                             ?>
 
                                 <img src="<?= htmlspecialchars($src) ?>"
@@ -84,7 +88,7 @@ function timeAgo($datetime)
                             <?php endif; ?>
                         </div>
 
-                        <?php if (isset($_SESSION['uid'])): ?>
+                        <?php if (isset($_SESSION['uid']) && $checkProfile): ?>
                             <hr class="my-3">
                             <div class="row text-center g-2" style="font-size: 14px;" onclick="resetModal()">
                                 <div class="col-6">

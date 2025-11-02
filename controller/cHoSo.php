@@ -39,11 +39,10 @@ class controlHoSo
 
         if ($maHoSo) {
             // Thêm sở thích nếu có
-            if (!empty($data['soThich'])) {
-                $soThichArray = is_array($data['soThich']) ? $data['soThich'] : explode(',', $data['soThich']);
-                foreach ($soThichArray as $maSoThich) {
+            if (!empty($data['soThich']) && is_array($data['soThich'])) {
+                foreach ($data['soThich'] as $maSoThich) {
                     if (!empty($maSoThich)) {
-                        $model->addHobby($maHoSo, $maSoThich);
+                        $model->addHobby($maHoSo, intval($maSoThich));
                     }
                 }
             }
@@ -79,12 +78,11 @@ class controlHoSo
 
         if ($updated) {
             // Cập nhật sở thích
-            if (isset($data['soThich'])) {
+            if (isset($data['soThich']) && is_array($data['soThich'])) {
                 $model->removeAllHobbies($maHoSo);
-                $soThichArray = is_array($data['soThich']) ? $data['soThich'] : explode(',', $data['soThich']);
-                foreach ($soThichArray as $maSoThich) {
+                foreach ($data['soThich'] as $maSoThich) {
                     if (!empty($maSoThich)) {
-                        $model->addHobby($maHoSo, $maSoThich);
+                        $model->addHobby($maHoSo, intval($maSoThich));
                     }
                 }
             }
@@ -166,5 +164,4 @@ class controlHoSo
         }
         return false;
     }
-
 }
