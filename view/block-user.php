@@ -1,21 +1,25 @@
 <?php
-session_start();
-
 // Kiểm tra đăng nhập
 if (!isset($_SESSION['uid'])) {
     header("Location: home.php?page=dangnhap");
     exit();
 }
 
-// Kiểm tra có userId cần chặn không
-if (!isset($_GET['uid'])) {
+// Kiểm tra có userId cần chặn không (hỗ trợ cả GET và POST)
+$userToBlock = null;
+if (isset($_POST['uid'])) {
+    $userToBlock = $_POST['uid'];
+} elseif (isset($_GET['uid'])) {
+    $userToBlock = $_GET['uid'];
+}
+
+if (!$userToBlock) {
     echo "<script>alert('Thiếu thông tin người dùng');</script>";
     echo "<script>window.history.back();</script>";
     exit();
 }
 
 $currentUserId = $_SESSION['uid'];
-$userToBlock = $_GET['uid'];
 
 // Không thể tự chặn mình
 if ($currentUserId == $userToBlock) {

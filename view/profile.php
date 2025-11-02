@@ -104,11 +104,6 @@ if (!empty($userData['ngaySinh'])) {
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <a class="dropdown-item" href="#" onclick="blockUser('<?= $profileUserId ?>'); return false;">
-                                <i class="bi bi-slash-circle me-2"></i>Chặn người dùng
-                            </a>
-                        </li>
-                        <li>
                             <a class="dropdown-item text-danger" href="#" onclick="reportUser('<?= $profileUserId ?>'); return false;">
                                 <i class="bi bi-exclamation-triangle me-2"></i>Báo cáo
                             </a>
@@ -153,70 +148,6 @@ if (!empty($userData['ngaySinh'])) {
 
 
 <script>
-    function toggleLike(userId) {
-        const btn = event.currentTarget;
-        const icon = btn.querySelector('i');
-        const isLiked = icon.classList.contains('bi-heart-fill');
-
-        // Toggle icon
-        if (isLiked) {
-            icon.classList.remove('bi-heart-fill');
-            icon.classList.add('bi-heart');
-            btn.classList.remove('liked');
-        } else {
-            icon.classList.remove('bi-heart');
-            icon.classList.add('bi-heart-fill');
-            btn.classList.add('liked');
-        }
-
-        // TODO: Call API to save like status
-        fetch('api/like-user.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    target_user_id: userId,
-                    action: isLiked ? 'unlike' : 'like'
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.success) {
-                    // Revert on error
-                    if (isLiked) {
-                        icon.classList.remove('bi-heart');
-                        icon.classList.add('bi-heart-fill');
-                        btn.classList.add('liked');
-                    } else {
-                        icon.classList.remove('bi-heart-fill');
-                        icon.classList.add('bi-heart');
-                        btn.classList.remove('liked');
-                    }
-                    alert('Có lỗi xảy ra: ' + (data.message || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
-
-    function blockUser(userId) {
-        if (!confirm('Bạn có chắc chắn muốn chặn người dùng này?')) return;
-        
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = 'home.php?page=block-user';
-
-        const uidInput = document.createElement('input');
-        uidInput.type = 'hidden';
-        uidInput.name = 'uid';
-        uidInput.value = userId;
-
-        form.appendChild(uidInput);
-        document.body.appendChild(form);
-        form.submit();
-    }
 
     function reportUser(userId) {
         const reason = prompt('Vui lòng nhập lý do báo cáo:');
