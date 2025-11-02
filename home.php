@@ -106,6 +106,9 @@ $titles = [
             case 'report-message':
                 include_once 'view/report-message.php';
                 break;
+            case 'blocked-list':
+                include_once 'view/blocked-list.php';
+                break;
             default:
                 include_once 'view/bantin.php';
                 break;

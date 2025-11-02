@@ -64,5 +64,13 @@ class controlQuanHeNguoiDung {
             $thoiGianTinNhan
         );
     }
+
+    /**
+     * Lấy danh sách người dùng bị chặn
+     */
+    public function getBlockedUsers($maNguoiDung) {
+        $model = new modelQuanHeNguoiDung();
+        return $model->getBlockedUsers($maNguoiDung);
+    }
 }
 ?>

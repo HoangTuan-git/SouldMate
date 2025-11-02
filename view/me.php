@@ -142,7 +142,7 @@ if ($maThanhPho) {
                 <span>Đổi mật khẩu</span>
             </a>
 
-            <a href="home.php?page=chanlienhe" class="profile-action-btn btn-secondary">
+            <a href="home.php?page=blocked-list" class="profile-action-btn btn-secondary">
                 <i class="bi bi-person-x"></i>
                 <span>Danh sách người bị chặn</span>
             </a>
