@@ -1,12 +1,12 @@
 <?php
 session_start();
 // Kiểm tra quyền admin
-if (!isset($_SESSION['uid']) || $_SESSION['role'] != 'admin') {
-    header('Location: home.php?page=dangnhap');
+if (!isset($_SESSION['uid']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
+    header('Location: ../home_test.php?page=dangnhap');
     exit();
 }
 
-include_once('controller/cAdmin.php');
+require_once('../controller/cAdmin.php');
 $adminController = new controlAdmin();
 
 // Xử lý tìm kiếm
@@ -45,12 +45,9 @@ if (isset($_POST['unlockAccount'])) {
                 </a>
             </nav>
             <div class="logout-btn mt-auto">
-                <a href="home.php?page=dangxuat" class="btn btn-outline-danger w-100">
+                <a href="../home_test.php?page=dangxuat" class="btn btn-outline-danger w-100">
                     <i class="bi bi-box-arrow-right"></i> Đăng xuất
                 </a>
-            </div>
-            <div class="watermark text-center mt-3">
-                 <span>Made with <span class="logo-v">V</span></span>
             </div>
         </aside>
 

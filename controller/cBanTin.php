@@ -32,4 +32,16 @@ class cBanTin
         // Giữ nguyên: thành công -> '5'
         return '5';
     }
+
+    public function cDeleteTinTuc($postId, $userId)
+    {
+        // Kiểm tra tham số
+        if (empty($postId) || empty($userId)) {
+            return false;
+        }
+        
+        $p = new mBanTin();
+        $kq = $p->mDeleteTinTuc($postId, $userId);
+        return $kq;
+    }
 }

@@ -5,6 +5,26 @@
 include_once("controller/cBanTin.php");
 $cBanTin = new cBanTin();
 
+// ==============================
+// XỬ LÝ XÓA BÀI VIẾT
+// ==============================
+if (isset($_POST['deletePost']) && isset($_POST['postId'])) {
+    if (!isset($_SESSION['uid'])) {
+        echo '<script>alert("Bạn cần đăng nhập để thực hiện thao tác này!")</script>';
+    } else {
+        $postId = intval($_POST['postId']);
+        $result = $cBanTin->cDeleteTinTuc($postId, $_SESSION['uid']);
+        
+        if ($result) {
+            echo '<script>alert("Xóa bài viết thành công!")</script>';
+            header("Location: home.php?page=bantin");
+            exit();
+        } else {
+            echo '<script>alert("Không thể xóa bài viết. Bạn không có quyền hoặc bài viết không tồn tại!")</script>';
+        }
+    }
+}
+
 if (isset($_POST['postNews'])) {
     // Gửi bản tin mới
     $p = $cBanTin->cAddTinTuc(
@@ -182,9 +202,6 @@ function timeAgo($datetime) {
                                         </button>
                                         <div class="feed-post-dropdown" id="postMenu-<?= $post['maBaiDang'] ?>" style="display: none;">
                                             <?php if ($post['maNguoiDung'] == $_SESSION['uid']): ?>
-                                                <button class="dropdown-item" onclick="editPost(<?= $post['maBaiDang'] ?>)">
-                                                    <i class="bi bi-pencil"></i> Chỉnh sửa
-                                                </button>
                                                 <button class="dropdown-item text-danger" onclick="deletePost(<?= $post['maBaiDang'] ?>)">
                                                     <i class="bi bi-trash"></i> Xóa bài viết
                                                 </button>
@@ -475,12 +492,35 @@ function timeAgo($datetime) {
         alert('Chức năng chỉnh sửa bài viết đang được phát triển');
     }
 
-    // Delete post function (placeholder)
+    // Delete post function
     function deletePost(postId) {
-        if (confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
-            // TODO: Implement delete functionality
-            alert('Chức năng xóa bài viết đang được phát triển');
+        if (confirm('Bạn có chắc chắn muốn xóa bài viết này?\nHành động này không thể hoàn tác!')) {
+            // Tạo form để submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '';
+            
+            // Thêm postId
+            const postIdInput = document.createElement('input');
+            postIdInput.type = 'hidden';
+            postIdInput.name = 'postId';
+            postIdInput.value = postId;
+            form.appendChild(postIdInput);
+            
+            // Thêm deletePost flag
+            const deleteInput = document.createElement('input');
+            deleteInput.type = 'hidden';
+            deleteInput.name = 'deletePost';
+            deleteInput.value = '1';
+            form.appendChild(deleteInput);
+            
+            // Submit form
+            document.body.appendChild(form);
+            form.submit();
         }
+        
+        // Close menu
+        togglePostMenu(postId);
     }
     </script>
 

@@ -752,9 +752,7 @@ if (isset($_REQUEST['uid'])) $uid = $_REQUEST['uid'];
                 <div class="chat-input">
                     <form action="#" method="post" id="chatForm" class="message-form" enctype="multipart/form-data">
                         <div class="input-container">
-                            <input type="text" placeholder="Nhập tin nhắn..." name="txtmessage" id="messageInput" autocomplete="off" class="message-input">
-                            <input type="file" name="file_msg" id="file_msg" hidden>
-                            <label for="file_msg" class="file-label"><i class="fa fa-paperclip" style="font-size: 32px;"></i></label>
+                            <input type="text" placeholder="Nhập tin nhắn..." name="txtmessage" id="messageInput" autocomplete="off" class="message-input">  
                             <button type="submit" name="btn_msg" class="send-btn" title="Gửi tin nhắn">
                                 <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px;">
                                     <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
