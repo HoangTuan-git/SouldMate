@@ -10,6 +10,6 @@ if (isset($_COOKIE[session_name()])) {
 // Destroy session
 session_destroy();
 
-// Redirect về trang chủ
-header("refresh:0.5;url=../index.php");
+// Redirect về trang index.php
+header("refresh:0.5;url=index.php");
 exit();

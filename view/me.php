@@ -19,7 +19,7 @@ $moTa = $u['moTa'] ?? '';
 $avatar = $u['avatar'] ?? 'default.png';
 $trangThaiHenHo = $u['trangThaiHenHo'] ?? " ";
 $soThichText = $u['soThichText'] ?? '';
-$avatarSrc = 'uploads/avatars/' . ($_SESSION['avatar'] ?? $avatar);
+$avatarSrc = (isset($_SESSION['avatar']) ? $_SESSION['avatar'] : 'uploads/avatars/'. $avatar);
 $isTraiNghiem = (strtolower(trim($trangThaiHenHo)) === 'trải nghiệm');
 
 // Text giới tính
@@ -53,24 +53,7 @@ if ($maThanhPho) {
             <img src="<?= htmlspecialchars($avatarSrc) ?>"
                 alt="Avatar"
                 class="profile-avatar"
-                onerror="this.src='img/default.png'">
-        </div>
-
-        <!-- Menu 3 chấm với dropdown -->
-        <div class="profile-menu-wrapper">
-            <button class="profile-menu-btn" onclick="toggleProfileMenu()">
-                <i class="bi bi-three-dots-vertical"></i>
-            </button>
-            <div class="profile-menu-dropdown" id="profileMenuDropdown">
-                <a href="home.php?page=xuly" class="profile-menu-item">
-                    <i class="bi bi-heart"></i>
-                    <span>Ai thích tôi</span>
-                </a>
-                <a href="home.php?page=baivietchuatoi" class="profile-menu-item">
-                    <i class="bi bi-envelope"></i>
-                    <span>Bài viết của tôi</span>
-                </a>
-            </div>
+               >
         </div>
     </div>
 
