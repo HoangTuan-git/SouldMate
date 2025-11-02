@@ -27,7 +27,7 @@ if ($profileUserId === $_SESSION['uid']) {
     return;
 }
 
-$user = $p->checkHoSoExists($profileUserId);
+$user = $p->getProfile($profileUserId);
 if (!$user || $user->num_rows === 0) {
     echo '<div class="card">';
     echo '<h3>Không tìm thấy người dùng</h3>';
@@ -90,11 +90,6 @@ if (!empty($userData['ngaySinh'])) {
 
             <!-- Action Buttons (Heart & More) -->
             <div class="profile-actions">
-                <button class="profile-action-btn profile-like-btn" onclick="toggleLike('<?= $profileUserId ?>')">
-                    <i class="bi bi-heart"></i>
-                    <span>Thích</span>
-                </button>
-
                 <div class="dropdown">
                     <button class="profile-action-btn" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-three-dots-vertical"></i>
