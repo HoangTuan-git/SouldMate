@@ -83,4 +83,26 @@ class modelTinNhan
         $result =  $this->execQuery($strcheck);
         return $result;
     }
+
+    public function getMessageTime($maTinNhan)
+    {
+        $p = new mKetNoi();
+        $conn = $p->KetNoi();
+        if (!$conn) return null;
+
+        $sql = "SELECT thoiGianGui FROM tinnhan WHERE maTinNhan = ?";
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            $p->NgatKetNoi($conn);
+            return null;
+        }
+        $stmt->bind_param('i', $maTinNhan);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        $p->NgatKetNoi($conn);
+        
+        return $row ? $row['thoiGianGui'] : null;
+    }
 }

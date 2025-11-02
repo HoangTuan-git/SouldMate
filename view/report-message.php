@@ -5,8 +5,8 @@ if (!isset($_SESSION['uid'])) {
     exit();
 }
 
-// Kiểm tra có userId và lý do không
-if (!isset($_POST['uid']) || !isset($_POST['reason'])) {
+// Kiểm tra có đủ thông tin không
+if (!isset($_POST['uid']) || !isset($_POST['messageId']) || !isset($_POST['reason'])) {
     echo "<script>alert('Thiếu thông tin báo cáo');</script>";
     echo "<script>window.history.back();</script>";
     exit();
@@ -14,7 +14,9 @@ if (!isset($_POST['uid']) || !isset($_POST['reason'])) {
 
 $currentUserId = $_SESSION['uid'];
 $userToReport = $_POST['uid'];
+$messageId = $_POST['messageId'];
 $reason = trim($_POST['reason']);
+$messageContent = isset($_POST['messageContent']) ? trim($_POST['messageContent']) : '';
 
 // Validate
 if (empty($reason)) {
@@ -30,13 +32,14 @@ if ($currentUserId == $userToReport) {
     exit();
 }
 
-// Xử lý báo cáo
+// Xử lý báo cáo tin nhắn
 include_once('controller/cQuanHeNguoiDung.php');
 $controller = new controlQuanHeNguoiDung();
 
-if ($controller->reportUser($currentUserId, $userToReport, $reason)) {
-    echo "<script>alert('Đã gửi báo cáo thành công. Chúng tôi sẽ xem xét trong thời gian sớm nhất.');</script>";
-    echo "<script>window.history.back();</script>";
+// Gọi hàm báo cáo tin nhắn với context
+if ($controller->reportMessage($currentUserId, $messageId, $userToReport, $reason, $messageContent, $currentUserId, $userToReport)) {
+    echo "<script>alert('Đã gửi báo cáo tin nhắn thành công. Chúng tôi sẽ xem xét trong thời gian sớm nhất.');</script>";
+    echo "<script>window.location.href='home.php?page=tinnhan&uid=" . $userToReport . "';</script>";
 } else {
     echo "<script>alert('Có lỗi xảy ra khi gửi báo cáo');</script>";
     echo "<script>window.history.back();</script>";

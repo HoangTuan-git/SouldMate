@@ -474,6 +474,46 @@ if (isset($_REQUEST['uid'])) $uid = $_REQUEST['uid'];
         padding: 10px 16px;
       }
     }
+
+    /* Message Context Menu Styles */
+    .message-context-menu {
+      position: fixed;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 9999;
+      min-width: 200px;
+      overflow: hidden;
+    }
+
+    .context-menu-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 14px;
+    }
+
+    .context-menu-item:hover {
+      background: #fef2f2;
+    }
+
+    .context-menu-item svg {
+      flex-shrink: 0;
+      color: #dc2626;
+      margin-right: 12px;
+    }
+
+    .message.received {
+      cursor: context-menu;
+    }
+
+    /* Highlight khi long-press */
+    .message.highlight {
+      background: #f3f4f6;
+    }
     </style>
 </head>
 <body>
@@ -654,8 +694,11 @@ if (isset($_REQUEST['uid'])) $uid = $_REQUEST['uid'];
                         }
 
                         $isMe = $msg['maNguoiDung1'] == $_SESSION['uid'];
-                        echo '<div class="message-wrapper ' . ($isMe ? 'me' : 'other') . '">';
-                        echo '<div class="message ' . ($isMe ? 'sent' : 'received') . '">';
+                        $senderId = $msg['maNguoiDung1'];
+                        $messageId = $msg['maTinNhan'];
+                        
+                        echo '<div class="message-wrapper ' . ($isMe ? 'me' : 'other') . '" data-message-id="' . $messageId . '">';
+                        echo '<div class="message ' . ($isMe ? 'sent' : 'received') . '" data-message-id="' . $messageId . '" data-sender-id="' . $senderId . '">';
                         echo '<div class="message-content">' . htmlspecialchars($msg['noiDungText']) . '</div>';
                         echo '<div class="message-time">' . date('H:i', strtotime($msg['thoiGianGui'] ?? 'now')) . '</div>';
                         echo '</div>';
@@ -729,6 +772,7 @@ if (isset($_REQUEST['uid'])) $uid = $_REQUEST['uid'];
     </div>
     <!-- End chat-main-container -->
 
+<script src="view/assets/js/message-report.js"></script>
 <script>
      // Set user IDs and JWT token for JavaScript
         window.currentUserId = <?= isset($_SESSION['uid']) ? $_SESSION['uid'] : 'null' ?>;

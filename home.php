@@ -100,10 +100,12 @@ $titles = [
             case 'DSDuocTim':
                 include_once 'view/DSDuocTim.php';
                 break;
-            case 'chat-content':
-                include_once 'view/chat-content.php';
+            case 'report-post':
+                include_once 'view/report-post.php';
                 break;
-            case 'bantin':
+            case 'report-message':
+                include_once 'view/report-message.php';
+                break;
             default:
                 include_once 'view/bantin.php';
                 break;

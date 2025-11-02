@@ -203,57 +203,46 @@ if (!empty($userData['ngaySinh'])) {
 
     function blockUser(userId) {
         if (!confirm('Bạn có chắc chắn muốn chặn người dùng này?')) return;
+        
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'home.php?page=block-user';
 
-        fetch('api/block-user.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    blocked_user_id: userId,
-                    action: 'block'
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Đã chặn người dùng thành công');
-                    window.location.href = 'home.php';
-                } else {
-                    alert('Có lỗi xảy ra: ' + (data.message || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra khi chặn người dùng');
-            });
+        const uidInput = document.createElement('input');
+        uidInput.type = 'hidden';
+        uidInput.name = 'uid';
+        uidInput.value = userId;
+
+        form.appendChild(uidInput);
+        document.body.appendChild(form);
+        form.submit();
     }
 
     function reportUser(userId) {
-        const reason = prompt('Lý do báo cáo (tùy chọn):');
-        if (reason === null) return; // User cancelled
+        const reason = prompt('Vui lòng nhập lý do báo cáo:');
+        if (reason && reason.trim()) {
+            submitReport(userId, reason.trim());
+        }
+    }
 
-        fetch('api/report-user.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    reported_user_id: userId,
-                    reason: reason || 'Không có lý do cụ thể'
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Đã báo cáo người dùng thành công');
-                } else {
-                    alert('Có lỗi xảy ra: ' + (data.message || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra khi báo cáo người dùng');
-            });
+    function submitReport(userId, reason) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'home.php?page=report-user';
+
+        const uidInput = document.createElement('input');
+        uidInput.type = 'hidden';
+        uidInput.name = 'uid';
+        uidInput.value = userId;
+
+        const reasonInput = document.createElement('input');
+        reasonInput.type = 'hidden';
+        reasonInput.name = 'reason';
+        reasonInput.value = reason;
+
+        form.appendChild(uidInput);
+        form.appendChild(reasonInput);
+        document.body.appendChild(form);
+        form.submit();
     }
 </script>
