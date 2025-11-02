@@ -85,7 +85,9 @@ ob_start();
             case 'taohosotrainghiem':
                 include_once 'view/taohoso_trainghiem.php';
                 break;
-            case 'bantin':
+            case 'dangxuat':
+                include_once 'view/dangxuat.php';
+                break;
             default:
                 include_once 'view/bantin.php';
                 break;
