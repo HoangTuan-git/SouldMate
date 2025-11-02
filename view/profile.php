@@ -10,6 +10,11 @@ if (!isset($_SESSION['uid'])) {
 include_once("controller/cHoSo.php");
 $p = new controlHoSo();
 
+// Kiểm tra trạng thái Premium của người dùng hiện tại
+include_once("controller/cPayment.php");
+$cPayment = new controlPayment();
+$isPremiumUser = $cPayment->checkPremiumStatus($_SESSION['uid']);
+
 // Get profile user ID from URL parameter
 $profileUserId = isset($_REQUEST['uid']) ? (string)$_REQUEST['uid'] : null;
 
@@ -96,9 +101,15 @@ if (!empty($userData['ngaySinh'])) {
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
-                            <a class="dropdown-item" href="home.php?page=tinnhan&uid=<?= $profileUserId ?>">
-                                <i class="bi bi-chat-dots me-2"></i>Nhắn tin ngay
-                            </a>
+                            <?php if ($isPremiumUser): ?>
+                                <a class="dropdown-item" href="home.php?page=tinnhan&uid=<?= $profileUserId ?>">
+                                    <i class="bi bi-chat-dots me-2"></i>Nhắn tin ngay
+                                </a>
+                            <?php else: ?>
+                                <a class="dropdown-item" href="#" onclick="showPremiumRequired(); return false;">
+                                    <i class="bi bi-chat-dots me-2"></i>Nhắn tin ngay
+                                </a>
+                            <?php endif; ?>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
@@ -148,6 +159,11 @@ if (!empty($userData['ngaySinh'])) {
 
 
 <script>
+    function showPremiumRequired() {
+        if (confirm('Bạn cần mua Premium để nhắn tin trước.\n\nBạn có muốn chuyển đến trang mua Premium không?')) {
+            window.location.href = 'home.php?page=premium';
+        }
+    }
 
     function reportUser(userId) {
         const reason = prompt('Vui lòng nhập lý do báo cáo:');
