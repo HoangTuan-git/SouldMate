@@ -18,25 +18,18 @@ $maThanhPho = $u['maThanhPho'] ?? '';
 $moTa = $u['moTa'] ?? '';
 $avatar = $u['avatar'] ?? 'default.png';
 $trangThaiHenHo = $u['trangThaiHenHo'] ?? " ";
-
+$soThichText = $u['soThichText'] ?? '';
 $avatarSrc = 'uploads/avatars/' . ($_SESSION['avatar'] ?? $avatar);
 $isTraiNghiem = (strtolower(trim($trangThaiHenHo)) === 'trải nghiệm');
 
 // Text giới tính
 
 // Lấy tên nghề nghiệp từ bảng nghenghiep
-$ngheNghiepText = '';
-if ($maNgheNghiep && !$isTraiNghiem) {
-    include_once("model/mdexuat.php");
-    $pNN = new Mdexuat();
-    $rsNN = $pNN->GetAllNgheNghiep();
-    if ($rsNN) {
-        while ($nn = $rsNN->fetch_assoc()) {
-            if ($nn['maNgheNghiep'] == $maNgheNghiep) {
-                $ngheNghiepText = $nn['tenNgheNghiep'];
-                break;
-            }
-        }
+$nghenghiepText = '';
+if ($maNgheNghiep) {
+    $rs = $p->GetUserByIdJob($maNgheNghiep);
+    if ($row = $rs->fetch_assoc()) {
+        $nghenghiepText = $row['tenNgheNghiep'];
     }
 }
 
@@ -119,13 +112,18 @@ if ($maThanhPho) {
         <div class="profile-section">
             <h6 class="profile-section-title">Thông tin chi tiết</h6>
 
-            <?php if ($ngheNghiepText): ?>
+            <?php if ($nghenghiepText): ?>
                 <div class="profile-detail-item">
                     <i class="bi bi-briefcase"></i>
-                    <span><?= htmlspecialchars($ngheNghiepText) ?></span>
+                    <span><?= htmlspecialchars($nghenghiepText) ?></span>
                 </div>
             <?php endif; ?>
-
+            <?php if ($soThichText): ?>
+                <div class="profile-detail-item">
+                    <i class="bi bi-stars"></i>
+                    <span><?php echo $soThichText ?></span>
+                </div>
+            <?php endif; ?>
             <?php if ($moTa): ?>
                 <div class="profile-about-section">
                     <strong>Về tôi:</strong>
@@ -151,7 +149,7 @@ if ($maThanhPho) {
         <h6 class="profile-section-title">Hành động tài khoản</h6>
 
         <div class="profile-actions">
-            <a href="home.php?page=chinhsua" class="profile-action-btn btn-primary">
+            <a href="home.php?page=ChinhSuaHS" class="profile-action-btn btn-primary">
                 <i class="bi bi-pencil-square"></i>
                 <span>Chỉnh sửa hồ sơ</span>
             </a>

@@ -2,7 +2,7 @@
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    box-sizing: border-box
 }
 
 /* Profile Container */
@@ -11,16 +11,16 @@
     margin: 0 auto;
     padding: 0;
     background: #f5f5f5;
-    min-height: 100vh;
+    min-height: 100vh
 }
 
-/* Profile Header với Background Gradient */
+/* Header */
 .profile-header {
     position: relative;
     height: 200px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 0 0 20px 20px;
-    overflow: visible;
+    overflow: visible
 }
 
 .profile-header-bg {
@@ -29,7 +29,7 @@
     background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"%3E%3Cpath fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"%3E%3C/path%3E%3C/svg%3E');
     background-position: bottom center;
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size: cover
 }
 
 /* Avatar */
@@ -38,7 +38,7 @@
     bottom: -60px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 100;
+    z-index: 100
 }
 
 .profile-avatar {
@@ -47,58 +47,57 @@
     border-radius: 50%;
     border: 5px solid #fff;
     object-fit: cover;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .2);
     background: #fff;
-    display: block;
+    display: block
 }
 
-/* Menu 3 chấm với Dropdown */
+/* Menu */
 .profile-menu-wrapper {
     position: absolute;
     top: 20px;
     right: 20px;
-    z-index: 200;
+    z-index: 200
 }
 
 .profile-menu-btn {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, .3);
     border: none;
     color: #fff;
     font-size: 20px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background .2s;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center
 }
 
 .profile-menu-btn:hover {
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, .5)
 }
 
-/* Dropdown Menu */
 .profile-menu-dropdown {
     position: absolute;
     top: 50px;
     right: 0;
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .15);
     min-width: 200px;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
-    transition: all 0.3s ease;
-    z-index: 1000;
+    transition: all .3s;
+    z-index: 1000
 }
 
 .profile-menu-dropdown.show {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translateY(0)
 }
 
 .profile-menu-item {
@@ -108,59 +107,48 @@
     padding: 14px 16px;
     color: #333;
     text-decoration: none;
-    transition: background 0.2s;
-}
-
-.profile-menu-item:first-child {
-    border-radius: 12px 12px 0 0;
-}
-
-.profile-menu-item:last-child {
-    border-radius: 0 0 12px 12px;
+    transition: background .2s
 }
 
 .profile-menu-item:hover {
-    background: #f5f5f5;
+    background: #f5f5f5
 }
 
 .profile-menu-item i {
     font-size: 18px;
-    color: #667eea;
+    color: #667eea
 }
 
 .profile-menu-item span {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 500
 }
 
-/* Profile Sections */
+/* Sections */
 .profile-section {
     background: #fff;
     margin: 20px 16px;
     padding: 20px;
     border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .08)
 }
 
 .profile-section:first-of-type {
-    margin-top: 80px;
+    margin-top: 80px
 }
 
-/* Section Title */
 .profile-section-title {
     font-size: 16px;
-    font-weight: 600;
-    color: #1a1a1a;
-    margin: 0 0 16px 0;
-    padding-bottom: 0;
-    display: block;
+    font-weight: 700;
+    color: #2f2e41;
+    margin: 0 0 12px
 }
 
-/* Basic Info List */
+/* Basic info */
 .profile-basic-info {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 12px
 }
 
 .profile-info-row {
@@ -168,72 +156,102 @@
     align-items: center;
     gap: 12px;
     color: #666;
-    font-size: 15px;
+    font-size: 15px
 }
 
 .profile-info-row i {
     font-size: 18px;
     color: #667eea;
     width: 24px;
-    flex-shrink: 0;
+    flex-shrink: 0
 }
 
 .profile-info-row span {
-    flex: 1;
+    flex: 1
 }
 
-/* Detail Items */
+/* ==== THÔNG TIN CHI TIẾT – làm đẹp ==== */
+/* Bố cục dạng grid: 1 cột icon + 1 cột nội dung, nền sáng, viền nhẹ */
 .profile-detail-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 12px;
-    color: #666;
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    column-gap: 12px;
+    align-items: start;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #fafafa;
+    border: 1px solid #eee;
 }
 
-.profile-detail-item:last-child {
-    margin-bottom: 0;
+.profile-detail-item+.profile-detail-item {
+    margin-top: 10px
 }
 
 .profile-detail-item i {
-    font-size: 20px;
-    color: #667eea;
+    grid-column: 1;
+    font-size: 18px;
+    color: #6b7cff;
+    /* tím dịu */
     margin-top: 2px;
-    flex-shrink: 0;
 }
 
-.profile-detail-item>span {
-    flex: 1;
+.profile-detail-item>span:not(.badge) {
+    grid-column: 2;
+    color: #3b3b3b;
+    font-weight: 500;
     line-height: 1.6;
 }
 
-/* About Section */
+/* Chip sở thích – đẹp, có hover, tự xuống hàng */
+.profile-detail-item .badge {
+    grid-column: 2;
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #f0f2ff;
+    color: #2f2e41;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid #e3e7ff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .06);
+    margin: 6px 8px 0 0;
+    /* khoảng cách giữa chip */
+    letter-spacing: .1px;
+    white-space: nowrap;
+    transition: transform .15s, background-color .15s, border-color .15s;
+}
+
+.profile-detail-item .badge:hover {
+    transform: translateY(-1px);
+    background: #e7ebff;
+    border-color: #d7dcff;
+}
+
+/* Về tôi */
 .profile-about-section {
-    margin-top: 12px;
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: #fcfcff;
+    border: 1px solid #eef0ff;
+    border-radius: 12px
 }
 
 .profile-about-section strong {
     display: block;
     color: #1a1a1a;
     margin-bottom: 8px;
-    font-weight: 600;
-    font-size: 14px;
+    font-weight: 700;
+    font-size: 14px
 }
 
 .profile-about-section p {
     margin: 0;
     line-height: 1.6;
-    color: #666;
-    font-size: 14px;
+    color: #4a4a4a;
+    font-size: 14px
 }
 
-.text-muted {
-    color: #999;
-    font-size: 14px;
-    font-style: italic;
-}
-
-/* Status Badge */
+/* Status */
 .profile-status-badge {
     display: inline-flex;
     align-items: center;
@@ -241,28 +259,28 @@
     padding: 12px 24px;
     border-radius: 25px;
     font-weight: 500;
-    font-size: 15px;
+    font-size: 15px
 }
 
 .status-serious {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
+    color: #fff
 }
 
 .status-casual {
     background: #f0f0f0;
-    color: #666;
+    color: #666
 }
 
 .profile-status-badge i {
-    font-size: 18px;
+    font-size: 18px
 }
 
-/* Action Buttons */
+/* Actions */
 .profile-actions {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 12px
 }
 
 .profile-action-btn {
@@ -274,56 +292,56 @@
     text-decoration: none;
     font-weight: 500;
     font-size: 15px;
-    transition: all 0.2s;
+    transition: all .2s;
     border: none;
-    cursor: pointer;
+    cursor: pointer
 }
 
 .profile-action-btn i {
-    font-size: 20px;
+    font-size: 20px
 }
 
 .profile-action-btn span {
     flex: 1;
-    text-align: left;
+    text-align: left
 }
 
 .profile-action-btn.btn-primary {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
+    color: #fff
 }
 
 .profile-action-btn.btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, .4)
 }
 
 .profile-action-btn.btn-secondary {
     background: #f5f5f5;
-    color: #666;
+    color: #666
 }
 
 .profile-action-btn.btn-secondary:hover {
-    background: #e8e8e8;
+    background: #e8e8e8
 }
 
 .profile-action-btn.btn-danger {
     background: #fff;
     color: #e74c3c;
-    border: 2px solid #e74c3c;
+    border: 2px solid #e74c3c
 }
 
 .profile-action-btn.btn-danger:hover {
     background: #e74c3c;
-    color: #fff;
+    color: #fff
 }
 
-/* Sidebar Buttons */
+/* Sidebar */
 .profile-sidebar {
     display: flex;
     gap: 12px;
     margin: 0 16px 20px;
-    padding: 0;
+    padding: 0
 }
 
 .profile-sidebar-btn {
@@ -336,70 +354,70 @@
     background: #fff;
     border: none;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all .2s
 }
 
 .profile-sidebar-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .12)
 }
 
 .profile-sidebar-btn i {
     font-size: 24px;
-    color: #667eea;
+    color: #667eea
 }
 
 .profile-sidebar-btn span {
     font-size: 13px;
     font-weight: 500;
     color: #666;
-    text-align: center;
+    text-align: center
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width:768px) {
     .profile-header {
-        height: 180px;
+        height: 180px
     }
 
     .profile-avatar {
         width: 100px;
-        height: 100px;
+        height: 100px
     }
 
     .profile-avatar-wrapper {
-        bottom: -50px;
+        bottom: -50px
     }
 
     .profile-section {
         margin: 16px 12px;
-        padding: 16px;
+        padding: 16px
     }
 
     .profile-section:first-of-type {
-        margin-top: 70px;
+        margin-top: 70px
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width:480px) {
     .profile-header {
-        height: 160px;
+        height: 160px
     }
 
     .profile-avatar {
         width: 90px;
-        height: 90px;
+        height: 90px
     }
 
     .profile-menu-btn {
         width: 36px;
         height: 36px;
-        font-size: 18px;
+        font-size: 18px
     }
 
     .profile-menu-dropdown {
-        min-width: 180px;
+        min-width: 180px
     }
 }

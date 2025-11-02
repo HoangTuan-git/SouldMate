@@ -62,7 +62,7 @@ class modelHoSo
     {
         $hoSo_unique_id = 'profile_' . uniqid('', true);
 
-        $query = "INSERT INTO hosonguoidung (hoSo_unique_id, maNguoiDung, hoTen, ngaysinh, gioiTinh, maNgheNghiep, maThanhPho, moTa, avatar, trangThaiHenHo) 
+        $query = "INSERT INTO hosonguoidung (hoSo_unique_id, maNguoiDung, hoTen, ngaySinh, gioiTinh, maNgheNghiep, maThanhPho, moTa, avatar, trangThaiHenHo) 
                   VALUES ('$hoSo_unique_id', $maNguoiDung, '$hoTen', '$ngaySinh', '$gioiTinh', " .
             ($maNgheNghiep ? $maNgheNghiep : 'NULL') . ", " .
             ($maThanhPho ? $maThanhPho : 'NULL') . ", '$moTa', '$avatar', '$trangThaiHenHo')";
@@ -88,7 +88,7 @@ class modelHoSo
     {
         $query = "UPDATE hosonguoidung SET 
                   hoTen = '$hoTen',
-                  ngaysinh = '$ngaySinh',
+                  ngaySinh = '$ngaySinh',
                   gioiTinh = '$gioiTinh',
                   maNgheNghiep = " . ($maNgheNghiep ? $maNgheNghiep : 'NULL') . ",
                   maThanhPho = " . ($maThanhPho ? $maThanhPho : 'NULL') . ",

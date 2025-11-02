@@ -44,7 +44,8 @@ $titles = [
         'bantin' => ['bantin.css', 'feed.css'],
         'dexuat' => ['dexuat.css'],
         'me'     => ['me.css'],
-        'xuly'   => ['xuly.css'],
+        'DSTim' => ['DSTim.css'],
+        'DSDuocTim' => ['DSTim.css'],
         'chat-content' => ['chat-content.css'],
         'profile' => ['profile.css']
     ];
@@ -81,6 +82,9 @@ $titles = [
             case 'profile':
                 include_once 'view/profile.php';
                 break;
+            case 'ChinhSuaHS':
+                include_once 'view/ChinhSuaHS.php';
+                break;
             case 'block-user':
                 include_once 'view/block-user.php';
                 break;
@@ -90,8 +94,11 @@ $titles = [
             case 'dangxuat':
                 include_once 'view/dangxuat.php';
                 break;
-            case 'xuly':
-                include_once 'view/xuly.php';
+            case 'DSTim':
+                include_once 'view/DSTim.php';
+                break;
+            case 'DSDuocTim':
+                include_once 'view/DSDuocTim.php';
                 break;
             case 'chat-content':
                 include_once 'view/chat-content.php';
