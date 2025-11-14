@@ -47,7 +47,8 @@ $titles = [
         'DSTim' => ['DSTim.css'],
         'DSDuocTim' => ['DSTim.css'],
         'chat-content' => ['chat-content.css'],
-        'profile' => ['profile.css']
+        'profile' => ['profile.css'],
+        'viewpost' => ['viewpost.css'],
     ];
 
     if (!empty($cssMap[$page])) {
@@ -100,6 +101,9 @@ $titles = [
             case 'DSDuocTim':
                 include_once 'view/DSDuocTim.php';
                 break;
+            case 'viewpost':
+                include_once 'view/viewpost.php';
+                break;
             case 'report-post':
                 include_once 'view/report-post.php';
                 break;
@@ -111,6 +115,9 @@ $titles = [
                 break;
             case 'premium':
                 include_once 'view/premium.php';
+                break;
+            case 'datLaiMatKhau':
+                include_once 'view/datLaiMatKhau.php';
                 break;
             default:
                 include_once 'view/bantin.php';

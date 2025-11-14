@@ -9,6 +9,11 @@ const dotenv = require('dotenv');
 // Load environment variables from .env file
 dotenv.config();
 
+console.log('🔧 Environment Configuration:');
+console.log('   JWT_SECRET_KEY:', process.env.JWT_SECRET_KEY || 'NOT LOADED - using fallback');
+console.log('   DB_HOST:', process.env.DB_HOST || 'NOT LOADED');
+console.log('   DB_NAME:', process.env.DB_NAME || 'NOT LOADED');
+
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -19,7 +24,8 @@ const io = socketIo(server, {
 });
 
 // JWT Secret Key (phải giống với PHP)
-const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY || 'my_secret_key_12345';
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY || 'my_sercret_key_22696961';
+console.log('🔑 Using JWT_SECRET_KEY:', JWT_SECRET_KEY);
 
 // Middleware
 app.use(cors());
@@ -27,18 +33,18 @@ app.use(express.json());
 
 // Database connection
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root', // Thay đổi theo cấu hình của bạn
-  password: '', // Thay đổi theo cấu hình của bạn
-  database: 'db_dating_final' // Thay đổi theo tên database của bạn
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'dating_app_final'
 });
 
 db.connect((err) => {
   if (err) {
-    console.error('Database connection failed:', err);
+    console.error('❌ Database connection failed:', err);
     return;
   }
-  console.log('Connected to MySQL database');
+  console.log('✅ Connected to MySQL database:', process.env.DB_NAME || 'dating_app_final');
 });
 
 // Store online users and offline timers

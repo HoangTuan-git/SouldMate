@@ -51,7 +51,7 @@ class controlNguoiDung
                 //nếu admin thì vào trang admin
                 if ($_SESSION['role'] == 'admin') {
                     echo " <script>alert('Dang nhap vào trang admin thanh cong')</script>";
-                    header("refresh:0.5;url=view/quanLyViPham.php");
+                    header("refresh:0.5;url=admin.php");
                     return;
                 }
                 // Kiểm tra nếu người dùng đã có hồ sơ chưa

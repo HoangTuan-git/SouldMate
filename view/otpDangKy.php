@@ -40,7 +40,7 @@
         </button>
 
         <p class="info-text" style="margin-top: 20px;">
-            <a href="home.php?page=dangky">← Quay lại đăng ký</a>
+            <a href="home_test.php?page=dangky">← Quay lại đăng ký</a>
         </p>
     </div>
 

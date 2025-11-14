@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đặt lại mật khẩu</title>
-    <link rel="stylesheet" href="css/form.css">
+    <link rel="stylesheet" href="assets/css/datLaiMatKhau.css">
     
 </head>
 <body>
+    <?php
+    $_SESSION['reset_password_email'] = $_SESSION['email'];
+    ?>
     <form method="post" id="resetPasswordForm">
         <h2>Đặt lại mật khẩu</h2>
         <p style="text-align: center; color: #7f8c8d; margin-bottom: 20px;">
@@ -104,7 +107,7 @@ if(isset($_POST['sbtn'])) {
 if(!isset($_SESSION['reset_password_email'])) {
     echo "<script>
         alert('Phiên đặt lại mật khẩu đã hết hạn. Vui lòng thử lại.');
-        window.location.href = 'home.php?page=quenMatKhau';
+        window.location.href = 'home.php?page=me';
     </script>";
 }
 ?>
