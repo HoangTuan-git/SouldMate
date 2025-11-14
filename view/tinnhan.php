@@ -684,7 +684,7 @@ if (isset($_REQUEST['uid'])) $uid = $_REQUEST['uid'];
                     while ($msg = $messages->fetch_assoc()) {
                         $today = date('d/m/Y', strtotime('today'));
                         $yesterday = date('d/m/Y', strtotime('yesterday'));
-                        $date_sent = date('d/m/Y', strtotime($msg['sent_at'] ?? 'today'));
+                        $date_sent = date('d/m/Y', strtotime($msg['thoiGianGui'] ?? 'today'));
 
                         if ($date_sent !== $date) {
                             echo '<div class="date-separator" style="margin: 12px 0; text-align: center; color: #aaa;">';

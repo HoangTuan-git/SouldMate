@@ -137,11 +137,6 @@ if ($maThanhPho) {
                 <span>Chỉnh sửa hồ sơ</span>
             </a>
 
-            <a href="home.php?page=doimatkhau" class="profile-action-btn btn-secondary">
-                <i class="bi bi-shield-lock"></i>
-                <span>Đổi mật khẩu</span>
-            </a>
-
             <a href="home.php?page=blocked-list" class="profile-action-btn btn-secondary">
                 <i class="bi bi-person-x"></i>
                 <span>Danh sách người bị chặn</span>

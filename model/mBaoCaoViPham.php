@@ -34,16 +34,60 @@ class modelBaoCaoViPham
         $con = $conn->KetNoi();
 
         if ($con) {
-            $sql = "INSERT INTO baocaovipham (maNguoiBaoCao, maBaiDang, maNguoiDungBiBaoCao, loaiBaoCao, lyDo, noiDungViPham) 
-                    VALUES (?, ?, ?, 'baidang', ?, ?)";
+            // Lấy snapshot của bài viết
+            $snapshot = $this->getPostSnapshot($maBaiDang);
+            
+            $sql = "INSERT INTO baocaovipham (maNguoiBaoCao, maBaiDang, maNguoiDungBiBaoCao, loaiBaoCao, lyDo, noiDungViPham, snapshotBaiViet) 
+                    VALUES (?, ?, ?, 'baidang', ?, ?, ?)";
             $stmt = $con->prepare($sql);
-            $stmt->bind_param("iiiss", $maNguoiBaoCao, $maBaiDang, $maNguoiDungBiBaoCao, $lyDo, $noiDungViPham);
+            $stmt->bind_param("iiisss", $maNguoiBaoCao, $maBaiDang, $maNguoiDungBiBaoCao, $lyDo, $noiDungViPham, $snapshot);
             $kq = $stmt->execute();
 
             $con->close();
             return $kq;
         }
         return false;
+    }
+
+    /**
+     * Lấy snapshot của bài viết để lưu vào báo cáo
+     */
+    private function getPostSnapshot($maBaiDang)
+    {
+        $conn = new mKetNoi();
+        $con = $conn->KetNoi();
+
+        if ($con) {
+            $sql = "SELECT bt.noiDungText, bt.noiDungAnh, bt.ngayTao, bt.phamVi, 
+                           h.hoTen as tenNguoiDang, bt.maNguoiDung
+                    FROM baidang bt
+                    LEFT JOIN hosonguoidung h ON bt.maNguoiDung = h.maNguoiDung
+                    WHERE bt.maBaiDang = ?";
+            
+            $stmt = $con->prepare($sql);
+            $stmt->bind_param("i", $maBaiDang);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $post = $result->fetch_assoc();
+            
+            $con->close();
+            
+            if ($post) {
+                $snapshot = [
+                    'maBaiDang' => $maBaiDang,
+                    'noiDungText' => $post['noiDungText'],
+                    'noiDungAnh' => $post['noiDungAnh'],
+                    'tenNguoiDang' => $post['tenNguoiDang'],
+                    'maNguoiDung' => $post['maNguoiDung'],
+                    'thoiGianDang' => $post['thoiGianDang'],
+                    'quyenRiengTu' => $post['quyenRiengTu'],
+                    'snapshotTime' => date('Y-m-d H:i:s')
+                ];
+                
+                return json_encode($snapshot, JSON_UNESCAPED_UNICODE);
+            }
+        }
+        return null;
     }
 
     /**
@@ -77,8 +121,11 @@ class modelBaoCaoViPham
         $con = $conn->KetNoi();
 
         if ($con) {
-            // Lấy tin nhắn được báo cáo
-            $sql = "SELECT * FROM tinnhan WHERE maTinNhan = ?";
+            // Lấy tin nhắn được báo cáo (với tên người gửi)
+            $sql = "SELECT tn.*, h.hoTen as tenNguoiGui, tn.thoiGianGui as thoiGian
+                    FROM tinnhan tn
+                    LEFT JOIN hosonguoidung h ON tn.maNguoiDung1 = h.maNguoiDung
+                    WHERE tn.maTinNhan = ?";
             $stmt = $con->prepare($sql);
             $stmt->bind_param("i", $maTinNhan);
             $stmt->execute();
@@ -91,22 +138,26 @@ class modelBaoCaoViPham
 
             $thoiGianGui = $reportedMessage['thoiGianGui'];
 
-            // Lấy tin nhắn trước đó
-            $sqlBefore = "SELECT * FROM tinnhan 
-                         WHERE ((maNguoiDung1 = ? AND maNguoiDung2 = ?) OR (maNguoiDung1 = ? AND maNguoiDung2 = ?))
-                         AND thoiGianGui < ?
-                         ORDER BY thoiGianGui DESC
+            // Lấy tin nhắn trước đó (với tên người gửi)
+            $sqlBefore = "SELECT tn.*, h.hoTen as tenNguoiGui, tn.thoiGianGui as thoiGian
+                         FROM tinnhan tn
+                         LEFT JOIN hosonguoidung h ON tn.maNguoiDung1 = h.maNguoiDung
+                         WHERE ((tn.maNguoiDung1 = ? AND tn.maNguoiDung2 = ?) OR (tn.maNguoiDung1 = ? AND tn.maNguoiDung2 = ?))
+                         AND tn.thoiGianGui < ?
+                         ORDER BY tn.thoiGianGui DESC
                          LIMIT ?";
             $stmtBefore = $con->prepare($sqlBefore);
             $stmtBefore->bind_param("iiiisi", $maNguoiDung1, $maNguoiDung2, $maNguoiDung2, $maNguoiDung1, $thoiGianGui, $contextSize);
             $stmtBefore->execute();
             $messagesBefore = $stmtBefore->get_result()->fetch_all(MYSQLI_ASSOC);
 
-            // Lấy tin nhắn sau đó
-            $sqlAfter = "SELECT * FROM tinnhan 
-                        WHERE ((maNguoiDung1 = ? AND maNguoiDung2 = ?) OR (maNguoiDung1 = ? AND maNguoiDung2 = ?))
-                        AND thoiGianGui > ?
-                        ORDER BY thoiGianGui ASC
+            // Lấy tin nhắn sau đó (với tên người gửi)
+            $sqlAfter = "SELECT tn.*, h.hoTen as tenNguoiGui, tn.thoiGianGui as thoiGian
+                        FROM tinnhan tn
+                        LEFT JOIN hosonguoidung h ON tn.maNguoiDung1 = h.maNguoiDung
+                        WHERE ((tn.maNguoiDung1 = ? AND tn.maNguoiDung2 = ?) OR (tn.maNguoiDung1 = ? AND tn.maNguoiDung2 = ?))
+                        AND tn.thoiGianGui > ?
+                        ORDER BY tn.thoiGianGui ASC
                         LIMIT ?";
             $stmtAfter = $con->prepare($sqlAfter);
             $stmtAfter->bind_param("iiiisi", $maNguoiDung1, $maNguoiDung2, $maNguoiDung2, $maNguoiDung1, $thoiGianGui, $contextSize);
@@ -127,7 +178,7 @@ class modelBaoCaoViPham
     /**
      * Lấy danh sách người dùng có nhiều báo cáo (>= ngưỡng)
      */
-    public function getUsersWithManyReports($minReports = 15)
+    public function getUsersWithManyReports($minReports = 3)
     {
         $conn = new mKetNoi();
         $con = $conn->KetNoi();
@@ -172,6 +223,10 @@ class modelBaoCaoViPham
                         bc.thoiGianBaoCao as ngayBaoCao,
                         bc.trangThai,
                         bc.noiDungViPham,
+                        bc.maBaiDang,
+                        bc.maTinNhan,
+                        bc.contextTinNhan,
+                        bc.maNguoiDungBiBaoCao,
                         h.hoTen as tenNguoiBaoCao
                     FROM baocaovipham bc
                     LEFT JOIN hosonguoidung h ON bc.maNguoiBaoCao = h.maNguoiDung
@@ -192,7 +247,7 @@ class modelBaoCaoViPham
     /**
      * Lấy tất cả báo cáo theo loại
      */
-    public function getReportsByType($loaiBaoCao = null, $trangThai = 'dangxuly')
+    public function getReportsByType($loaiBaoCao = null, $trangThai = null)
     {
         $conn = new mKetNoi();
         $con = $conn->KetNoi();
@@ -205,20 +260,29 @@ class modelBaoCaoViPham
                     FROM baocaovipham bc
                     LEFT JOIN hosonguoidung h1 ON bc.maNguoiBaoCao = h1.maNguoiDung
                     LEFT JOIN hosonguoidung h2 ON bc.maNguoiDungBiBaoCao = h2.maNguoiDung
-                    WHERE bc.trangThai = ?";
+                    WHERE 1=1";
+            
+            $params = [];
+            $types = '';
+            
+            if ($trangThai) {
+                $sql .= " AND bc.trangThai = ?";
+                $params[] = $trangThai;
+                $types .= 's';
+            }
             
             if ($loaiBaoCao) {
                 $sql .= " AND bc.loaiBaoCao = ?";
+                $params[] = $loaiBaoCao;
+                $types .= 's';
             }
             
             $sql .= " ORDER BY bc.thoiGianBaoCao DESC";
             
             $stmt = $con->prepare($sql);
             
-            if ($loaiBaoCao) {
-                $stmt->bind_param("ss", $trangThai, $loaiBaoCao);
-            } else {
-                $stmt->bind_param("s", $trangThai);
+            if (!empty($params)) {
+                $stmt->bind_param($types, ...$params);
             }
             
             $stmt->execute();
@@ -404,7 +468,7 @@ class modelBaoCaoViPham
     /**
      * Tìm kiếm người dùng vi phạm
      */
-    public function searchViolatingUsers($keyword, $minReports = 15)
+    public function searchViolatingUsers($keyword, $minReports = 3)
     {
         $conn = new mKetNoi();
         $con = $conn->KetNoi();
@@ -570,6 +634,81 @@ class modelBaoCaoViPham
             
             $con->close();
             return $result;
+        }
+        return false;
+    }
+
+    /**
+     * Lấy thông tin bài viết theo ID (cho admin)
+     * Trả về null nếu bài viết đã bị xóa
+     */
+    public function getPostById($maBaiDang)
+    {
+        $conn = new mKetNoi();
+        $con = $conn->KetNoi();
+
+        if ($con) {
+            $sql = "SELECT bt.*, h.hoTen as tenNguoiDang, h.avatar
+                    FROM baidang bt
+                    LEFT JOIN hosonguoidung h ON bt.maNguoiDung = h.maNguoiDung
+                    WHERE bt.maBaiDang = ?";
+            
+            $stmt = $con->prepare($sql);
+            $stmt->bind_param("i", $maBaiDang);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $post = $result->fetch_assoc();
+            
+            $con->close();
+            return $post;
+        }
+        return null;
+    }
+
+    /**
+     * Xóa bài viết vi phạm (soft delete - cập nhật trạng thái)
+     */
+    public function deletePost($maBaiDang, $lyDo = '')
+    {
+        $conn = new mKetNoi();
+        $con = $conn->KetNoi();
+
+        if ($con) {
+            // Bắt đầu transaction
+            $con->begin_transaction();
+            
+            try {
+                // Bước 1: Cập nhật trạng thái các báo cáo liên quan TRƯỚC KHI xóa bài viết
+                $sqlUpdate = "UPDATE baocaovipham 
+                             SET trangThai = 'daxuly', 
+                                 noiDungViPham = CONCAT(IFNULL(noiDungViPham, ''), '\n[Admin đã xóa bài viết: ', ?, ']')
+                             WHERE maBaiDang = ? AND trangThai IN ('dangxuly', 'choxuly')";
+                $stmtUpdate = $con->prepare($sqlUpdate);
+                $stmtUpdate->bind_param("si", $lyDo, $maBaiDang);
+                $stmtUpdate->execute();
+                $affectedReports = $stmtUpdate->affected_rows;
+                $stmtUpdate->close();
+                
+                // Bước 2: Xóa bài viết
+                $sql = "DELETE FROM baidang WHERE maBaiDang = ?";
+                $stmt = $con->prepare($sql);
+                $stmt->bind_param("i", $maBaiDang);
+                $stmt->execute();
+                $stmt->close();
+                
+                // Commit transaction
+                $con->commit();
+                $con->close();
+                
+                return true;
+                
+            } catch (Exception $e) {
+                // Rollback nếu có lỗi
+                $con->rollback();
+                $con->close();
+                error_log("Error deleting post: " . $e->getMessage());
+                return false;
+            }
         }
         return false;
     }

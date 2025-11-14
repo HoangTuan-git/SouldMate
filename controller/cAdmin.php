@@ -1,5 +1,5 @@
 <?php
-include_once('../model/mBaoCaoViPham.php');
+include_once(dirname(__DIR__) . '/model/mBaoCaoViPham.php');
 
 class controlAdmin
 {
@@ -92,5 +92,38 @@ class controlAdmin
         }
         
         return $this->model->searchLockedAccounts($keyword);
+    }
+
+    /**
+     * Lấy tất cả báo cáo
+     */
+    public function getAllReports($loaiBaoCao = null, $trangThai = null)
+    {
+        return $this->model->getReportsByType($loaiBaoCao, $trangThai);
+    }
+
+    /**
+     * Cập nhật trạng thái báo cáo
+     */
+    public function updateReportStatus($maBaoCao, $trangThai)
+    {
+        return $this->model->updateReportStatus($maBaoCao, $trangThai);
+    }
+
+    /**
+     * Lấy thông tin bài viết cho admin (để xem báo cáo)
+     * Trả về post nếu còn tồn tại, null nếu đã xóa
+     */
+    public function getPostForAdmin($maBaiDang)
+    {
+        return $this->model->getPostById($maBaiDang);
+    }
+
+    /**
+     * Xóa bài viết vi phạm
+     */
+    public function deleteViolatingPost($maBaiDang, $lyDo = '')
+    {
+        return $this->model->deletePost($maBaiDang, $lyDo);
     }
 }

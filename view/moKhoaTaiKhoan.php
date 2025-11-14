@@ -1,12 +1,6 @@
 <?php
-session_start();
-// Kiểm tra quyền admin
-if (!isset($_SESSION['uid']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
-    header('Location: ../home_test.php?page=dangnhap');
-    exit();
-}
 
-require_once('../controller/cAdmin.php');
+require_once(dirname(__DIR__) . '/controller/cAdmin.php');
 $adminController = new controlAdmin();
 
 // Xử lý tìm kiếm
@@ -21,99 +15,63 @@ if (isset($_POST['unlockAccount'])) {
     $messageType = $result['success'] ? 'success' : 'danger';
 }
 ?>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mở khóa tài khoản - Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/admin-style.css">
-</head>
-<body>
-    <div class="wrapper">
-        <aside class="sidebar">
-            <nav class="nav flex-column">
-                <a class="nav-link" href="quanLyViPham.php">
-                    <i class="bi bi-list-task"></i>
-                    Quản lý vi phạm
-                </a>
-                <a class="nav-link active" aria-current="page" href="moKhoaTaiKhoan.php">
-                    <i class="bi bi-unlock"></i>
-                    Mở khóa tài khoản
-                </a>
-            </nav>
-            <div class="logout-btn mt-auto">
-                <a href="../home_test.php?page=dangxuat" class="btn btn-outline-danger w-100">
-                    <i class="bi bi-box-arrow-right"></i> Đăng xuất
-                </a>
-            </div>
-        </aside>
 
-        <main class="main-content">
-            <h1 class="h3 fw-bold mb-4">Quản lý tài khoản bị khóa</h1>
-            
-            <?php if (isset($message)): ?>
-                <div class="alert alert-<?= $messageType ?> alert-dismissible fade show" role="alert">
-                    <?= htmlspecialchars($message) ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            <?php endif; ?>
+<h1 class="h3 fw-bold mb-4">Quản lý tài khoản bị khóa</h1>
 
-            <form class="mb-4" method="GET">
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
-                    <input type="text" name="keyword" class="form-control border-start-0" 
-                           placeholder="Tìm kiếm theo ID hoặc tên người dùng..." 
-                           value="<?= htmlspecialchars($keyword) ?>">
-                    <button class="btn btn-primary" type="submit">Tìm kiếm</button>
-                </div>
-            </form>
-
-            <div class="table-responsive">
-                <table class="table table-hover bg-white border rounded">
-                    <thead>
-                        <tr>
-                            <th scope="col">ID Tài Khoản</th>
-                            <th scope="col">Tên Người Dùng</th>
-                            <th scope="col">Ngày Khóa</th>
-                            <th scope="col">Lý Do Khóa</th>
-                            <th scope="col" class="text-end">Hành Động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if ($lockedAccounts && $lockedAccounts->num_rows > 0): ?>
-                            <?php while ($row = $lockedAccounts->fetch_assoc()): ?>
-                                <tr>
-                                    <td><strong>MSU<?= str_pad($row['maNguoiDung'], 3, '0', STR_PAD_LEFT) ?></strong></td>
-                                    <td><?= htmlspecialchars($row['hoTen'] ?? 'Chưa cập nhật') ?></td>
-                                    <td><?= date('d/m/Y', strtotime($row['ngayBiKhoa'])) ?></td>
-                                    <td><?= htmlspecialchars($row['lyDoKhoa']) ?></td>
-                                    <td class="text-end">
-                                        <form method="POST" style="display:inline;" 
-                                              onsubmit="return confirm('Bạn có chắc muốn mở khóa tài khoản này?');">
-                                            <input type="hidden" name="maNguoiDung" value="<?= $row['maNguoiDung'] ?>">
-                                            <button type="submit" name="unlockAccount" class="btn btn-success btn-sm">
-                                                Mở khóa
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <?php endwhile; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="5" class="text-center py-4 text-muted">
-                                    Không có tài khoản bị khóa
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </main>
+<?php if (isset($message)): ?>
+    <div class="alert alert-<?= $messageType ?> alert-dismissible fade show" role="alert">
+        <?= htmlspecialchars($message) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
+<?php endif; ?>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<form class="mb-4" method="GET">
+    <div class="input-group">
+        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+        <input type="text" name="keyword" class="form-control border-start-0" 
+                placeholder="Tìm kiếm theo ID hoặc tên người dùng..." 
+                value="<?= htmlspecialchars($keyword) ?>">
+        <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover bg-white border rounded">
+        <thead>
+            <tr>
+                <th scope="col">ID Tài Khoản</th>
+                <th scope="col">Tên Người Dùng</th>
+                <th scope="col">Ngày Khóa</th>
+                <th scope="col">Lý Do Khóa</th>
+                <th scope="col" class="text-end">Hành Động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if ($lockedAccounts && $lockedAccounts->num_rows > 0): ?>
+                <?php while ($row = $lockedAccounts->fetch_assoc()): ?>
+                    <tr>
+                        <td><strong>MSU<?= str_pad($row['maNguoiDung'], 3, '0', STR_PAD_LEFT) ?></strong></td>
+                        <td><?= htmlspecialchars($row['hoTen'] ?? 'Chưa cập nhật') ?></td>
+                        <td><?= date('d/m/Y', strtotime($row['ngayBiKhoa'])) ?></td>
+                        <td><?= htmlspecialchars($row['lyDoKhoa']) ?></td>
+                        <td class="text-end">
+                            <form method="POST" style="display:inline;" 
+                                    onsubmit="return confirm('Bạn có chắc muốn mở khóa tài khoản này?');">
+                                <input type="hidden" name="maNguoiDung" value="<?= $row['maNguoiDung'] ?>">
+                                <button type="submit" name="unlockAccount" class="btn btn-success btn-sm">
+                                    Mở khóa
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-muted">
+                        Không có tài khoản bị khóa
+                    </td>
+                </tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
+</div>

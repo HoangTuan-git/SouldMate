@@ -263,7 +263,59 @@ body {
     background-color: #f8f9fa;
     border-top: 1px solid #dee2e6;
 }
+/* Custom styles for message context modal */
+.chat-context {
+    max-height: 500px;
+    overflow-y: auto;
+}
 
+.message-item {
+    transition: all 0.2s ease;
+}
+
+.message-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.message-content {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Highlight violated message */
+.border-danger.bg-danger.bg-opacity-10 {
+    animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+    0%, 100% {
+        border-color: #dc3545;
+    }
+    50% {
+        border-color: #ff6b6b;
+    }
+}
+
+/* Scrollbar styling */
+.chat-context::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-context::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.chat-context::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.chat-context::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
 /* Responsive */
 @media (max-width: 768px) {
     .sidebar {
