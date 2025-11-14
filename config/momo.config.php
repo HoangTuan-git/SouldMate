@@ -17,9 +17,13 @@ define('MOMO_SECRET_KEY', EnvLoader::get('MOMO_SECRET_KEY', 'at67qH6mk8w5Y1nAyMo
 define('MOMO_ENDPOINT', EnvLoader::get('MOMO_ENDPOINT', 'https://test-payment.momo.vn/v2/gateway/api/create'));
 define('MOMO_CALLBACK_PORT', EnvLoader::get('MOMO_CALLBACK_PORT', '8000'));
 
-// URL Callback
-define('MOMO_RETURN_URL', 'http://localhost:' . MOMO_CALLBACK_PORT . '/SouldMate/payment/momo-return.php');
-define('MOMO_NOTIFY_URL', 'http://localhost:' . MOMO_CALLBACK_PORT . '/SouldMate/payment/momo-notify.php');
+// URL Callback - Lấy từ .env
+$callbackBaseUrl = EnvLoader::get('MOMO_CALLBACK_BASE_URL', 'http://localhost:8000/SouldMate');
+$returnPath = EnvLoader::get('MOMO_RETURN_URL', '/payment/momo-return.php');
+$notifyPath = EnvLoader::get('MOMO_NOTIFY_URL', '/payment/momo-notify.php');
+
+define('MOMO_RETURN_URL', $callbackBaseUrl . $returnPath);
+define('MOMO_NOTIFY_URL', $callbackBaseUrl . $notifyPath);
 
 // Cấu hình gói Premium
 define('PREMIUM_PACKAGES', [
