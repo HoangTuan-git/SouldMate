@@ -21,6 +21,34 @@ $premiumInfo = $isPremium ? $controller->getPremiumInfo($userId) : null;
 // Xử lý thanh toán
 $paymentError = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['package'])) {
+    // Kiểm tra trạng thái hồ sơ trước khi thanh toán
+    include_once(__DIR__ . '/../controller/cHoSo.php');
+    $hosoController = new controlHoSo();
+    $profileResult = $hosoController->getProfile($userId);
+    
+    if (!$profileResult || $profileResult->num_rows == 0) {
+        $paymentError = "Bạn chưa có hồ sơ! Vui lòng tạo hồ sơ trước.";
+        echo '<script>
+            alert("' . $paymentError . '");
+            window.location.href = "home.php?page=profile_quiz";
+        </script>';
+        exit;
+    }
+    
+    $profile = $profileResult->fetch_assoc();
+    $trangThaiHenHo = $profile['trangThaiHenHo'] ?? 'trải nghiệm';
+    
+    // Kiểm tra nếu là trải nghiệm thì không cho mua Premium
+    if ($trangThaiHenHo === 'trải nghiệm') {
+        $paymentError = "Chỉ thành viên nghiêm túc mới có thể đăng ký Premium!";
+        echo '<script>
+            alert("Chỉ thành viên nghiêm túc mới có thể đăng ký Premium!\\n\\nVui lòng chuyển sang chế độ nghiêm túc tại trang chỉnh sửa hồ sơ.");
+            window.location.href = "home.php?page=ChinhSuaHS";
+        </script>';
+        exit;
+    }
+    
+    // Nếu hợp lệ thì tiếp tục xử lý thanh toán
     $packageId = $_POST['package'];
     
     $result = $controller->createPayment($userId, $packageId);
@@ -280,13 +308,6 @@ $packages = PREMIUM_PACKAGES;
             <h4 class="mb-3">Phương thức thanh toán</h4>
             <img src="img/MoMo_Logo.png" alt="MoMo" style="background: white; padding: 10px; border-radius: 10px;">
             <p class="mt-3 text-white-50">Thanh toán an toàn với MoMo</p>
-        </div>
-
-        <!-- Nút quay lại -->
-        <div class="text-center mt-4">
-            <a href="me.php" class="btn btn-outline-light btn-lg">
-                <i class="fas fa-arrow-left me-2"></i>Quay lại
-            </a>
         </div>
     </div>
 

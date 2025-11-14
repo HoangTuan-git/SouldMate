@@ -95,7 +95,7 @@
             'moTa' => $_POST['bio'] ?? '',
             //get  hobbies as array checkbox had been selected
             'soThich' => $_POST['hobbies'] ?? [],
-            'trangThaiHenHo' => 'nghiemtuc'
+            'trangThaiHenHo' => 'nghiêm túc' // mặc định là nghiêm túc
         ];
         error_log("Processed Data: " . print_r($data, true));
         // Upload avatar nếu có

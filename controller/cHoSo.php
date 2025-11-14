@@ -34,7 +34,7 @@ class controlHoSo
             $data['maThanhPho'] ?? null,
             $data['moTa'] ?? '',
             $avatarPath,
-            $data['trangThaiHenHo'] ?? 'trainghiem'
+            $data['trangThaiHenHo'] ?? 'trải nghiệmF'
         );
 
         if ($maHoSo) {
@@ -79,7 +79,8 @@ class controlHoSo
             $data['maNgheNghiep'] ?? null,
             $data['maThanhPho'] ?? null,
             $data['moTa'] ?? '',
-            $avatar
+            $avatar,
+            $data['trangThaiHenHo'] ?? 'trải nghiệm'
         );
 
         if ($updated) {
@@ -142,6 +143,7 @@ class controlHoSo
 
         // Upload file
         if (move_uploaded_file($file['tmp_name'], $filePath)) {
+            $_SESSION['avatar'] = $filePath;
             return ['success' => true, 'path' => $fileName];
         }
 

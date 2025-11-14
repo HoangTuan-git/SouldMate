@@ -131,11 +131,18 @@
             'hoTen' => $_POST['fullName'] ?? '',
             'ngaySinh' => $_POST['birthDate'] ?? '',
             'gioiTinh' => $_POST['gender'] ?? '',
+            'trangThaiHenHo' => $_POST['relationshipStatus'] ?? 'trải nghiệm',
             'maNgheNghiep' => !empty($_POST['job']) ? intval($_POST['job']) : null,
             'maThanhPho' => !empty($_POST['location']) ? intval($_POST['location']) : null,
             'moTa' => $_POST['bio'] ?? '',
             'soThich' => $_POST['hobbies'] ?? []
         ];
+
+        // Nếu chọn trải nghiệm thì xóa nghề nghiệp và sở thích
+        if ($data['trangThaiHenHo'] === 'trải nghiệm') {
+            $data['maNgheNghiep'] = null;
+            $data['soThich'] = [];
+        }
 
         // Upload avatar nếu có
         $avatarPath = null;
@@ -250,8 +257,24 @@
                             </div>
                         </div>
 
+                        <!-- Trạng thái hẹn hò -->
+                        <div class="mb-3">
+                            <label for="relationshipStatus" class="form-label fw-semibold">
+                                <i class="bi bi-heart-fill text-danger"></i> Mục đích hẹn hò <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="relationshipStatus" name="relationshipStatus" required>
+                                <option value="trải nghiệm" <?= ($profile['trangThaiHenHo'] ?? 'trải nghiệm') == 'trải nghiệm' ? 'selected' : '' ?>>
+                                    Trải nghiệm - Tìm hiểu bạn bè mới
+                                </option>
+                                <option value="nghiêm túc" <?= ($profile['trangThaiHenHo'] ?? '') == 'nghiêm túc' ? 'selected' : '' ?>>
+                                    Nghiêm túc - Tìm kiếm mối quan hệ lâu dài
+                                </option>
+                            </select>
+                            <small class="text-muted">Chọn mục đích để chúng tôi gợi ý phù hợp hơn</small>
+                        </div>
+
                         <!-- Địa điểm & Nghề nghiệp -->
-                        <div class="row mb-3">
+                        <div class="row mb-3" id="seriousOnlySection">
                             <div class="col-md-6">
                                 <label for="location" class="form-label fw-semibold">
                                     <i class="bi bi-geo-alt-fill text-danger"></i> Thành phố
@@ -276,6 +299,7 @@
                             <div class="col-md-6">
                                 <label for="job" class="form-label fw-semibold">
                                     <i class="bi bi-briefcase-fill text-primary"></i> Nghề nghiệp
+                                    <span class="badge bg-info ms-1">Chỉ với mục đích nghiêm túc</span>
                                 </label>
                                 <select class="form-select" id="job" name="job">
                                     <option value="">-- Chọn nghề nghiệp --</option>
@@ -318,9 +342,10 @@
                         </div>
 
                         <!-- Sở thích -->
-                        <div class="mb-4">
+                        <div class="mb-4" id="hobbiesSection">
                             <label class="form-label fw-semibold mb-3">
                                 <i class="bi bi-heart-fill text-danger"></i> Sở thích của bạn
+                                <span class="badge bg-info ms-1">Chỉ với mục đích nghiêm túc</span>
                             </label>
                             <div class="d-flex flex-wrap gap-2">
                                 <?php 
@@ -363,6 +388,38 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Toggle hiển thị nghề nghiệp và sở thích dựa trên trạng thái hẹn hò
+        function toggleSeriousOnlyFields() {
+            const relationshipStatus = document.getElementById('relationshipStatus').value;
+            const seriousOnlySection = document.getElementById('seriousOnlySection');
+            const hobbiesSection = document.getElementById('hobbiesSection');
+            const jobSelect = document.getElementById('job');
+            
+            if (relationshipStatus === 'trải nghiệm') {
+                // Ẩn nghề nghiệp (nhưng vẫn giữ địa điểm)
+                seriousOnlySection.querySelector('.col-md-6:last-child').style.display = 'none';
+                hobbiesSection.style.display = 'none';
+                
+                // Xóa giá trị nghề nghiệp và sở thích
+                jobSelect.value = '';
+                document.querySelectorAll('.hobby-checkbox').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+            } else {
+                // Hiển thị lại
+                seriousOnlySection.querySelector('.col-md-6:last-child').style.display = 'block';
+                hobbiesSection.style.display = 'block';
+            }
+        }
+        
+        // Khởi tạo khi load trang
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleSeriousOnlyFields();
+            
+            // Lắng nghe thay đổi
+            document.getElementById('relationshipStatus').addEventListener('change', toggleSeriousOnlyFields);
+        });
+
         // Preview avatar
         document.getElementById('avatar').addEventListener('change', function(e) {
             const file = e.target.files[0];

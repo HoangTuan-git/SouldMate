@@ -11,10 +11,10 @@ define('MOMO_SECRET_KEY', 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa'); // Secret Key (te
 
 // Endpoint API
 define('MOMO_ENDPOINT', 'https://test-payment.momo.vn/v2/gateway/api/create'); // Test endpoint
-
+define('MOMO_CALLBACK_PORT', 8000); // Port for the API
 // URL Callback
-define('MOMO_RETURN_URL', 'http://localhost:8000/SouldMate/payment/momo-return.php'); // URL trả về sau khi thanh toán
-define('MOMO_NOTIFY_URL', 'http://localhost:8000/SouldMate/payment/momo-notify.php'); // URL nhận thông báo từ MoMo (IPN)
+define('MOMO_RETURN_URL', 'http://localhost:'.MOMO_CALLBACK_PORT.'/SouldMate/payment/momo-return.php'); // URL trả về sau khi thanh toán
+define('MOMO_NOTIFY_URL', 'http://localhost:'.MOMO_CALLBACK_PORT.'/SouldMate/payment/momo-notify.php'); // URL nhận thông báo từ MoMo (IPN)
 
 // Cấu hình gói Premium
 define('PREMIUM_PACKAGES', [

@@ -128,7 +128,7 @@ class Mdexuat
             $filterConditions
             
         ORDER BY compatibility_score DESC, RAND()
-        LIMIT 20
+        LIMIT 5
         ";
 
         $kq = $conn->query($query);
