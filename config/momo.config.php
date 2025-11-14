@@ -4,17 +4,22 @@
  * Đăng ký tài khoản test tại: https://developers.momo.vn
  */
 
-// Thông tin Partner - Lấy từ MoMo Developer Portal
-define('MOMO_PARTNER_CODE', 'MOMOBKUN20180529'); // Partner Code (test)
-define('MOMO_ACCESS_KEY', 'klm05TvNBzhg7h7j'); // Access Key (test)
-define('MOMO_SECRET_KEY', 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa'); // Secret Key (test)
+// Load environment variables
+require_once(__DIR__ . '/../helper/EnvLoader.php');
+EnvLoader::load(__DIR__ . '/../.env');
+
+// Thông tin Partner - Lấy từ .env
+define('MOMO_PARTNER_CODE', EnvLoader::get('MOMO_PARTNER_CODE', 'MOMOBKUN20180529'));
+define('MOMO_ACCESS_KEY', EnvLoader::get('MOMO_ACCESS_KEY', 'klm05TvNBzhg7h7j'));
+define('MOMO_SECRET_KEY', EnvLoader::get('MOMO_SECRET_KEY', 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa'));
 
 // Endpoint API
-define('MOMO_ENDPOINT', 'https://test-payment.momo.vn/v2/gateway/api/create'); // Test endpoint
-define('MOMO_CALLBACK_PORT', 8000); // Port for the API
+define('MOMO_ENDPOINT', EnvLoader::get('MOMO_ENDPOINT', 'https://test-payment.momo.vn/v2/gateway/api/create'));
+define('MOMO_CALLBACK_PORT', EnvLoader::get('MOMO_CALLBACK_PORT', '8000'));
+
 // URL Callback
-define('MOMO_RETURN_URL', 'http://localhost:'.MOMO_CALLBACK_PORT.'/SouldMate/payment/momo-return.php'); // URL trả về sau khi thanh toán
-define('MOMO_NOTIFY_URL', 'http://localhost:'.MOMO_CALLBACK_PORT.'/SouldMate/payment/momo-notify.php'); // URL nhận thông báo từ MoMo (IPN)
+define('MOMO_RETURN_URL', 'http://localhost:' . MOMO_CALLBACK_PORT . '/SouldMate/payment/momo-return.php');
+define('MOMO_NOTIFY_URL', 'http://localhost:' . MOMO_CALLBACK_PORT . '/SouldMate/payment/momo-notify.php');
 
 // Cấu hình gói Premium
 define('PREMIUM_PACKAGES', [
@@ -45,6 +50,6 @@ define('PREMIUM_PACKAGES', [
 ]);
 
 // Cấu hình khác
-define('MOMO_REQUEST_TYPE', 'captureWallet'); // Loại thanh toán
+define('MOMO_REQUEST_TYPE', EnvLoader::get('MOMO_REQUEST_TYPE', 'captureWallet'));
 define('MOMO_ORDER_INFO', 'Thanh toán gói Premium SoulMatch');
-define('MOMO_LANG', 'vi'); // Ngôn ngữ
+define('MOMO_LANG', EnvLoader::get('MOMO_LANG', 'vi'));
