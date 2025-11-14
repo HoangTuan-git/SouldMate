@@ -11,7 +11,7 @@ $u = $rs ? $rs->fetch_assoc() : [];
 
 // Lấy dữ liệu
 $hoTen = $u['hoTen'] ?? 'Người dùng';
-$tuoi = $u['tuoi'] ?? 0;
+$ngaySinh = $u['ngaySinh'] ?? null;
 $gioiTinh = $u['gioiTinh'] ?? '';
 $maNgheNghiep = $u['maNgheNghiep'] ?? '';
 $maThanhPho = $u['maThanhPho'] ?? '';
@@ -67,10 +67,10 @@ if ($maThanhPho) {
                 <span><?= htmlspecialchars($hoTen) ?></span>
             </div>
 
-            <?php if ($tuoi > 0): ?>
+            <?php if ($ngaySinh != ""): ?>
                 <div class="profile-info-row">
                     <i class="bi bi-calendar3"></i>
-                    <span><?= $tuoi ?> tuổi</span>
+                    <span><?= $ngaySinh ?></span>
                 </div>
             <?php endif; ?>
 

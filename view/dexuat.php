@@ -289,7 +289,7 @@ $users = $hasFilters ? $controller->GetAllUser($filters) : $controller->GetAllUs
         while ($u = $users->fetch_assoc()) {
           $count++;
           $avatar = !empty($u['avatar']) ? "uploads/avatars/" . $u['avatar'] : "uploads/avatars/default.png";
-          $compatibilityScore = round($u['compatibility_score'], 1) < 40 ? rand(40, 100) : round($u['compatibility_score'], 1);
+          $compatibilityScore = round($u['compatibility_score'], 1);
           $scoreClass = $compatibilityScore >= 70 ? 'high' : ($compatibilityScore >= 40 ? 'medium' : '');
           
           // Lấy sở thích chung

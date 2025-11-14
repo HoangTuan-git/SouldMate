@@ -701,12 +701,12 @@ if (isset($_REQUEST['uid'])) $uid = $_REQUEST['uid'];
                         echo '<div class="message ' . ($isMe ? 'sent' : 'received') . '" data-message-id="' . $messageId . '" data-sender-id="' . $senderId . '">';
                         echo '<div class="message-content">' . htmlspecialchars($msg['noiDungText']) . '</div>';
                         echo '<div class="message-time">' . date('H:i', strtotime($msg['thoiGianGui'] ?? 'now')) . '</div>';
+                        if ($isMe && $msg['maTinNhan'] == $lastMessage['maTinNhan']) {
+                            echo '<span class="msg_status"></span>';
+                        }
                         echo '</div>';
                         echo '</div>';
 
-                        if ($isMe && $msg['maTinNhan'] == $lastMessage['maTinNhan']) {
-                            echo '<div class="message-wrapper me"><span class="msg_status"></span></div>';
-                        }
                     }
                 } else {
                     echo '<div class="empty-messages">';

@@ -76,11 +76,20 @@ class ChatClient {
     });
 
     this.socket.on('message_sent', (data) => {
-      this.updateMessageStatus('delivered', data.id);
+      console.log('📨 Message sent event received:', data);
+      console.log('📌 this.updateMessageStatus type:', typeof this.updateMessageStatus);
+      if (typeof this.updateMessageStatus === 'function') {
+        this.updateMessageStatus('delivered', data.id);
+      } else {
+        console.error('❌ updateMessageStatus is not a function!');
+      }
     });
 
     this.socket.on('message_seen', (data) => {
-      this.updateMessageStatus('read');
+      console.log('👁️ Message seen event received:', data);
+      if (typeof this.updateMessageStatus === 'function') {
+        this.updateMessageStatus('read');
+      }
     });
 
     // Typing events
@@ -183,6 +192,15 @@ class ChatClient {
     
     messageDiv.appendChild(messageContent);
     messageDiv.appendChild(messageTime);
+    
+    // Thêm status indicator cho tin nhắn của mình
+    if (isSent) {
+      const statusSpan = document.createElement('span');
+      statusSpan.className = 'msg_status sent';
+      statusSpan.textContent = 'Đã gửi';
+      messageDiv.appendChild(statusSpan);
+    }
+    
     messageWrapper.appendChild(messageDiv);
     this.elements.messagesContainer.appendChild(messageWrapper);
 
@@ -267,6 +285,27 @@ class ChatClient {
     }
   }
 
+  // Update message status (sent, delivered, read)
+  updateMessageStatus(status, messageId) {
+    const statusElements = document.querySelectorAll('.msg_status');
+    if (statusElements.length === 0) return;
+    
+    // Update the last message status
+    const lastStatus = statusElements[statusElements.length - 1];
+    if (!lastStatus) return;
+    
+    lastStatus.className = `msg_status ${status}`;
+    
+    const statusText = {
+      'sent': 'Đã gửi',
+      'delivered': 'Đã nhận',
+      'read': 'Đã đọc'
+    };
+    
+    lastStatus.textContent = statusText[status] || '';
+    console.log(`Message status updated to: ${status}`, messageId);
+  }
+
   // Disconnect from server
   disconnect() {
     if (this.socket) {
@@ -318,23 +357,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Auto-scroll to bottom on page load
     setTimeout(() => chatClient.scrollToBottom(), 100);
   }
-
-  // Global updateMessageStatus function
-  window.updateMessageStatus = function(status) {
-    const statusElements = document.querySelectorAll('.msg_status');
-    if (statusElements.length === 0) return;
-    
-    const lastStatus = statusElements[statusElements.length - 1];
-    lastStatus.className = `msg_status ${status}`;
-    
-    const statusText = {
-      'sent': 'Đã gửi',
-      'delivered': 'Đã nhận',
-      'read': 'Đã đọc'
-    };
-    
-    lastStatus.textContent = statusText[status] || '';
-  };
 });
 
 // Handle page unload

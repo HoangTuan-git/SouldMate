@@ -92,7 +92,7 @@ class modelHoSo
     /**
      * Cập nhật hồ sơ
      */
-    public function updateProfile($maHoSo, $hoTen, $ngaySinh, $gioiTinh, $maNgheNghiep, $maThanhPho, $moTa, $avatar = null)
+    public function updateProfile($maHoSo, $hoTen, $ngaySinh, $gioiTinh, $maNgheNghiep, $maThanhPho, $moTa, $avatar = null, $trangThaiHenHo = 'trainghiem')
     {
         $query = "UPDATE hosonguoidung SET 
                   hoTen = '$hoTen',
@@ -100,7 +100,8 @@ class modelHoSo
                   gioiTinh = '$gioiTinh',
                   maNgheNghiep = " . ($maNgheNghiep ? $maNgheNghiep : 'NULL') . ",
                   maThanhPho = " . ($maThanhPho ? $maThanhPho : 'NULL') . ",
-                  moTa = '$moTa'";
+                  moTa = '$moTa',
+                  trangThaiHenHo = '$trangThaiHenHo'";
 
         if ($avatar) {
             $query .= ", avatar = '$avatar'";
