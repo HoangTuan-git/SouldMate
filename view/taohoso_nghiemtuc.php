@@ -74,12 +74,12 @@
     $controller = new controlHoSo();
 
     // Kiểm tra đã có hồ sơ chưa
-    $profile = $controller->getProfile($_SESSION['uid']);
-    if ($profile && $profile->num_rows > 0) {
-        echo '<script>alert("Bạn đã có hồ sơ rồi!");</script>';
-        header("refresh:0;url=home.php");
-        exit();
-    }
+    // $profile = $controller->getProfile($_SESSION['uid']);
+    // if ($profile && $profile->num_rows > 0) {
+    //     echo '<script>alert("Bạn đã có hồ sơ rồi!");</script>';
+    //     header("refresh:0;url=home.php");
+    //     exit();
+    // }
 
     // Lấy dữ liệu cho form
     $formData = $controller->getFormData();
@@ -199,7 +199,7 @@
                                                 echo '<optgroup label="' . $job['tenNganh'] . '">';
                                                 $currentIndustry = $job['tenNganh'];
                                             }
-                                            echo '<option value="' . $job['maNghe'] . '">' . $job['tenNghe'] . '</option>';
+                                            echo '<option value="' . $job['maNgheNghiep'] . '">' . $job['tenNgheNghiep'] . '</option>';
                                         }
                                         if ($currentIndustry != '') echo '</optgroup>';
                                     }

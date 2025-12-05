@@ -22,9 +22,9 @@ class modelHoSo
      */
     public function hasProfile($maNguoiDung)
     {
-        $query = "SELECT maHoSo FROM hosonguoidung WHERE maNguoiDung = $maNguoiDung";
+        $query = "SELECT maHoSo, hoTen FROM hosonguoidung WHERE maNguoiDung = $maNguoiDung";
         $result = $this->execQuery($query);
-        return $result && $result->num_rows > 0;
+        return $result;
     }
 
     /**

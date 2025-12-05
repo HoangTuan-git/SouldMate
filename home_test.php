@@ -17,8 +17,6 @@ ob_start();
     <link rel="stylesheet" href="view/assets/css/common.css">
     <link rel="stylesheet" href="view/assets/css/bantin.css">
     <link rel="stylesheet" href="view/assets/css/feed.css">
-    <link rel="stylesheet" href="view/assets/css/dangky.css">
-    <link rel="stylesheet" href="view/assets/css/dangnhap.css">
     <?php
     // Load page-specific CSS based on current page
     $page = $_GET['page'] ?? 'home_test';

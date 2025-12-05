@@ -87,7 +87,7 @@ if (!empty($userData['ngaySinh'])) {
                     <?php if ($userData['trangThaiHenHo']): ?>
                         <span class="profile-dating-status">
                             <i class="bi bi-heart"></i>
-                            <?= $userData['trangThaiHenHo'] == 'nghiemtuc' ? 'Tìm kiếm nghiêm túc' : 'Tìm kiếm trải nghiệm' ?>
+                            <?= $userData['trangThaiHenHo'] == 'nghiêm túc' ? 'Tìm kiếm nghiêm túc' : 'Tìm kiếm trải nghiệm' ?>
                         </span>
                     <?php endif; ?>
                 </div>

@@ -10,12 +10,6 @@ class controlHoSo
     public function createProfile($maNguoiDung, $data, $avatar = null)
     {
         $model = new modelHoSo();
-
-        // Kiểm tra đã có hồ sơ chưa
-        if ($model->hasProfile($maNguoiDung)) {
-            return ['success' => false, 'message' => 'Bạn đã có hồ sơ rồi!'];
-        }
-
         // Validate dữ liệu
         if (empty($data['hoTen']) || empty($data['ngaySinh']) || empty($data['gioiTinh'])) {
             return ['success' => false, 'message' => 'Vui lòng điền đầy đủ thông tin bắt buộc!'];
@@ -48,7 +42,7 @@ class controlHoSo
             }
             //Lưu avatar vào session
             if (!empty($avatarPath) && $avatarPath !== 'default.jpg') {
-                $_SESSION['avatar'] = $avatarPath;
+                $_SESSION['avatar'] = 'uploads/avatars/' . $avatarPath;
             } else {
                 $_SESSION['avatar'] = 'default.png';
             }
@@ -106,7 +100,11 @@ class controlHoSo
     public function getProfile($maNguoiDung)
     {
         $model = new modelHoSo();
-        return $model->getProfileByUserId($maNguoiDung);
+        $kq = $model->getProfileByUserId($maNguoiDung);
+        if ($kq && $kq->num_rows > 0) {
+            return $kq;
+        }
+        return 0;
     }
 
     /**
@@ -167,6 +165,10 @@ class controlHoSo
     {
         $model = new modelHoSo();
         // Dùng đúng logic kiểm tra đã có hồ sơ chưa
-        return $model->hasProfile($maNguoiDung);
+        $kq = $model->hasProfile($maNguoiDung);
+        if ($kq && $kq->num_rows > 0) {
+            return $kq->fetch_assoc();
+        }
+        return false;
     }
 }

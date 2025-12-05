@@ -19,16 +19,15 @@ class mBanTin
         return $kq;
     }
 
-    public function mAddTinTuc($user_id, $text, $image, $quyenRiengTu)
+    public function mAddTinTuc($user_id, $text, $image)
     {
         $p = new mKetNoi();
         $conn = $p->KetNoi();
         $text = $conn->real_escape_string($text);
         $image = $conn->real_escape_string($image);
-        $quyenRiengTu = $conn->real_escape_string($quyenRiengTu);
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         $date = date('Y-m-d H:i:s');
-        $query = "INSERT INTO baidang (maNguoiDung ,noidungText, noidungAnh, phamVi, ngayTao) VALUES ('$user_id', '$text', '$image','$quyenRiengTu', '$date')";
+        $query = "INSERT INTO baidang (maNguoiDung ,noidungText, noidungAnh, ngayTao) VALUES ('$user_id', '$text', '$image', '$date')";
         $kq = $conn->query($query);
         $p->NgatKetNoi($conn);
         return $kq;
