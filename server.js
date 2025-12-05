@@ -171,21 +171,6 @@ io.on('connection', (socket) => {
       socket.emit('error', 'Failed to send message');
     }
   });
-// Đánh dấu tin nhắn đã đọc
-socket.on('mark_as_read', (data) => {
-  const { sender_id, receiver_id } = data;
-  const query = "UPDATE tinnhan SET trangThai='seen', is_read=1 WHERE maNguoiDung1=? AND maNguoiDung2=? AND is_read=0";
-  db.execute(query, [sender_id, receiver_id], (err, result) => {
-    if (!err) {
-      // Thông báo lại cho người gửi
-      const senderSocket = onlineUsers.get(sender_id.toString());
-      if (senderSocket) {
-        io.to(senderSocket).emit('message_seen', { by: receiver_id });
-      }
-    }
-  });
-});
-
   // Handle typing indicators
   socket.on('typing', (data) => {
     const { receiver_id } = data;
