@@ -54,7 +54,7 @@ if (isset($_REQUEST['uid'])) $uid = $_REQUEST['uid'];
                                 $lastMessageResult = $chatController->getLastMessage($_SESSION['uid'], $row['maNguoiDung']);
                                 if ($lastMessageResult && $lastMessageResult->num_rows > 0) {
                                     $lastMessage = $lastMessageResult->fetch_assoc();
-                                    $sent_at = date('H:i', strtotime($lastMessage['sent_at'] ?? 'now'));
+                                    $sent_at = date('H:i', strtotime($lastMessage['thoiGianGui'] ?? 'now'));
                                     $previewText = strlen($lastMessage['noiDungText']) > 30 ? substr($lastMessage['noiDungText'], 0, 30) . '...' . ' ' . $sent_at : $lastMessage['noiDungText'].' '.$sent_at;
                                     echo '<div class="chat-preview">' . htmlspecialchars($previewText) . '</div>';
                                 } else {

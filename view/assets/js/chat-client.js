@@ -6,36 +6,37 @@ class ChatClient {
     this.currentReceiverId = null;
     this.typingTimer = null;
     this.isTyping = false;
-    this.isOnline = false;
-    this.onlineUsers = new Set();
-    this.lastStatusUpdate = new Map(); // Track last update time for each user
-    this.statusChangeTimers = new Map(); // Timers for delayed status changes
+    
+    // Cache DOM elements
+    this.elements = {
+      messagesContainer: null,
+      chatBody: null,
+      typingIndicator: null
+    };
+  }
+  
+  // Helper: Cache DOM elements
+  cacheElements() {
+    this.elements.messagesContainer = document.querySelector('.messages-container');
+    this.elements.chatBody = document.querySelector('#chatBody');
+    this.elements.typingIndicator = document.querySelector('#typingIndicator');
+  }
+  
+  // Helper: Scroll chat to bottom
+  scrollToBottom() {
+    if (this.elements.chatBody) {
+      this.elements.chatBody.scrollTop = this.elements.chatBody.scrollHeight;
+    }
   }
 
   // Initialize socket connection
   init(userId) {
     this.currentUserId = userId;
-    console.log('🚀 Initializing chat client for user:', userId);
-    
-    // Get JWT token from window
-    const jwtToken = window.jwtToken || null;
-    
-    console.log('🔍 DEBUG - JWT Token from window:', jwtToken);
-    console.log('🔍 DEBUG - Token type:', typeof jwtToken);
-    console.log('🔍 DEBUG - Token length:', jwtToken ? jwtToken.length : 0);
-    
-    if (!jwtToken || jwtToken === '' || jwtToken === 'null') {
-      console.error('❌ No JWT token found! Cannot connect to chat server.');
-      console.error('❌ Token value:', jwtToken);
-      alert('Không tìm thấy JWT token. Vui lòng đăng nhập lại!');
-      return;
-    }
-    
-    console.log('✅ JWT token found, connecting to chat server...');
-    
-    // Use localhost for development
+    console.log('Initializing chat client for user:', userId);
     const socketUrl = 'http://localhost:3000';
-    console.log('🔌 Connecting to:', socketUrl);
+    
+    // Cache DOM elements
+    this.cacheElements();
       
     this.socket = io(socketUrl, {
       transports: ['websocket', 'polling'],
@@ -43,12 +44,17 @@ class ChatClient {
       forceNew: true
     });
     
+    this.setupSocketListeners();
+  }
+  
+  // Setup all socket event listeners
+  setupSocketListeners() {
     this.socket.on('connect', () => {
-      console.log('✅ Connected to chat server successfully');
-      // Send JWT token with join event
+      console.log('✅ Connected to chat server');
+      // Gửi join với JWT token
       this.socket.emit('join', {
-        userId: userId,
-        token: jwtToken
+        userId: this.currentUserId,
+        token: window.jwtToken || ''
       });
     });
 
@@ -61,66 +67,35 @@ class ChatClient {
       alert('Không thể kết nối đến server chat. Vui lòng kiểm tra lại!');
     });
 
-    // Listen for incoming messages
+    // Message events
     this.socket.on('receive_message', (data) => {
-      console.log('Received message:', data);
-      // Only display if message is from current chat partner
       if (this.currentReceiverId && data.sender_id == this.currentReceiverId) {
         this.displayMessage(data, false);
         this.playNotificationSound();
       }
     });
 
-    // Listen for message sent confirmation
-    this.socket.on('message_sent', (data) => {
-      // Message was successfully sent and saved to database
+    // Message status events removed
 
-      console.log('Message sent successfully:', data);
-    });
-
-    // Listen for typing indicators
+    // Typing events
     this.socket.on('user_typing', (data) => {
-      console.log('User typing:', data);
       this.showTypingIndicator(data.sender_id);
     });
 
     this.socket.on('user_stop_typing', (data) => {
-      console.log('User stop typing:', data);
       this.hideTypingIndicator(data.sender_id);
     });
 
-    // Listen for user online/offline status
+    // User status events
     this.socket.on('user_online', (userId) => {
-      console.log('User online:', userId);
-      if (!this.onlineUsers) this.onlineUsers = new Set();
-      
-      // Clear any pending offline timer
-      if (this.statusChangeTimers.has(userId.toString())) {
-        clearTimeout(this.statusChangeTimers.get(userId.toString()));
-        this.statusChangeTimers.delete(userId.toString());
-        console.log(`Cleared pending offline timer for user ${userId}`);
-      }
-      
-      this.onlineUsers.add(userId.toString());
       this.updateUserStatus(userId, true);
     });
 
     this.socket.on('user_offline', (userId) => {
-      console.log('User offline:', userId);
-      if (this.onlineUsers) this.onlineUsers.delete(userId.toString());
-      
-      // Add small delay to smooth out rapid online/offline changes
-      const delayTimer = setTimeout(() => {
-        this.updateUserStatus(userId, false);
-        this.statusChangeTimers.delete(userId.toString());
-      }, 500); // 500ms delay for smooth transition
-      
-      this.statusChangeTimers.set(userId.toString(), delayTimer);
+      this.updateUserStatus(userId, false);
     });
 
-    // Listen for initial online users list
     this.socket.on('online_users_list', (onlineUsers) => {
-      console.log('Received online users list:', onlineUsers);
       this.initializeUserStatuses(onlineUsers);
     });
 
@@ -128,21 +103,8 @@ class ChatClient {
       console.error('Socket error:', error);
       alert('Có lỗi xảy ra khi gửi tin nhắn');
     });
-    this.socket.on('message_seen', (data) => {
-    console.log('Tin nhắn đã xem bởi:', data.by);
-  // Update UI: đổi icon thành ✓✓ xanh
-});
   }
 
-  // Khi mở chat
-  openChat(receiverId) {
-    this.setReceiver(receiverId);
-    this.socket.emit('mark_as_read', { 
-      sender_id: receiverId, 
-      receiver_id: this.currentUserId 
-    });
-  }
-  
   // Set current chat receiver
   setReceiver(receiverId) {
     this.currentReceiverId = receiverId;
@@ -165,12 +127,13 @@ class ChatClient {
     console.log('Sending message:', messageData);
     this.socket.emit('send_message', messageData);
     
-    // Display message immediately for sender
+    // Display message immediately for sender with "sent" status
     this.displayMessage({
       sender_id: parseInt(this.currentUserId),
       receiver_id: parseInt(this.currentReceiverId),
       message: message.trim(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      status: 'sent'
     }, true);
 
     return true;
@@ -178,20 +141,14 @@ class ChatClient {
   
   // Display message in chat
   displayMessage(data, isSent) {
-    const messagesContainer = document.querySelector('.messages-container');
-    if (!messagesContainer) return;
+    if (!this.elements.messagesContainer) return;
 
     // Check if we're in the correct chat room
-    if (!isSent && this.currentReceiverId != data.sender_id) {
-      console.log('Message not for current chat room');
-      return;
-    }
+    if (!isSent && this.currentReceiverId != data.sender_id) return;
 
     // Remove empty messages placeholder if exists
     const emptyMessages = document.querySelector('.empty-messages');
-    if (emptyMessages) {
-      emptyMessages.remove();
-    }
+    if (emptyMessages) emptyMessages.remove();
 
     const messageWrapper = document.createElement('div');
     messageWrapper.className = `message-wrapper ${isSent ? 'me' : 'other'}`;
@@ -205,91 +162,56 @@ class ChatClient {
     
     const messageTime = document.createElement('div');
     messageTime.className = 'message-time';
-    const now = new Date();
-    messageTime.textContent = now.toLocaleTimeString('vi-VN', { 
+    messageTime.textContent = new Date().toLocaleTimeString('vi-VN', { 
       hour: '2-digit', 
       minute: '2-digit' 
     });
     
     messageDiv.appendChild(messageContent);
     messageDiv.appendChild(messageTime);
+    
     messageWrapper.appendChild(messageDiv);
-    messagesContainer.appendChild(messageWrapper);
+    this.elements.messagesContainer.appendChild(messageWrapper);
 
-    // Scroll to bottom
-    const chatBody = document.querySelector('#chatBody');
-    if (chatBody) {
-      chatBody.scrollTop = chatBody.scrollHeight;
-    }
+    this.scrollToBottom();
   }
-  
   // Handle typing indicators
   startTyping() {
-    if (!this.isTyping && this.currentReceiverId) {
-      this.isTyping = true;
-      this.socket.emit('typing', { receiver_id: this.currentReceiverId });
-    }
+    if (this.isTyping || !this.currentReceiverId) return;
+    
+    this.isTyping = true;
+    this.socket.emit('typing', { receiver_id: this.currentReceiverId });
 
-    // Clear existing timer
-    if (this.typingTimer) {
-      clearTimeout(this.typingTimer);
-    }
-
-    // Set new timer to stop typing after 3 seconds
-    this.typingTimer = setTimeout(() => {
-      this.stopTyping();
-    }, 3000);
+    clearTimeout(this.typingTimer);
+    this.typingTimer = setTimeout(() => this.stopTyping(), 3000);
   }
 
   stopTyping() {
-    if (this.isTyping && this.currentReceiverId) {
-      this.isTyping = false;
-      this.socket.emit('stop_typing', { receiver_id: this.currentReceiverId });
-    }
+    if (!this.isTyping || !this.currentReceiverId) return;
     
-    if (this.typingTimer) {
-      clearTimeout(this.typingTimer);
-      this.typingTimer = null;
-    }
+    this.isTyping = false;
+    this.socket.emit('stop_typing', { receiver_id: this.currentReceiverId });
+    clearTimeout(this.typingTimer);
+    this.typingTimer = null;
   }
 
   showTypingIndicator(userId) {
-    const chatBody = document.querySelector('#chatBody');
-    if (!chatBody) return;
-
-    // Only show typing indicator for current chat partner
-    if (this.currentReceiverId != userId) {
-      return;
-    }
-
-    // Show typing indicator
-    const typingIndicator = document.querySelector('#typingIndicator');
-    if (typingIndicator) {
-      typingIndicator.style.display = 'flex';
-      
-      // Auto-scroll to bottom
-      chatBody.scrollTop = chatBody.scrollHeight;
-    }
+    if (!this.elements.typingIndicator || this.currentReceiverId != userId) return;
+    
+    this.elements.typingIndicator.style.display = 'flex';
+    this.scrollToBottom();
   }
 
   hideTypingIndicator(userId) {
-    const typingIndicator = document.querySelector('#typingIndicator');
-    if (typingIndicator) {
-      typingIndicator.style.display = 'none';
+    if (this.elements.typingIndicator) {
+      this.elements.typingIndicator.style.display = 'none';
     }
   }
 
   // Initialize user statuses when receiving online users list
   initializeUserStatuses(onlineUsers) {
-    console.log('🔄 Initializing user statuses...');
-    
-    // Store online users in a Set for faster lookup
-    this.onlineUsers = new Set(onlineUsers.map(id => id.toString()));
-    
     // Get all unique user IDs from the page
     const allUserIds = new Set();
-    
-    // Find all elements with data-user-id attribute
     document.querySelectorAll('[data-user-id]').forEach(element => {
       const userId = element.getAttribute('data-user-id');
       if (userId && userId !== 'null') {
@@ -297,62 +219,29 @@ class ChatClient {
       }
     });
     
-    console.log('Found user IDs on page:', Array.from(allUserIds));
-    console.log('Online users from server:', onlineUsers);
-    
-    // Update statuses directly without resetting to avoid flicker
-    allUserIds.forEach(userId => {
-      const isOnline = this.onlineUsers.has(userId);
-      this.updateUserStatus(userId, isOnline);
-    });
-    
-    console.log('✅ User statuses initialized');
+    // Set all users to offline first, then set online users to online
+    allUserIds.forEach(userId => this.updateUserStatus(userId, false));
+    onlineUsers.forEach(userId => this.updateUserStatus(userId.toString(), true));
   }
 
   updateUserStatus(userId, isOnline) {
-    // Rate limiting: only update if status actually changed or enough time passed
-    const now = Date.now();
-    const lastUpdate = this.lastStatusUpdate.get(userId);
-    const timeSinceLastUpdate = now - (lastUpdate || 0);
-    
-    // Skip if same status was set recently (within 1 second)
-    if (lastUpdate && timeSinceLastUpdate < 1000) {
-      const currentElements = document.querySelectorAll(`.online-indicator[data-user-id="${userId}"]`);
-      const currentlyOnline = currentElements.length > 0 && currentElements[0].classList.contains('active');
-      if (currentlyOnline === isOnline) {
-        console.log(`⏭️ Skipping redundant status update for user ${userId}`);
-        return;
+    const statusConfig = [
+      {
+        selector: `.online-indicator[data-user-id="${userId}"]`,
+        update: (el) => el.classList.toggle('active', isOnline)
+      },
+      {
+        selector: `.chat-time[data-user-id="${userId}"], .status[data-user-id="${userId}"]`,
+        update: (el) => {
+          el.textContent = isOnline ? 'Đang hoạt động' : 'Ngoại tuyến';
+          el.style.color = isOnline ? '#10b981' : '#94a3b8';
+        }
       }
-    }
+    ];
     
-    console.log(`🔄 Updating status for user ${userId}: ${isOnline ? 'online' : 'offline'}`);
-    this.lastStatusUpdate.set(userId, now);
-    
-    // Update all online indicators for this user
-    const onlineIndicators = document.querySelectorAll(`.online-indicator[data-user-id="${userId}"]`);
-    onlineIndicators.forEach(indicator => {
-      if (isOnline) {
-        indicator.classList.add('active');
-      } else {
-        indicator.classList.remove('active');
-      }
+    statusConfig.forEach(({ selector, update }) => {
+      document.querySelectorAll(selector).forEach(update);
     });
-    
-    // Update all status text elements for this user (chat-time in list)
-    const chatTimeElements = document.querySelectorAll(`.chat-time[data-user-id="${userId}"]`);
-    chatTimeElements.forEach(timeElement => {
-      timeElement.textContent = isOnline ? 'Đang hoạt động' : 'Ngoại tuyến';
-      timeElement.style.color = isOnline ? '#10b981' : '#94a3b8';
-    });
-    
-    // Update status text in chat header
-    const statusElements = document.querySelectorAll(`.status[data-user-id="${userId}"]`);
-    statusElements.forEach(statusElement => {
-      statusElement.textContent = isOnline ? 'Đang hoạt động' : 'Ngoại tuyến';
-      statusElement.style.color = isOnline ? '#10b981' : '#94a3b8';
-    });
-    
-    console.log(`✅ Updated ${onlineIndicators.length} indicators, ${chatTimeElements.length} time elements, ${statusElements.length} status elements`);
   }
 
   playNotificationSound() {
@@ -364,22 +253,10 @@ class ChatClient {
       console.log('Notification sound not available');
     }
   }
-
   // Disconnect from server
   disconnect() {
-    // Clear typing timer
-    if (this.typingTimer) {
-      clearTimeout(this.typingTimer);
-    }
-    
-    // Clear all status change timers
-    this.statusChangeTimers.forEach(timer => clearTimeout(timer));
-    this.statusChangeTimers.clear();
-    
     if (this.socket) {
-      console.log('Disconnecting from chat server...');
       this.socket.disconnect();
-      this.socket = null;
     }
   }
 }
@@ -389,64 +266,43 @@ let chatClient = null;
 
 // Initialize chat when page loads
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('🚀 Chat client script loaded');
-  
-  // Check if Socket.io is available
   if (typeof io === 'undefined') {
     console.error('❌ Socket.io library not loaded!');
     alert('Socket.io không được tải. Vui lòng kiểm tra kết nối internet!');
     return;
   }
   
-  console.log('✅ Socket.io library loaded successfully');
-  
-  // Get user ID from PHP session
-  const userId = window.currentUserId ? window.currentUserId.toString() : null;
-  const receiverId = window.currentReceiverId ? window.currentReceiverId.toString() : null;
+  const userId = window.currentUserId?.toString();
+  const receiverId = window.currentReceiverId?.toString();
 
-  console.log('User ID:', userId, 'Receiver ID:', receiverId);
+  if (!userId) return;
   
-  if (userId && userId !== 'null') {
-    console.log('🔄 Initializing chat client...');
-    chatClient = new ChatClient();
-    chatClient.init(userId);
-    
-    if (receiverId) {
-      chatClient.setReceiver(receiverId);
-    }
-    
-    // Handle form submission
-    const chatForm = document.querySelector('#chatForm') || document.querySelector('.message-form');
-    const messageInput = document.querySelector('#messageInput') || document.querySelector('.message-input');
-    
-    if (chatForm && messageInput) {
-      chatForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const message = messageInput.value.trim();
-        if (message && chatClient.sendMessage(message)) {
-          messageInput.value = '';
-          chatClient.stopTyping();
-        }
-      });
-      
-      // Handle typing indicators
-      messageInput.addEventListener('input', function() {
-        chatClient.startTyping();
-      });
-      
-      messageInput.addEventListener('blur', function() {
+  chatClient = new ChatClient();
+  chatClient.init(userId);
+  
+  if (receiverId) {
+    chatClient.setReceiver(receiverId);
+  }
+  
+  // Handle form submission
+  const chatForm = document.querySelector('#chatForm') || document.querySelector('.message-form');
+  const messageInput = document.querySelector('#messageInput') || document.querySelector('.message-input');
+  
+  if (chatForm && messageInput) {
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const message = messageInput.value.trim();
+      if (message && chatClient.sendMessage(message)) {
+        messageInput.value = '';
         chatClient.stopTyping();
-      });
-      
-      // Auto-scroll to bottom on page load
-      const chatBody = document.querySelector('#chatBody');
-      if (chatBody) {
-        setTimeout(() => {
-          chatBody.scrollTop = chatBody.scrollHeight;
-        }, 100);
       }
-    }
+    });
+    
+    messageInput.addEventListener('input', () => chatClient.startTyping());
+    messageInput.addEventListener('blur', () => chatClient.stopTyping());
+    
+    // Auto-scroll to bottom on page load
+    setTimeout(() => chatClient.scrollToBottom(), 100);
   }
 });
 
