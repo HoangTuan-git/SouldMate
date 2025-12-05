@@ -75,22 +75,7 @@ class ChatClient {
       }
     });
 
-    this.socket.on('message_sent', (data) => {
-      console.log('📨 Message sent event received:', data);
-      console.log('📌 this.updateMessageStatus type:', typeof this.updateMessageStatus);
-      if (typeof this.updateMessageStatus === 'function') {
-        this.updateMessageStatus('delivered', data.id);
-      } else {
-        console.error('❌ updateMessageStatus is not a function!');
-      }
-    });
-
-    this.socket.on('message_seen', (data) => {
-      console.log('👁️ Message seen event received:', data);
-      if (typeof this.updateMessageStatus === 'function') {
-        this.updateMessageStatus('read');
-      }
-    });
+    // Message status events removed
 
     // Typing events
     this.socket.on('user_typing', (data) => {
@@ -124,14 +109,6 @@ class ChatClient {
   setReceiver(receiverId) {
     this.currentReceiverId = receiverId;
     console.log('Set receiver to:', receiverId);
-    
-    // Tự động mark as read khi set receiver
-    if (this.socket && this.socket.connected) {
-      this.socket.emit('mark_as_read', { 
-        sender_id: receiverId, 
-        receiver_id: this.currentUserId 
-      });
-    }
   }
 
   // Send message
@@ -192,14 +169,6 @@ class ChatClient {
     
     messageDiv.appendChild(messageContent);
     messageDiv.appendChild(messageTime);
-    
-    // Thêm status indicator cho tin nhắn của mình
-    if (isSent) {
-      const statusSpan = document.createElement('span');
-      statusSpan.className = 'msg_status sent';
-      statusSpan.textContent = 'Đã gửi';
-      messageDiv.appendChild(statusSpan);
-    }
     
     messageWrapper.appendChild(messageDiv);
     this.elements.messagesContainer.appendChild(messageWrapper);
@@ -284,28 +253,6 @@ class ChatClient {
       console.log('Notification sound not available');
     }
   }
-
-  // Update message status (sent, delivered, read)
-  updateMessageStatus(status, messageId) {
-    const statusElements = document.querySelectorAll('.msg_status');
-    if (statusElements.length === 0) return;
-    
-    // Update the last message status
-    const lastStatus = statusElements[statusElements.length - 1];
-    if (!lastStatus) return;
-    
-    lastStatus.className = `msg_status ${status}`;
-    
-    const statusText = {
-      'sent': 'Đã gửi',
-      'delivered': 'Đã nhận',
-      'read': 'Đã đọc'
-    };
-    
-    lastStatus.textContent = statusText[status] || '';
-    console.log(`Message status updated to: ${status}`, messageId);
-  }
-
   // Disconnect from server
   disconnect() {
     if (this.socket) {
