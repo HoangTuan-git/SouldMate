@@ -487,10 +487,6 @@ function timeAgo($datetime) {
         form.submit();
     }
 
-    // Edit post function (placeholder)
-    function editPost(postId) {
-        alert('Chức năng chỉnh sửa bài viết đang được phát triển');
-    }
 
     // Delete post function
     function deletePost(postId) {

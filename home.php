@@ -158,7 +158,7 @@ $titles = [
     <?php endif; ?>
 </script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script src="chat-client.js"></script>
+<script src="view/assets/js/chat-client.js"></script>
 </body>
 
 </html>

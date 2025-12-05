@@ -302,13 +302,6 @@ $packages = PREMIUM_PACKAGES;
                 </div>
             </div>
         </div>
-
-        <!-- Phương thức thanh toán -->
-        <div class="payment-methods">
-            <h4 class="mb-3">Phương thức thanh toán</h4>
-            <img src="img/MoMo_Logo.png" alt="MoMo" style="background: white; padding: 10px; border-radius: 10px;">
-            <p class="mt-3 text-white-50">Thanh toán an toàn với MoMo</p>
-        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
