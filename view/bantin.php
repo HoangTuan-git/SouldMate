@@ -30,8 +30,7 @@ if (isset($_POST['postNews'])) {
     $p = $cBanTin->cAddTinTuc(
         $_SESSION['uid'],
         $_POST['newsContent'],
-        $_FILES['newsImages'],
-        $_POST['privacy']
+        $_FILES['newsImages']
     );
     switch ($p) {
         case '1':
@@ -108,7 +107,7 @@ function timeAgo($datetime) {
                                 <!-- Ô nhập bài viết, hiển thị avatar và tên, click sẽ mở modal đăng bài -->
                                 <img src="<?= htmlspecialchars($src) ?>" alt="Avatar" class="avatar-circle me-3">
                                 <div class="post-input flex-fill" role="button" onclick="openPostModalAndFocus()">
-                                    <?= htmlspecialchars($_SESSION['email']) ?> ơi, bạn đang nghĩ gì thế?
+                                    <?= htmlspecialchars($checkProfile['hoTen']); ?> ơi, bạn đang nghĩ gì thế?
                                 </div>
                             <?php else: ?>
                                 <!-- Nếu chưa đăng nhập, hiển thị thông báo -->
@@ -340,13 +339,6 @@ function timeAgo($datetime) {
               <div class="mb-3">
                 <label class="form-label">Hình ảnh</label>
                 <input type="file" name="newsImages[]" class="form-control" multiple>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Quyền riêng tư</label>
-                <select name="privacy" class="form-select">
-                  <option value="public">🌍 Công khai</option>
-                  <option value="friends">👫 Bạn bè</option>
-                </select>
               </div>
             </div>
             <div class="modal-footer">

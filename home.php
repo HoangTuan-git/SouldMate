@@ -35,6 +35,8 @@ $titles = [
     <!-- Custom site CSS -->
     <link rel="stylesheet" href="view/assets/css/site.css">
     <link rel="stylesheet" href="view/assets/css/common.css">
+    <link rel="stylesheet" href="view/assets/css/bantin.css">
+    <link rel="stylesheet" href="view/assets/css/feed.css">
     <?php
     // Load page-specific CSS based on current page
     $page = isset($_GET['page']) ? $_GET['page'] : 'home';

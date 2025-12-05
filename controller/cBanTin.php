@@ -9,25 +9,40 @@ class cBanTin
         $kq = $p->mGetAllTinTuc();
         return $kq;
     }
-    public function cAddTinTuc($user_id, $text, $image, $quyenRiengTu)
+    public function cAddTinTuc($user_id, $text, $image)
     {
-        // GIỮ logic mã lỗi '1' (text rỗng + không có ảnh)
-        if ($text == '' && count($image["name"]) == 0) {
+        $text = trim($text);
+        
+        // Kiểm tra có file thật sự hay không
+        $hasFiles = false;
+        if (isset($image['name']) && is_array($image['name'])) {
+            foreach ($image['name'] as $fileName) {
+                if (!empty(trim($fileName))) {
+                    $hasFiles = true;
+                    break;
+                }
+            }
+        }
+        
+        // LOGIC ĐÚNG: Phải có text HOẶC file
+        if (empty($text) && !$hasFiles) {
             return '1';
         }
-        $uploader = new CUpload();
-        $res = $uploader->processImagesOnly($image);
 
-        // Nếu upload fail -> trả đúng mã lỗi cũ
-        if (!$res['success']) {
-            return $res['error']; // '2' | '3' | '4'
+        $hinhs = '';
+        if ($hasFiles) {
+            $uploader = new CUpload();
+            $res = $uploader->processImagesOnly($image);
+
+            if (!$res['success']) {
+                return $res['error']; // '2' | '3' | '4'
+            }
+            
+            $hinhs = $res['hinhs'];
         }
 
-        // Thành công: lấy chuỗi $hinhs và lưu DB như cũ
-        $hinhs = $res['hinhs'];
-
         $p = new mBanTin();
-        $kq = $p->mAddTinTuc($user_id, $text, $hinhs, $quyenRiengTu);
+        $kq = $p->mAddTinTuc($user_id, $text, $hinhs);
 
         // Giữ nguyên: thành công -> '5'
         return '5';
