@@ -41,7 +41,28 @@
             height: 100%;
             object-fit: cover;
         }
+         .hobby-checkbox {
+            cursor: pointer;
+        }
 
+        .hobby-checkbox:checked+label {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .hobby-label {
+            padding: 10px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .hobby-label:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
         .form-check {
             padding: 10px;
             border: 1px solid #dee2e6;
@@ -72,15 +93,6 @@
 
     include_once('controller/cHoSo.php');
     $controller = new controlHoSo();
-
-    // Kiểm tra đã có hồ sơ chưa
-    // $profile = $controller->getProfile($_SESSION['uid']);
-    // if ($profile && $profile->num_rows > 0) {
-    //     echo '<script>alert("Bạn đã có hồ sơ rồi!");</script>';
-    //     header("refresh:0;url=home.php");
-    //     exit();
-    // }
-
     // Lấy dữ liệu cho form
     $formData = $controller->getFormData();
 
@@ -207,29 +219,33 @@
                                 </select>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="hobbies" class="form-label">Sở thích</label>
-                                <!-- check box with 4 column layout -->
-                                <div id="hobbies" class="form-check">
-                                    <?php
-                                    if ($formData['hobbies'] && $formData['hobbies']->num_rows > 0) {
-                                        $count = 0;
-                                        echo '<div class="row">';
-                                        while ($hobby = $formData['hobbies']->fetch_assoc()) {
-                                            echo '<div class="form-check col-3">
-                                                    <input class="form-check-input" type="checkbox" value="' . $hobby['maSoThich'] . '" id="hobby_' . $hobby['maSoThich'] . '" name="hobbies[]">
-                                                    <label class="form-check-label" for="hobby_' . $hobby['maSoThich'] . '">' . $hobby['tenSoThich'] . '</label>
-                                                  </div>';
-                                            if (++$count % 4 === 0) {
-                                                echo '</div><div class="row">';
-                                            }
-
-                                        }
-                                        echo '</div>';
-                                    }
+                            <div class="mb-4" id="hobbiesSection">
+                                <label class="form-label fw-semibold mb-3">
+                                    <i class="bi bi-heart-fill text-danger"></i> Sở thích của bạn
+                                    <span class="badge bg-info ms-1">Chỉ với mục đích nghiêm túc</span>
+                                </label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <?php 
+                                    if ($formData['hobbies'] && $formData['hobbies']->num_rows > 0):
+                                        while ($hobby = $formData['hobbies']->fetch_assoc()): 
+                                    ?>
+                                        <div>
+                                            <input type="checkbox" 
+                                                class="hobby-checkbox d-none" 
+                                                id="hobby_<?= $hobby['maSoThich'] ?>" 
+                                                name="hobbies[]" 
+                                                value="<?= $hobby['maSoThich'] ?>">
+                                            <label class="hobby-label" for="hobby_<?= $hobby['maSoThich'] ?>">
+                                                <?= htmlspecialchars($hobby['tenSoThich']) ?>
+                                            </label>
+                                        </div>
+                                    <?php 
+                                        endwhile;
+                                    endif; 
                                     ?>
                                 </div>
                             </div>
+
 
                             <div class="mb-3">
                                 <label for="bio" class="form-label">Mô tả bản thân</label>

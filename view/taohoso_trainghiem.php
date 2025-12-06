@@ -16,7 +16,7 @@
     <?php
     if (!isset($_SESSION['uid'])) {
         echo '<script>alert("Vui lòng đăng nhập!");</script>';
-        header("refresh:0;url=home.php?page=dangnhap");
+        header("refresh:0;url=home_test.php?page=dangnhap");
         exit();
     }
 
