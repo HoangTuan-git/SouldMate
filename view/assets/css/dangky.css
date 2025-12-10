@@ -22,20 +22,29 @@
     margin-bottom: 2rem;
 }
 
-.brand-icon {
-    width: 70px;
-    height: 70px;
+.brand-logo {
+    width: 64px;
+    height: 64px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 50%;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 1rem;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, .3);
 }
 
-.brand-icon i {
-    font-size: 1.8rem;
+.brand-logo i {
+    font-size: 28px;
     color: #fff;
+}
+
+.brand-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    letter-spacing: -0.025em;
 }
 
 .signup-title {

@@ -23,41 +23,8 @@ if (isset($_POST['btnthich'])) {
   }
 }
 
-// Lấy dữ liệu cho bộ lọc
-$khuvuc = $controller->GetAllKhuVuc();
-$ngheNghiep = $controller->GetAllNgheNghiep();
-
-
-// Xử lý bộ lọc
-$filters = [];
-$selectedRegion = $_POST['region'] ?? '';
-$selectedJob = $_POST['job'] ?? '';
-$selectedAgeMin = $_POST['age_min'] ?? '';
-$selectedAgeMax = $_POST['age_max'] ?? '';
-$hasFilters = false;
-
-if (isset($_POST['btnApply'])) {
-  $hasFilters = true;
-  
-  if (!empty($selectedRegion)) {
-    $filters['thanhpho'] = (int)$selectedRegion;
-  }
-  
-  if (!empty($selectedJob)) {
-    $filters['nghenghiep'] = (int)$selectedJob;
-  }
-  
-  if (!empty($selectedAgeMin)) {
-    $filters['tuoi_min'] = (int)$selectedAgeMin;
-  }
-  
-  if (!empty($selectedAgeMax)) {
-    $filters['tuoi_max'] = (int)$selectedAgeMax;
-  }
-}
-
 // Lấy danh sách đề xuất
-$users = $hasFilters ? $controller->GetAllUser($filters) : $controller->GetAllUser();
+$users = $controller->GetAllUser();
 ?>
 
 <style>
@@ -209,77 +176,6 @@ $users = $hasFilters ? $controller->GetAllUser($filters) : $controller->GetAllUs
 
 <body>
   <div class="wrap">
-    <!-- Bộ lọc nâng cao -->
-    <form class="dx-controls" action="home.php?page=dexuat" method="post">
-      <div>
-        <label for="region">🌍 Khu vực</label>
-        <select class="dx-dd" name="region" id="region">
-          <option value="">-- Tất cả --</option>
-          <?php 
-          mysqli_data_seek($khuvuc, 0); // Reset pointer
-          while ($r = $khuvuc->fetch_assoc()): 
-          ?>
-            <option value="<?= $r['maThanhPho'] ?>" <?= ($selectedRegion == $r['maThanhPho'] ? 'selected' : '') ?>>
-              <?= htmlspecialchars($r['tenThanhPho']) ?>
-            </option>
-          <?php endwhile; ?>
-        </select>
-      </div>
-      
-      <div>
-        <label for="job">💼 Nghề nghiệp</label>
-        <select class="dx-dd" name="job" id="job">
-          <option value="">-- Tất cả --</option>
-          <?php 
-          // Nhóm nghề theo ngành
-          $currentNganh = '';
-          $hasOpenOptgroup = false;
-          
-          while ($j = $ngheNghiep->fetch_assoc()): 
-            $tenNganh = $j['tenNganh'] ?? 'Ngành khác';
-            
-            // Nếu chuyển sang ngành mới
-            if ($currentNganh !== $tenNganh) {
-              // Đóng optgroup cũ nếu có
-              if ($hasOpenOptgroup) {
-                echo '</optgroup>';
-              }
-              // Mở optgroup mới cho ngành
-              echo '<optgroup label="📁 ' . htmlspecialchars($tenNganh) . '">';
-              $currentNganh = $tenNganh;
-              $hasOpenOptgroup = true;
-            }
-          ?>
-            <option value="<?= $j['maNgheNghiep'] ?>" <?= ($selectedJob == $j['maNgheNghiep'] ? 'selected' : '') ?>>
-              &nbsp;&nbsp;└ <?= htmlspecialchars($j['tenNgheNghiep']) ?>
-            </option>
-          <?php 
-          endwhile; 
-          // Đóng optgroup cuối cùng
-          if ($hasOpenOptgroup) {
-            echo '</optgroup>';
-          }
-          ?>
-        </select>
-      </div>
-      
-      <div>
-        <label for="age_min">🎂 Tuổi từ</label>
-        <input type="number" name="age_min" id="age_min" min="18" max="100" 
-               placeholder="VD: 20" value="<?= htmlspecialchars($selectedAgeMin) ?>">
-      </div>
-      
-      <div>
-        <label for="age_max">🎂 Tuổi đến</label>
-        <input type="number" name="age_max" id="age_max" min="18" max="100" 
-               placeholder="VD: 35" value="<?= htmlspecialchars($selectedAgeMax) ?>">
-      </div>
-      
-      <div class="dx-button-group">
-        <button class="dx-apply" type="submit" name="btnApply">🔍 Tìm kiếm</button>
-        <button class="dx-reset" type="button" onclick="location.href='home.php?page=dexuat'">🔄 Đặt lại</button>
-      </div>
-    </form>
 
     <!-- Stack thẻ người dùng -->
     <div class="cards" id="cardContainer">

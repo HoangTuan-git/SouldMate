@@ -2,39 +2,10 @@
 require_once("model/mdexuat.php");
 class Cdexuat
 {
-    public function GetAllKhuVuc()
+    public function GetAllUser()
     {
         $p = new Mdexuat();
-        $tblKhuVuc = $p->GetAllKhuVuc();
-        return $tblKhuVuc;
-    }
-    
-    public function GetAllNgheNghiep()
-    {
-        $p = new Mdexuat();
-        return $p->GetAllNgheNghiep();
-    }
-    
-    public function GetAllSoThich()
-    {
-        $p = new Mdexuat();
-        return $p->GetAllSoThich();
-    }
-    
-    public function GetUserHobbies($uid)
-    {
-        $p = new Mdexuat();
-        return $p->GetUserHobbies($uid);
-    }
-    
-    /**
-     * Lấy danh sách đề xuất với bộ lọc
-     * @param array $filters - Mảng chứa các bộ lọc: ['thanhpho', 'tuoi_min', 'tuoi_max', 'nghenghiep']
-     */
-    public function GetAllUser($filters = [])
-    {
-        $p = new Mdexuat();
-        $tblUser = $p->GetAllUserByDeXuat($filters);
+        $tblUser = $p->GetAllUserByDeXuat();
         return $tblUser;
     }
 

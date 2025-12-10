@@ -6,34 +6,11 @@ class Mdexuat
      * Lấy danh sách người dùng đề xuất dựa trên thuật toán matching
      * Tham số lọc: $filters = ['thanhpho' => id, 'tuoi_min' => int, 'tuoi_max' => int, 'nghenghiep' => id]
      */
-    public function GetAllUserByDeXuat($filters = [])
+    public function GetAllUserByDeXuat()
     {
         $p = new mKetNoi();
         $conn = $p->KetNoi();
         $current_uid = $_SESSION['uid'];
-
-        // Xây dựng điều kiện lọc
-        $filterConditions = "";
-        
-        if (!empty($filters['thanhpho'])) {
-            $thanhpho = (int)$filters['thanhpho'];
-            $filterConditions .= " AND hs.maThanhPho = $thanhpho ";
-        }
-        
-        if (!empty($filters['tuoi_min'])) {
-            $tuoi_min = (int)$filters['tuoi_min'];
-            $filterConditions .= " AND YEAR(CURDATE()) - YEAR(hs.ngaySinh) >= $tuoi_min ";
-        }
-        
-        if (!empty($filters['tuoi_max'])) {
-            $tuoi_max = (int)$filters['tuoi_max'];
-            $filterConditions .= " AND YEAR(CURDATE()) - YEAR(hs.ngaySinh) <= $tuoi_max ";
-        }
-        
-        if (!empty($filters['nghenghiep'])) {
-            $nghenghiep = (int)$filters['nghenghiep'];
-            $filterConditions .= " AND hs.maNgheNghiep = $nghenghiep ";
-        }
 
         $query = "
         SELECT 
@@ -125,7 +102,7 @@ class Mdexuat
             AND nd.maNguoiDung != $current_uid
             AND qh.maNguoiDung1 IS NULL  -- Chưa có quan hệ
             AND hs.gioiTinh != cur_hs.gioiTinh  -- Chỉ ghép nam-nữ hoặc nữ-nam
-            $filterConditions
+           
             
         ORDER BY compatibility_score DESC, RAND()
         LIMIT 5

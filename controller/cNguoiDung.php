@@ -8,15 +8,16 @@ class controlNguoiDung
     public function Login($TDN, $MK): void
     {
         $p = new modelNguoiDung();
-        $MK = md5($MK);
+        //hash password argon2id
+        
         $tblTaiKhoan = $p->mLogin($TDN, $MK);
-        if (!$tblTaiKhoan) {
+        if ($tblTaiKhoan === false) {
             echo "<script>alert('Loi ket noi')</script>";
             header("refresh:0.5;url=home_test.php?page=dangnhap");
         } else {
-            if ($tblTaiKhoan->num_rows > 0) {
+            $r = $tblTaiKhoan->fetch_assoc();
+            if (password_verify($MK, $r['matKhau'])) {
                 //dang nhap thanh cong
-                $r = $tblTaiKhoan->fetch_assoc();
                 $userId = $r['maNguoiDung'];
                 
                 // Kiểm tra trạng thái tài khoản bị khóa
@@ -79,7 +80,8 @@ class controlNguoiDung
             // Email chưa tồn tại, lưu thông tin tạm vào session
             $_SESSION['temp_register'] = [
                 'email' => $TDN,
-                'password' => md5($MK)
+                //lưu mật khẩu thô
+                'password' => $MK
             ];
 
             // Gửi OTP
@@ -141,22 +143,29 @@ class controlNguoiDung
                 unset($_SESSION['temp_register']);
 
                 // Tự động đăng nhập - lấy thông tin user mới
-                $user = $p->mLogin($email, $password);
-                if ($user && $user->num_rows > 0) {
+                $user = $p->mLogin($email);
+                if ($user) {
                     $r = $user->fetch_assoc();
-                    $_SESSION['uid'] = $r['maNguoiDung'];
-                    $_SESSION['email'] = $email;
+                    if (password_verify($password, $r['matKhau'])) {
+                        $_SESSION['uid'] = $r['maNguoiDung'];
+                        $_SESSION['email'] = $email;
+                        // Tạo JWT token
+                        $token = JWTHelper::createToken($r['maNguoiDung'], $email);
+                        $_SESSION['jwt_token'] = $token;
 
-                    // Tạo JWT token
-                    $token = JWTHelper::createToken($r['maNguoiDung'], $email);
-                    $_SESSION['jwt_token'] = $token;
-
-                    $_SESSION['role'] = $r['role'] ?? 'user'; // Lưu role vào session
+                        $_SESSION['role'] = $r['role'] ?? 'user'; // Lưu role vào session
+                        echo "<script>alert('Đăng ký thành công!');</script>";
+                        //redirect to create profile quiz 
+                        header("refresh:0.5;url=home_test.php?page=profile_quiz");
+                    }else {
+                        echo "<script>alert('Lỗi xác thực mật khẩu');</script>";
+                    }
+                }else{
+                    echo "<script>alert('Lỗi đăng nhập tự động sau khi đăng ký');</script>";
                 }
 
-                echo "<script>alert('Đăng ký thành công!');</script>";
-                //redirect to create profile quiz 
-                header("refresh:0.5;url=home_test.php?page=profile_quiz");
+                header("refresh:0.5;url=home_test.php?page=dangnhap");
+
             } else {
                 echo "<script>alert('Lỗi khi tạo tài khoản');</script>";
                 header("refresh:0.5;url=home_test.php?page=dangky");
@@ -236,10 +245,9 @@ class controlNguoiDung
         }
 
         $email = $_SESSION['reset_password_email'];
-        $hashedPassword = md5($newPassword);
 
         $p = new modelNguoiDung();
-        $updated = $p->updatePassword($email, $hashedPassword);
+        $updated = $p->updatePassword($email, $newPassword);
 
         if ($updated) {
             unset($_SESSION['reset_password_email']);
