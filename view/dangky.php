@@ -21,15 +21,18 @@ if (isset($_REQUEST['sbtn'])) {
 
 
 
-<div class="signup-container">
+<div class="signup-container mt-4">
     <div class="signup-header">
+        <!-- Logo & Brand -->
         <div class="signup-header">
             <div class="brand-logo">
                 <i class="bi bi-heart-fill"></i>
             </div>
             <h1 class="brand-name">SoulMatch</h1>
         </div>
-        <h1 class="signup-title">Đăng ký</h1>
+
+        <!-- Login Title -->
+        <h2 class="signup-title">Đăng ký</h2>
         <p class="signup-subtitle">Tạo tài khoản để bắt đầu kết nối</p>
     </div>
 

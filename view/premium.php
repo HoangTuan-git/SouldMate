@@ -79,14 +79,17 @@ $packages = PREMIUM_PACKAGES;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 15px;
+            padding: 10px 15px;
+            border-radius: 15px;
         }
         .premium-header {
+            margin-top: 20px;
             text-align: center;
             color: white;
             margin-bottom: 50px;
         }
         .premium-header h1 {
+           
             font-size: 3rem;
             font-weight: bold;
             margin-bottom: 20px;

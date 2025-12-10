@@ -59,22 +59,44 @@ class modelTinNhan
 
     public function mGetAllFriend($uid)
     {
-        $strget1 = "select * from nguoidung join quanhenguoidung on nguoidung.maNguoiDung = quanhenguoidung.maNguoiDung1 join hosonguoidung on nguoidung.maNguoiDung = hosonguoidung.maNguoiDung where maNguoiDung2 = $uid and trangThai = 'ghep'";
-        $strget2 = "select * from nguoidung join quanhenguoidung on nguoidung.maNguoiDung = quanhenguoidung.maNguoiDung2 join hosonguoidung on nguoidung.maNguoiDung = hosonguoidung.maNguoiDung where maNguoiDung1 = $uid and trangThai = 'ghep'";
-        $result1 =  $this->execQuery($strget1);
-        $result2 =  $this->execQuery($strget2);
-        $result = array();
-        if ($result1) {
-            while ($row = $result1->fetch_assoc()) {
-                $result[] = $row;
+        // Lấy tất cả người dùng có tin nhắn với user hiện tại
+        // Loại trừ những người đã bị chặn (trangThai = 'chan')
+        $strget = "
+            SELECT DISTINCT 
+                nguoidung.*,
+                hosonguoidung.*,
+                quanhenguoidung.trangThai,
+                quanhenguoidung.maNguoiDung1,
+                quanhenguoidung.maNguoiDung2
+            FROM nguoidung
+            INNER JOIN hosonguoidung ON nguoidung.maNguoiDung = hosonguoidung.maNguoiDung
+            LEFT JOIN quanhenguoidung ON 
+                (nguoidung.maNguoiDung = quanhenguoidung.maNguoiDung1 AND quanhenguoidung.maNguoiDung2 = $uid)
+                OR (nguoidung.maNguoiDung = quanhenguoidung.maNguoiDung2 AND quanhenguoidung.maNguoiDung1 = $uid)
+            WHERE nguoidung.maNguoiDung != $uid
+                AND (quanhenguoidung.trangThai IS NULL OR quanhenguoidung.trangThai != 'chan')
+                AND EXISTS (
+                    SELECT 1 FROM tinnhan 
+                    WHERE (tinnhan.maNguoiDung1 = $uid AND tinnhan.maNguoiDung2 = nguoidung.maNguoiDung)
+                       OR (tinnhan.maNguoiDung2 = $uid AND tinnhan.maNguoiDung1 = nguoidung.maNguoiDung)
+                )
+            ORDER BY (
+                SELECT MAX(thoiGianGui) FROM tinnhan 
+                WHERE (tinnhan.maNguoiDung1 = $uid AND tinnhan.maNguoiDung2 = nguoidung.maNguoiDung)
+                   OR (tinnhan.maNguoiDung2 = $uid AND tinnhan.maNguoiDung1 = nguoidung.maNguoiDung)
+            ) DESC
+        ";
+        
+        $result = $this->execQuery($strget);
+        $friendList = array();
+        
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $friendList[] = $row;
             }
         }
-        if ($result2) {
-            while ($row = $result2->fetch_assoc()) {
-                $result[] = $row;
-            }
-        }
-        return $result;
+        
+        return $friendList;
     }
 
     public function mCheckBlocked($uid1, $uid2)
