@@ -11,6 +11,26 @@ class Mdexuat
         $p = new mKetNoi();
         $conn = $p->KetNoi();
         $current_uid = $_SESSION['uid'];
+        // 1. Đếm số lượt tương tác hôm nay (ghep + boqua) của user này
+        $sqlCount = "
+            SELECT COUNT(*) AS cnt
+            FROM quanhenguoidung
+            WHERE maNguoiDung1 = $current_uid
+            AND DATE(ngayTao) = CURDATE()
+            AND trangThai IN ('ghep', 'boqua')
+        ";
+        $rsCount = $conn->query($sqlCount);
+        $rowCount = $rsCount ? $rsCount->fetch_assoc() : ['cnt' => 0];
+        $countToday = (int)$rowCount['cnt'];
+
+        // Nếu đã đủ 5 lần thì không đề xuất nữa
+        if ($countToday >= 5) {
+            $p->NgatKetNoi($conn);
+            return false; // hoặc trả về một result rỗng tuỳ bạn xử lý
+        }
+
+        // Số người còn lại được đề xuất hôm nay
+        $limit = 5 - $countToday;
 
         $query = "
         SELECT 
@@ -70,7 +90,6 @@ class Mdexuat
                 END)
                 
             ) AS compatibility_score,
-            
             -- Số sở thích chung để hiển thị
             COALESCE(
                 (
@@ -102,61 +121,12 @@ class Mdexuat
             AND nd.maNguoiDung != $current_uid
             AND qh.maNguoiDung1 IS NULL  -- Chưa có quan hệ
             AND hs.gioiTinh != cur_hs.gioiTinh  -- Chỉ ghép nam-nữ hoặc nữ-nam
-           
-            
+            AND cur_hs.trangThaiHenHo = 'nghiêm túc'  -- User hiện tại phải là nghiêm túc
+            AND hs.trangThaiHenHo = 'nghiêm túc'  -- Người được đề xuất cũng phải là nghiêm túc
         ORDER BY compatibility_score DESC, RAND()
-        LIMIT 5
+        LIMIT $limit
         ";
 
-        $kq = $conn->query($query);
-        $p->NgatKetNoi($conn);
-        return $kq;
-    }
-    
-    /**
-     * Lấy danh sách sở thích của một người dùng (thông qua hồ sơ)
-     */
-    public function GetUserHobbies($uid)
-    {
-        $p = new mKetNoi();
-        $conn = $p->KetNoi();
-        $query = "SELECT st.* 
-                  FROM sothich st
-                  INNER JOIN hoso_sothich hst ON st.maSoThich = hst.maSoThich
-                  INNER JOIN hosonguoidung hs ON hst.maHoSo = hs.maHoSo
-                  WHERE hs.maNguoiDung = $uid";
-        $kq = $conn->query($query);
-        $p->NgatKetNoi($conn);
-        return $kq;
-    }
-    
-    public function GetAllKhuVuc()
-    {
-        $p = new mKetNoi();
-        $conn = $p->KetNoi();
-        $query = "SELECT * FROM thanhpho ORDER BY tenThanhPho ASC";
-        $kq = $conn->query($query);
-        $p->NgatKetNoi($conn);
-        return $kq;
-    }
-    public function GetAllSoThich()
-    {
-        $p = new mKetNoi();
-        $conn = $p->KetNoi();
-        $query = "SELECT * FROM sothich ORDER BY tenSoThich ASC";
-        $kq = $conn->query($query);
-        $p->NgatKetNoi($conn);
-        return $kq;
-    }
-    public function GetAllNgheNghiep()
-    {
-        $p = new mKetNoi();
-        $conn = $p->KetNoi();
-        // Lấy nghề nghiệp kèm theo tên ngành
-        $query = "SELECT nn.*, ng.tenNganh 
-                  FROM nghenghiep nn 
-                  LEFT JOIN nganhnghe ng ON nn.maNganh = ng.maNganh 
-                  ORDER BY ng.tenNganh ASC, nn.tenNgheNghiep ASC";
         $kq = $conn->query($query);
         $p->NgatKetNoi($conn);
         return $kq;
@@ -169,14 +139,5 @@ class Mdexuat
         $kq = $conn->query($query);
         $p->NgatKetNoi($conn);
         return $kq;
-    }
-    public function HasLiked($uid1, $uid2)
-    {
-        $p = new mKetNoi();
-        $conn = $p->KetNoi();
-        $query = "SELECT * FROM quanhenguoidung WHERE maNguoiDung1 = $uid1 AND maNguoiDung2 = $uid2 AND trangThai = 'like'";
-        $kq = $conn->query($query);
-        $p->NgatKetNoi($conn);
-        return ($kq && $kq->num_rows > 0);
     }
 }

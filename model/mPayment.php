@@ -7,15 +7,6 @@ include_once('mKetNoi.php');
  */
 class modelPayment
 {
-    /**
-     * Tạo đơn hàng mới
-     * @param int $userId - maNguoiDung
-     * @param string $packageId - Loại gói (premium_1month, v.v.)
-     * @param int $amount - Số tiền
-     * @param string $orderId - Mã đơn hàng unique (sẽ không dùng, dùng auto_increment)
-     * @param string $status - Trạng thái: pending, completed, failed, cancelled
-     * @return bool|int - Trả về maDonHang (INT) nếu thành công, false nếu thất bại
-     */
     public function createOrder($userId, $packageId, $amount, $orderId, $status = 'pending')
     {
         $conn = new mKetNoi();

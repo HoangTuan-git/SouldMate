@@ -12,15 +12,14 @@ $controller = new Cdexuat();
 if (isset($_POST['btnthich'])) {
   $uid1 = $_SESSION['uid'];
   $uid2 = (int)$_POST['btnthich'];
-  
-  if (!$controller->HasLiked($uid1, $uid2)) {
-    $controller->InsertUser($uid1, $uid2, 'ghep');
-    echo "<script>
-      document.addEventListener('DOMContentLoaded', function() {
-        alert('Đã ghép người dùng này!');
-      });
-    </script>";
-  }
+  $controller->InsertUser($uid1, $uid2, 'ghep');
+}
+
+// Xử lý nút bỏ qua
+if (isset($_POST['btnboqua'])) {
+  $uid1 = $_SESSION['uid'];
+  $uid2 = (int)$_POST['btnboqua'];
+  $controller->InsertUser($uid1, $uid2, 'boqua');
 }
 
 // Lấy danh sách đề xuất
@@ -250,7 +249,8 @@ $users = $controller->GetAllUser();
               </div>
               
               <div class="actions">
-                <button class="btn-circle btn-skip" type="button" title="Bỏ qua">✕</button>
+                <button class="btn-circle btn-skip" type="submit" name="btnboqua" 
+                        value="<?= $u['maNguoiDung'] ?>" title="Bỏ qua">✕</button>
                 <a href="home.php?page=profile&uid=<?= $u['maNguoiDung'] ?>" 
                    class="btn-circle btn-profile" title="Xem hồ sơ" target="_blank">
                   <i class="bi bi-person-circle"></i>
@@ -268,7 +268,6 @@ $users = $controller->GetAllUser();
         echo '<div class="empty">
                 <i class="bi bi-emoji-frown" style="font-size: 48px; color: #ccc;"></i>
                 <p style="margin-top: 15px; color: #666;">Không tìm thấy người dùng phù hợp.</p>
-                <p style="color: #999; font-size: 14px;">Thử thay đổi bộ lọc để xem thêm gợi ý!</p>
               </div>';
       }
       ?>

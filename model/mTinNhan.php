@@ -59,32 +59,37 @@ class modelTinNhan
 
     public function mGetAllFriend($uid)
     {
-        // Lấy tất cả người dùng có tin nhắn với user hiện tại
-        // Loại trừ những người đã bị chặn (trangThai = 'chan')
+        // Lấy tất cả người dùng:
+        // 1. Đã ghép (trangThai = 'ghep') - dù có tin nhắn hay chưa
+        // 2. Có tin nhắn (Premium nhắn tin trước) - chưa ghép nhưng có tin nhắn
+        // Loại trừ: 'chan', 'thich', 'boqua'
         $strget = "
             SELECT DISTINCT 
                 nguoidung.*,
                 hosonguoidung.*,
                 quanhenguoidung.trangThai,
                 quanhenguoidung.maNguoiDung1,
-                quanhenguoidung.maNguoiDung2
+                quanhenguoidung.maNguoiDung2,
+                (SELECT MAX(thoiGianGui) FROM tinnhan 
+                 WHERE (tinnhan.maNguoiDung1 = $uid AND tinnhan.maNguoiDung2 = nguoidung.maNguoiDung)
+                    OR (tinnhan.maNguoiDung2 = $uid AND tinnhan.maNguoiDung1 = nguoidung.maNguoiDung)
+                ) as lastMessageTime
             FROM nguoidung
             INNER JOIN hosonguoidung ON nguoidung.maNguoiDung = hosonguoidung.maNguoiDung
-            LEFT JOIN quanhenguoidung ON 
+            INNER JOIN quanhenguoidung ON 
                 (nguoidung.maNguoiDung = quanhenguoidung.maNguoiDung1 AND quanhenguoidung.maNguoiDung2 = $uid)
                 OR (nguoidung.maNguoiDung = quanhenguoidung.maNguoiDung2 AND quanhenguoidung.maNguoiDung1 = $uid)
             WHERE nguoidung.maNguoiDung != $uid
-                AND (quanhenguoidung.trangThai IS NULL OR quanhenguoidung.trangThai != 'chan')
-                AND EXISTS (
-                    SELECT 1 FROM tinnhan 
-                    WHERE (tinnhan.maNguoiDung1 = $uid AND tinnhan.maNguoiDung2 = nguoidung.maNguoiDung)
-                       OR (tinnhan.maNguoiDung2 = $uid AND tinnhan.maNguoiDung1 = nguoidung.maNguoiDung)
+                AND quanhenguoidung.trangThai NOT IN ('chan', 'thich', 'boqua')
+                AND (
+                    quanhenguoidung.trangThai = 'ghep'
+                    OR EXISTS (
+                        SELECT 1 FROM tinnhan 
+                        WHERE (tinnhan.maNguoiDung1 = $uid AND tinnhan.maNguoiDung2 = nguoidung.maNguoiDung)
+                           OR (tinnhan.maNguoiDung2 = $uid AND tinnhan.maNguoiDung1 = nguoidung.maNguoiDung)
+                    )
                 )
-            ORDER BY (
-                SELECT MAX(thoiGianGui) FROM tinnhan 
-                WHERE (tinnhan.maNguoiDung1 = $uid AND tinnhan.maNguoiDung2 = nguoidung.maNguoiDung)
-                   OR (tinnhan.maNguoiDung2 = $uid AND tinnhan.maNguoiDung1 = nguoidung.maNguoiDung)
-            ) DESC
+            ORDER BY lastMessageTime DESC
         ";
         
         $result = $this->execQuery($strget);

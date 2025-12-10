@@ -246,13 +246,9 @@ $packages = PREMIUM_PACKAGES;
                         </form>
 
                         <ul class="package-features">
-                            <li><i class="fas fa-check"></i> Lượt thích không giới hạn</li>
+                            <li><i class="fas fa-check"></i> Tính năng đề xuất</li>
                             <li><i class="fas fa-check"></i> Xem ai đã thích bạn</li>
-                            <li><i class="fas fa-check"></i> Boost hồ sơ</li>
-                            <li><i class="fas fa-check"></i> Rewind lượt vuốt</li>
-                            <li><i class="fas fa-check"></i> 5 Super Like/ngày</li>
-                            <li><i class="fas fa-check"></i> 1 Boost miễn phí/tháng</li>
-                            <li><i class="fas fa-check"></i> Ưu tiên trong tìm kiếm</li>
+                            <li><i class="fas fa-check"></i> Ưu tiên nhắn tin trước</li>
                             <li><i class="fas fa-check"></i> Không quảng cáo</li>
                         </ul>
                     </div>
