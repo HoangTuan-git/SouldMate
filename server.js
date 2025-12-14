@@ -24,7 +24,7 @@ const io = socketIo(server, {
 });
 
 // JWT Secret Key (phải giống với PHP)
-const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY || 'my_sercret_key_22696961';
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY || 'my_sercret_key_12345';
 console.log('🔑 Using JWT_SECRET_KEY:', JWT_SECRET_KEY);
 
 // Middleware

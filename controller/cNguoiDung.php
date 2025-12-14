@@ -20,11 +20,47 @@ class controlNguoiDung
                 //dang nhap thanh cong
                 $userId = $r['maNguoiDung'];
                 
-                // Kiểm tra trạng thái tài khoản bị khóa
+                // 🔥 BƯỚC 1: Tự động mở khóa tài khoản nếu đã hết hạn
                 if (isset($r['trangThaiViPham']) && $r['trangThaiViPham'] == 'khoa') {
-                    echo "<script>alert('Tài khoản của bạn đã bị khóa do vi phạm. Vui lòng liên hệ quản trị viên.')</script>";
-                    header("refresh:0.5;url=home_test.php?page=dangnhap");
-                    return;
+                    include_once('model/mBaoCaoViPham.php');
+                    $modelViPham = new modelBaoCaoViPham();
+                    
+                    // Kiểm tra và tự động mở khóa
+                    $unlockCount = $modelViPham->autoUnlockExpiredAccounts();
+                    
+                    // Reload thông tin user sau khi mở khóa
+                    $tblTaiKhoan = $p->mLogin($TDN, $MK);
+                    $r = $tblTaiKhoan->fetch_assoc();
+                    
+                    // Nếu vẫn bị khóa sau khi check
+                    if ($r['trangThaiViPham'] == 'khoa') {
+                        // Lấy thông tin chi tiết về khóa
+                        $userInfo = $modelViPham->getUserInfo($userId);
+                        
+                        if ($userInfo && $userInfo['ngayMoKhoa']) {
+                            $ngayMoKhoa = date('d/m/Y H:i', strtotime($userInfo['ngayMoKhoa']));
+                            $soNgayConLai = ceil((strtotime($userInfo['ngayMoKhoa']) - time()) / 86400);
+                            
+                            echo "<script>alert('Tài khoản bị khóa đến $ngayMoKhoa (còn $soNgayConLai ngày).\\n\\nLý do: " . addslashes($userInfo['lyDoKhoa']) . "')</script>";
+                        } else {
+                            echo "<script>alert('Tài khoản của bạn đã bị khóa vĩnh viễn.\\n\\nVui lòng liên hệ quản trị viên.')</script>";
+                        }
+                        
+                        header("refresh:0.5;url=home_test.php?page=dangnhap");
+                        return;
+                    } else {
+                        // Đã được mở khóa tự động
+                        echo "<script>alert('Tài khoản của bạn đã được mở khóa tự động!')</script>";
+                    }
+                }
+
+                // 🔥 BƯỚC 2: Tự động vô hiệu hóa Premium hết hạn
+                include_once('model/mPayment.php');
+                $modelPayment = new modelPayment();
+                $deactivatedCount = $modelPayment->deactivateExpiredPremium();
+                
+                if ($deactivatedCount > 0) {
+                    error_log("Deactivated $deactivatedCount expired premium accounts");
                 }
 
                 // Tạo JWT token

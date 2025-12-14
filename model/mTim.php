@@ -105,7 +105,7 @@ class mTim
 
         // Chỉ cập nhật 1 bản ghi duy nhất (bản ghi cũ có sẵn)
         // Tìm bản ghi nào tồn tại (uid2->uid1 hoặc uid1->uid2)
-        $query = "UPDATE quanhenguoidung SET trangthai = 'ghep' 
+        $query = "UPDATE quanhenguoidung SET trangthai = 'ghep_search' 
                   WHERE (maNguoiDung1 = $uid1 AND maNguoiDung2 = $uid2)
                      OR (maNguoiDung1 = $uid2 AND maNguoiDung2 = $uid1)";
 

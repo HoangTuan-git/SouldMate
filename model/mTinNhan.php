@@ -61,7 +61,7 @@ class modelTinNhan
     {
         // Lấy tất cả người dùng:
         // 1. Đã ghép (trangThai = 'ghep') - dù có tin nhắn hay chưa
-        // 2. Có tin nhắn (Premium nhắn tin trước) - chưa ghép nhưng có tin nhắn
+        // 2. Có tin nhắn (Premium nhắn tin trước) - chưa có quan hệ nhưng có tin nhắn
         // Loại trừ: 'chan', 'thich', 'boqua'
         $strget = "
             SELECT DISTINCT 
@@ -76,11 +76,11 @@ class modelTinNhan
                 ) as lastMessageTime
             FROM nguoidung
             INNER JOIN hosonguoidung ON nguoidung.maNguoiDung = hosonguoidung.maNguoiDung
-            INNER JOIN quanhenguoidung ON 
+            LEFT JOIN quanhenguoidung ON 
                 (nguoidung.maNguoiDung = quanhenguoidung.maNguoiDung1 AND quanhenguoidung.maNguoiDung2 = $uid)
                 OR (nguoidung.maNguoiDung = quanhenguoidung.maNguoiDung2 AND quanhenguoidung.maNguoiDung1 = $uid)
             WHERE nguoidung.maNguoiDung != $uid
-                AND quanhenguoidung.trangThai NOT IN ('chan', 'thich', 'boqua')
+                AND (quanhenguoidung.trangThai IS NULL OR quanhenguoidung.trangThai NOT IN ('chan', 'thich', 'boqua'))
                 AND (
                     quanhenguoidung.trangThai = 'ghep'
                     OR EXISTS (

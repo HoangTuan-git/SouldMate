@@ -200,7 +200,7 @@
 
                             <div class="mb-3">
                                 <label for="occupation" class="form-label">Nghề nghiệp</label>
-                                <select class="form-select" id="occupation" name="occupation">
+                                <select class="form-select" id="occupation" name="occupation" required>
                                     <option value="" selected>Chọn nghề nghiệp của bạn</option>
                                     <?php
                                     if ($formData['jobs'] && $formData['jobs']->num_rows > 0) {

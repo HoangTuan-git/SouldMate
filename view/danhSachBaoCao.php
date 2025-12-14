@@ -4,8 +4,9 @@ include_once(dirname(__DIR__) . '/controller/cAdmin.php');
 $adminController = new controlAdmin();
 
 // Lấy filter từ URL
+$uid = isset($_GET['uid']) ? intval($_GET['uid']) : null;
 $loaiBaoCao = isset($_GET['loai']) ? $_GET['loai'] : null;
-$trangThai = isset($_GET['trangthai']) ? $_GET['trangthai'] : 'dangxuly';
+$trangThai = isset($_GET['trangthai']) ? $_GET['trangthai'] : '';
 
 // Xử lý cập nhật trạng thái
 if (isset($_POST['updateStatus'])) {
@@ -23,7 +24,7 @@ if (isset($_POST['updateStatus'])) {
 }
 
 // Lấy danh sách báo cáo
-$reports = $adminController->getAllReports($loaiBaoCao, $trangThai);
+$reports = $adminController->getAllReports($uid,$loaiBaoCao, $trangThai);
 
 // Kiểm tra success message từ session
 if (isset($_SESSION['success_message'])) {
@@ -49,6 +50,9 @@ if (isset($_SESSION['success_message'])) {
 <div class="card mb-4">
     <div class="card-body">
         <form method="GET" class="row g-3">
+            <!-- Hidden input để giữ tham số page -->
+            <input type="hidden" name="page" value="danhSachBaoCao">
+            
             <div class="col-md-4">
                 <label class="form-label">Loại báo cáo</label>
                 <select name="loai" class="form-select">
@@ -155,7 +159,8 @@ if (isset($_SESSION['success_message'])) {
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                         <?php else: ?>
-                                            <span class="text-muted small">N/A</span>
+                                            
+                                            <span class="text-muted small">Đã xóa</span>
                                         <?php endif; ?>
                                     <?php elseif ($report['loaiBaoCao'] == 'tinnhan'): ?>
                                         <!-- Modal hiển thị context tin nhắn -->

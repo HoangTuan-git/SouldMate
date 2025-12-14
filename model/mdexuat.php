@@ -69,8 +69,26 @@ class Mdexuat
                 ) +
                 
                 -- 2. ĐIỂM NGHỀ NGHIỆP (25%)
+                -- 2. ĐIỂM NGHỀ NGHIỆP (25%)
                 (CASE 
-                    WHEN hs.maNgheNghiep = cur_hs.maNgheNghiep THEN 25
+                    -- Cùng nghề nghiệp cụ thể: 25 điểm (100%)
+                    WHEN hs.maNgheNghiep = cur_hs.maNgheNghiep 
+                         AND hs.maNgheNghiep IS NOT NULL 
+                         AND cur_hs.maNgheNghiep IS NOT NULL 
+                    THEN 25
+                    
+                    -- Cùng ngành nghề nhưng khác nghề cụ thể: 15 điểm (60%)
+                    WHEN hs.maNgheNghiep != cur_hs.maNgheNghiep 
+                         AND EXISTS (
+                             SELECT 1 
+                             FROM nghenghiep nn1, nghenghiep nn2
+                             WHERE nn1.maNgheNghiep = hs.maNgheNghiep
+                               AND nn2.maNgheNghiep = cur_hs.maNgheNghiep
+                               AND nn1.maNganh = nn2.maNganh
+                               AND nn1.maNganh IS NOT NULL
+                         )
+                    THEN 15
+                    
                     ELSE 0 
                 END) +
                 

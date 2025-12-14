@@ -58,7 +58,7 @@ class modelBaoCaoViPham
         $con = $conn->KetNoi();
 
         if ($con) {
-            $sql = "SELECT bt.noiDungText, bt.noiDungAnh, bt.ngayTao, bt.phamVi, 
+            $sql = "SELECT bt.noiDungText, bt.noiDungAnh, bt.ngayTao, 
                            h.hoTen as tenNguoiDang, bt.maNguoiDung
                     FROM baidang bt
                     LEFT JOIN hosonguoidung h ON bt.maNguoiDung = h.maNguoiDung
@@ -247,7 +247,7 @@ class modelBaoCaoViPham
     /**
      * Lấy tất cả báo cáo theo loại
      */
-    public function getReportsByType($loaiBaoCao = null, $trangThai = null)
+    public function getReportsByType($uid = null, $loaiBaoCao = null, $trangThai = null)
     {
         $conn = new mKetNoi();
         $con = $conn->KetNoi();
@@ -264,7 +264,11 @@ class modelBaoCaoViPham
             
             $params = [];
             $types = '';
-            
+            if( $uid ) {
+                $sql .= " AND (bc.maNguoiDungBiBaoCao = ?)";
+                $params[] = $uid;
+                $types .= 'i';
+            }
             if ($trangThai) {
                 $sql .= " AND bc.trangThai = ?";
                 $params[] = $trangThai;
@@ -327,6 +331,7 @@ class modelBaoCaoViPham
                         nd.maNguoiDung,
                         h.hoTen,
                         nd.trangThaiViPham,
+                        nd.ngayMoKhoa,
                         (SELECT lv1.ngayThucHien 
                          FROM lichsuvipham lv1 
                          WHERE lv1.maNguoiDung = nd.maNguoiDung 
@@ -350,9 +355,12 @@ class modelBaoCaoViPham
     }
 
     /**
-     * Khóa tài khoản
+     * Khóa tài khoản với thời hạn
+     * @param int $maNguoiDung
+     * @param string $lyDo
+     * @param int|null $soNgayKhoa - Số ngày khóa (null = vĩnh viễn)
      */
-    public function lockAccount($maNguoiDung, $lyDo)
+    public function lockAccount($maNguoiDung, $lyDo, $soNgayKhoa = null)
     {
         $conn = new mKetNoi();
         $con = $conn->KetNoi();
@@ -372,21 +380,33 @@ class modelBaoCaoViPham
                 return false;
             }
             
+            // Tính ngày mở khóa nếu có thời hạn
+            $ngayMoKhoa = null;
+            if ($soNgayKhoa !== null && $soNgayKhoa > 0) {
+                $ngayMoKhoa = date('Y-m-d H:i:s', strtotime("+{$soNgayKhoa} days"));
+            }
+            
             // Bắt đầu transaction
             $con->begin_transaction();
             
             try {
-                // Cập nhật trạng thái vi phạm
+                // Cập nhật trạng thái vi phạm và ngày mở khóa
                 $sql1 = "UPDATE nguoidung 
-                        SET trangThaiViPham = 'khoa'
+                        SET trangThaiViPham = 'khoa', ngayMoKhoa = ?
                         WHERE maNguoiDung = ?";
                 
                 $stmt1 = $con->prepare($sql1);
-                $stmt1->bind_param("i", $maNguoiDung);
+                $stmt1->bind_param("si", $ngayMoKhoa, $maNguoiDung);
                 $stmt1->execute();
                 
                 // Thêm vào lịch sử vi phạm
                 $hanhDong = "Khóa tài khoản: " . $lyDo;
+                if ($soNgayKhoa !== null) {
+                    $hanhDong .= " (Thời hạn: {$soNgayKhoa} ngày)";
+                } else {
+                    $hanhDong .= " (Vĩnh viễn)";
+                }
+                
                 $sql2 = "INSERT INTO lichsuvipham (maNguoiDung, ngayThucHien, hanhDong) 
                         VALUES (?, NOW(), ?)";
                 
@@ -432,9 +452,9 @@ class modelBaoCaoViPham
             $con->begin_transaction();
             
             try {
-                // Cập nhật trạng thái vi phạm
+                // Cập nhật trạng thái vi phạm và xóa ngày mở khóa
                 $sql1 = "UPDATE nguoidung 
-                        SET trangThaiViPham = NULL
+                        SET trangThaiViPham = NULL, ngayMoKhoa = NULL
                         WHERE maNguoiDung = ?";
                 
                 $stmt1 = $con->prepare($sql1);
@@ -553,6 +573,7 @@ class modelBaoCaoViPham
                         nd.maNguoiDung,
                         nd.email,
                         nd.trangThaiViPham,
+                        nd.ngayMoKhoa,
                         (SELECT lv1.ngayThucHien 
                          FROM lichsuvipham lv1 
                          WHERE lv1.maNguoiDung = nd.maNguoiDung 
@@ -707,6 +728,67 @@ class modelBaoCaoViPham
                 $con->rollback();
                 $con->close();
                 error_log("Error deleting post: " . $e->getMessage());
+                return false;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Tự động mở khóa các tài khoản đã hết hạn
+     * Gọi hàm này ở đầu trang quản lý tài khoản khóa
+     */
+    public function autoUnlockExpiredAccounts()
+    {
+        $conn = new mKetNoi();
+        $con = $conn->KetNoi();
+
+        if ($con) {
+            $con->begin_transaction();
+            
+            try {
+                // Tìm các tài khoản đã hết hạn khóa
+                $sql = "SELECT maNguoiDung FROM nguoidung 
+                        WHERE trangThaiViPham = 'khoa' 
+                        AND ngayMoKhoa IS NOT NULL 
+                        AND ngayMoKhoa <= NOW()";
+                
+                $result = $con->query($sql);
+                $count = 0;
+                
+                if ($result && $result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        $maNguoiDung = $row['maNguoiDung'];
+                        
+                        // Mở khóa tài khoản
+                        $sqlUpdate = "UPDATE nguoidung 
+                                     SET trangThaiViPham = NULL, ngayMoKhoa = NULL 
+                                     WHERE maNguoiDung = ?";
+                        $stmtUpdate = $con->prepare($sqlUpdate);
+                        $stmtUpdate->bind_param("i", $maNguoiDung);
+                        $stmtUpdate->execute();
+                        
+                        // Thêm vào lịch sử vi phạm
+                        $hanhDong = "Tự động mở khóa tài khoản (hết hạn)";
+                        $sqlHistory = "INSERT INTO lichsuvipham (maNguoiDung, ngayThucHien, hanhDong) 
+                                      VALUES (?, NOW(), ?)";
+                        $stmtHistory = $con->prepare($sqlHistory);
+                        $stmtHistory->bind_param("is", $maNguoiDung, $hanhDong);
+                        $stmtHistory->execute();
+                        
+                        $count++;
+                    }
+                }
+                
+                $con->commit();
+                $con->close();
+                
+                return $count; // Trả về số tài khoản đã mở khóa
+                
+            } catch (Exception $e) {
+                $con->rollback();
+                $con->close();
+                error_log("Error auto unlocking accounts: " . $e->getMessage());
                 return false;
             }
         }
