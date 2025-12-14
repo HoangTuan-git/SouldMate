@@ -68,7 +68,7 @@ if (!empty($userData['ngaySinh'])) {
         <div class="profile-header">
             <div class="profile-avatar-wrapper">
                 <img src="uploads/avatars/<?= htmlspecialchars($userData['avatar']) ?>"
-                    alt="<?= htmlspecialchars($userData['hoTen']) ?>"
+                    alt="<?= !empty($userData['avatar']) ? htmlspecialchars($userData['avatar']) : 'default.png'?>"
                     class="profile-avatar-img">
             </div>
 
