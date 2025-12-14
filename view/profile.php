@@ -123,14 +123,20 @@ if (!empty($userData['ngaySinh'])) {
                 </div>
             </div>
         </div>
-
+        <div class="profile-section">
+        <!-- Ngành nghề Section -->
+        <?php if ($userData['tenNganh']): ?>
+            <h3 class="profile-section-title">Ngành nghề</h3>
+            <p class="profile-section-text"><?= htmlspecialchars($userData['tenNganh']) ?></p>
+            <br>
+        <?php endif; ?>
         <!-- Nghề nghiệp Section -->
         <?php if ($ngheNghiep): ?>
-            <div class="profile-section">
                 <h3 class="profile-section-title">Nghề nghiệp</h3>
                 <p class="profile-section-text"><?= htmlspecialchars($ngheNghiep) ?></p>
             </div>
         <?php endif; ?>
+
 
         <!-- Sở thích Section -->
         <?php if (!empty($soThichArray)): ?>

@@ -32,11 +32,12 @@ class modelHoSo
      */
     public function getProfileByUserId($maNguoiDung)
     {
-        $query = "SELECT h.*, tp.tenThanhPho, nn.tenNgheNghiep,
+        $query = "SELECT h.*, tp.tenThanhPho, nnh.tenNganh, nn.tenNgheNghiep,
                   GROUP_CONCAT(st.tenSoThich SEPARATOR ', ') AS soThich
                   FROM hosonguoidung h
                   LEFT JOIN thanhpho tp ON h.maThanhPho = tp.maThanhPho
                   LEFT JOIN nghenghiep nn ON h.maNgheNghiep = nn.maNgheNghiep
+                  LEFT JOIN nganhnghe nnh ON nn.maNganh = nnh.maNganh
                   LEFT JOIN hoso_sothich hst ON h.maHoSo = hst.maHoSo
                   LEFT JOIN sothich st ON hst.maSoThich = st.maSoThich
                   WHERE h.maNguoiDung = $maNguoiDung
