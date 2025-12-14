@@ -4,43 +4,33 @@ if (!isset($_SESSION['uid'])) {
     exit();
 }
 
-include_once("model/mme.php");
-$p = new mMe();
-$rs = $p->GetUserById($_SESSION['uid']);
-$u = $rs ? $rs->fetch_assoc() : [];
+include_once("controller/cHoSo.php");
+$cHoSo = new controlHoSo();
+$profileResult = $cHoSo->getProfile($_SESSION['uid']);
 
-// Lấy dữ liệu
+// Lấy dữ liệu từ hồ sơ
+$u = [];
+if ($profileResult && $profileResult->num_rows > 0) {
+    $u = $profileResult->fetch_assoc();
+}
+
+// Gán giá trị mặc định nếu không có hồ sơ
 $hoTen = $u['hoTen'] ?? 'Người dùng';
 $ngaySinh = $u['ngaySinh'] ?? null;
 $gioiTinh = $u['gioiTinh'] ?? '';
-$maNgheNghiep = $u['maNgheNghiep'] ?? '';
-$maThanhPho = $u['maThanhPho'] ?? '';
 $moTa = $u['moTa'] ?? '';
 $avatar = $u['avatar'] ?? 'default.png';
-$trangThaiHenHo = $u['trangThaiHenHo'] ?? " ";
-$soThichText = $u['soThichText'] ?? '';
-$avatarSrc = (isset($_SESSION['avatar']) ? $_SESSION['avatar'] : 'uploads/avatars/'. $avatar);
+$trangThaiHenHo = $u['trangThaiHenHo'] ?? '';
 $isTraiNghiem = (strtolower(trim($trangThaiHenHo)) === 'trải nghiệm');
 
-// Text giới tính
+// Avatar source
+$avatarSrc = (isset($_SESSION['avatar']) ? $_SESSION['avatar'] : 'uploads/avatars/'. $avatar);
 
-// Lấy tên nghề nghiệp từ bảng nghenghiep
-$nghenghiepText = '';
-if ($maNgheNghiep) {
-    $rs = $p->GetUserByIdJob($maNgheNghiep);
-    if ($row = $rs->fetch_assoc()) {
-        $nghenghiepText = $row['tenNgheNghiep'];
-    }
-}
-
-// Lấy tên thành phố từ bảng thanhpho
-$thanhPhoText = '';
-if ($maThanhPho) {
-    $rs = $p->GetUserByIdRegion($maThanhPho);
-    if ($row = $rs->fetch_assoc()) {
-        $thanhPhoText = $row['tenThanhPho'];
-    }
-}
+// Tên nghề nghiệp và thành phố (đã được JOIN trong query)
+$nganhNgheText = $u['tenNganh'] ?? '';
+$nghenghiepText = $u['tenNgheNghiep'] ?? '';
+$thanhPhoText = $u['tenThanhPho'] ?? '';
+$soThichText = $u['soThich'] ?? '';
 ?>
 
 <div class="profile-container mt-2">
@@ -94,7 +84,12 @@ if ($maThanhPho) {
     <?php if (!$isTraiNghiem): ?>
         <div class="profile-section">
             <h6 class="profile-section-title">Thông tin chi tiết</h6>
-
+            <?php if ($nganhNgheText): ?>
+                <div class="profile-detail-item">
+                    <i class="bi bi-briefcase"></i>
+                    <span><?= htmlspecialchars($nganhNgheText) ?></span>
+                </div>
+            <?php endif; ?>
             <?php if ($nghenghiepText): ?>
                 <div class="profile-detail-item">
                     <i class="bi bi-briefcase"></i>
