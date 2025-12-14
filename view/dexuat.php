@@ -116,7 +116,20 @@ $users = $controller->GetAllUser();
 .dx-reset:hover {
   background: #e0e0e0;
 }
-
+.info
+{
+  position: absolute;
+  border-radius: 16px;
+  padding: 15px 20px;
+  
+  width: 60%;
+  bottom: 20px;
+  left: 20px;
+  color: white;
+  z-index: 5;
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  visibility: visible;
+}
 .compatibility-badge {
   position: absolute;
   top: 10px;

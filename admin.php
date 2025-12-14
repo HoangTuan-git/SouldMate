@@ -2,7 +2,7 @@
 session_start();
 // Kiểm tra quyền admin
 if (!isset($_SESSION['uid']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
-    header('Location: ../home_test.php?page=dangnhap');
+    header('Location: home_test.php?page=dangnhap');
     exit();
 }
 
@@ -21,13 +21,13 @@ if (!isset($_SESSION['uid']) || !isset($_SESSION['role']) || $_SESSION['role'] !
     <div class="wrapper">
         <aside class="sidebar">
             <nav class="nav flex-column">
-                <a class="nav-link" href="admin.php?page=quanLyViPham">
+                <a class="nav-link" href="admin.php">
                     <i class="bi bi-list-task"></i>
                     Quản lý vi phạm
                 </a>
-                <a class="nav-link" aria-current="page" href="admin.php?page=mokhoaTaiKhoan">
+                <a class="nav-link" aria-current="page" href="admin.php?page=taiKhoanBiKhoa">
                     <i class="bi bi-unlock"></i>
-                    Mở khóa tài khoản
+                    Danh sách tài khoản bị khóa
                 </a>
                 <a class="nav-link" href="admin.php?page=danhSachBaoCao">
                     <i class="bi bi-flag"></i>
@@ -45,18 +45,17 @@ if (!isset($_SESSION['uid']) || !isset($_SESSION['role']) || $_SESSION['role'] !
             <?php
                 $page = isset($_GET['page']) ? $_GET['page'] : '';
                 switch ($page) {
-                    case 'quanLyViPham':
-                        include_once('view/quanLyViPham.php');
+                    case 'taiKhoanBiKhoa':
+                        include_once('view/taiKhoanBiKhoa.php');
                         break;
-                    case 'mokhoaTaiKhoan':
-                        include_once('view/mokhoaTaiKhoan.php');
+                    case 'danhSachBaoCao':
+                        include_once('view/danhSachBaoCao.php');
                         break;
                     case 'dangxuat':
                         include_once('view/dangxuat.php');
                         break;
                     default:
-                        include_once('view/danhSachBaoCao.php');
-                        break;
+                        include_once('view/quanLyViPham.php');
                 }
             ?>
         </main>

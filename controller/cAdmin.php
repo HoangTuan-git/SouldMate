@@ -13,7 +13,7 @@ class controlAdmin
     /**
      * Lấy danh sách người dùng vi phạm nhiều
      */
-    public function getDanhSachViPham($minReports = 15)
+    public function getDanhSachViPham($minReports = 3)
     {
         return $this->model->getUsersWithManyReports($minReports);
     }
@@ -35,21 +35,37 @@ class controlAdmin
     }
 
     /**
-     * Khóa tài khoản
+     * Khóa tài khoản với thời hạn
+     * @param int $maNguoiDung
+     * @param string $lyDo
+     * @param int|null $soNgayKhoa - Số ngày khóa (null = vĩnh viễn)
      */
-    public function khoaTaiKhoan($maNguoiDung, $lyDo)
+    public function khoaTaiKhoan($maNguoiDung, $lyDo, $soNgayKhoa = null)
     {
         if (empty($maNguoiDung) || empty($lyDo)) {
             return ['success' => false, 'message' => 'Vui lòng nhập đầy đủ thông tin!'];
         }
 
-        $result = $this->model->lockAccount($maNguoiDung, $lyDo);
+        $result = $this->model->lockAccount($maNguoiDung, $lyDo, $soNgayKhoa);
         
         if ($result) {
-            return ['success' => true, 'message' => 'Đã khóa tài khoản thành công và cập nhật trạng thái các báo cáo!'];
+            if ($soNgayKhoa === null) {
+                $msg = 'Đã khóa tài khoản vĩnh viễn thành công!';
+            } else {
+                $msg = "Đã khóa tài khoản trong {$soNgayKhoa} ngày!";
+            }
+            return ['success' => true, 'message' => $msg];
         }
         
         return ['success' => false, 'message' => 'Tài khoản đã bị khóa hoặc có lỗi xảy ra!'];
+    }
+
+    /**
+     * Tự động mở khóa các tài khoản đã hết hạn
+     */
+    public function autoUnlockExpiredAccounts()
+    {
+        return $this->model->autoUnlockExpiredAccounts();
     }
 
     /**
@@ -97,9 +113,9 @@ class controlAdmin
     /**
      * Lấy tất cả báo cáo
      */
-    public function getAllReports($loaiBaoCao = null, $trangThai = null)
+    public function getAllReports($uid = null, $loaiBaoCao = null, $trangThai = null)
     {
-        return $this->model->getReportsByType($loaiBaoCao, $trangThai);
+        return $this->model->getReportsByType($uid, $loaiBaoCao, $trangThai);
     }
 
     /**

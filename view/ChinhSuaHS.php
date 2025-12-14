@@ -277,9 +277,9 @@
                         <div class="row mb-3" id="seriousOnlySection">
                             <div class="col-md-6">
                                 <label for="location" class="form-label fw-semibold">
-                                    <i class="bi bi-geo-alt-fill text-danger"></i> Thành phố
+                                    <i class="bi bi-geo-alt-fill text-danger"></i> Thành phố <span class="text-danger">*</span>
                                 </label>
-                                <select class="form-select" id="location" name="location">
+                                <select class="form-select" id="location" name="location" required>
                                     <option value="">-- Chọn thành phố --</option>
                                     <?php 
                                     if ($formData['cities'] && $formData['cities']->num_rows > 0):
@@ -299,9 +299,9 @@
                             <div class="col-md-6">
                                 <label for="job" class="form-label fw-semibold">
                                     <i class="bi bi-briefcase-fill text-primary"></i> Nghề nghiệp
-                                    <span class="badge bg-info ms-1">Chỉ với mục đích nghiêm túc</span>
+                                    <span class="text-danger">*</span>
                                 </label>
-                                <select class="form-select" id="job" name="job">
+                                <select class="form-select" id="job" name="job" required>
                                     <option value="">-- Chọn nghề nghiệp --</option>
                                     <?php 
                                     if ($formData['jobs'] && $formData['jobs']->num_rows > 0):
